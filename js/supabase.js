@@ -1,15 +1,29 @@
 // ===== PlainFinance - Supabase Client =====
 
 // Initialize Supabase client
-// These values will be replaced with environment variables in production
+// Replace these with your Supabase project values
 const SUPABASE_URL = 'YOUR_SUPABASE_URL';
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
 let supabaseClient = null;
+let supabaseEnabled = false;
 
 function getSupabase() {
+    // Check if Supabase is properly configured
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || !SUPABASE_URL.startsWith('http')) {
+        supabaseEnabled = false;
+        return null;
+    }
+
     if (!supabaseClient && typeof supabase !== 'undefined') {
-        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        try {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            supabaseEnabled = true;
+        } catch (e) {
+            console.log('Supabase not configured');
+            supabaseEnabled = false;
+            return null;
+        }
     }
     return supabaseClient;
 }
@@ -130,6 +144,11 @@ function getReportLimit(plan) {
 }
 
 async function canCreateReport() {
+    // If Supabase is not configured, allow unlimited reports
+    if (!getSupabase()) {
+        return { allowed: true, remaining: -1, plan: 'free' };
+    }
+
     const { data: profile } = await getUserProfile();
     const plan = profile?.subscription_plan || 'free';
     const limit = getReportLimit(plan);
