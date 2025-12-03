@@ -477,7 +477,7 @@ async function sendToAnalyze(formData) {
 
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('Something went wrong. Please try again.');
+        alert('Error: ' + (error.message || 'Something went wrong. Please try again.'));
 
         // Reset form
         loadingState.style.display = 'none';

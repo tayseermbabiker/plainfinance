@@ -4,10 +4,24 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
+    // CORS headers for all responses
+    const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    };
+
+    // Handle preflight
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
+    }
+
     // Only allow POST
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
+            headers,
             body: JSON.stringify({ error: 'Method not allowed' })
         };
     }
@@ -19,6 +33,7 @@ exports.handler = async (event, context) => {
         if (!data.current || !data.company) {
             return {
                 statusCode: 400,
+                headers,
                 body: JSON.stringify({ error: 'Missing required data' })
             };
         }
@@ -35,10 +50,7 @@ exports.handler = async (event, context) => {
         // Return complete report data
         return {
             statusCode: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers,
             body: JSON.stringify({
                 success: true,
                 company: data.company,
@@ -54,7 +66,8 @@ exports.handler = async (event, context) => {
         console.error('Error:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Analysis failed. Please try again.' })
+            headers,
+            body: JSON.stringify({ error: 'Analysis failed: ' + error.message })
         };
     }
 };
