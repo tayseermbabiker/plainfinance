@@ -843,6 +843,20 @@ function formatNumber(num) {
     return Math.abs(num).toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
+// ===== Dropdown Toggle =====
+
+function toggleDropdown(btn) {
+    const dropdown = btn.closest('.dropdown');
+    dropdown.classList.toggle('open');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+});
+
 // ===== WhatsApp Share =====
 
 function shareWhatsApp() {
@@ -876,6 +890,83 @@ https://plainfinance.co`;
 }
 
 // ===== PDF Download =====
+
+function downloadInvestorPDF() {
+    // Get stored report data
+    const storedReport = localStorage.getItem('plainfinance_report');
+    if (!storedReport) {
+        alert('Report data not found');
+        return;
+    }
+
+    const reportData = JSON.parse(storedReport);
+    const currency = reportData.company?.currency || 'AED';
+    const current = reportData.current || {};
+    const metrics = reportData.metrics || {};
+
+    // Populate investor summary template
+    document.getElementById('inv-company').textContent = reportData.company?.name || 'Company';
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    const period = reportData.company?.period;
+    document.getElementById('inv-period').textContent = period ?
+        `Financial Summary - ${monthNames[parseInt(period.month) - 1]} ${period.year}` : 'Financial Summary';
+    document.getElementById('inv-date').textContent = new Date().toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Key metrics
+    document.getElementById('inv-revenue').textContent = `${currency} ${formatNumber(current.revenue)}`;
+    const profitEl = document.getElementById('inv-profit');
+    profitEl.textContent = `${currency} ${formatNumber(current.netProfit)}`;
+    profitEl.style.color = current.netProfit >= 0 ? '#059669' : '#dc2626';
+    document.getElementById('inv-cash').textContent = `${currency} ${formatNumber(current.cash)}`;
+    document.getElementById('inv-runway').textContent = `${metrics.cashRunway || 0} mo`;
+
+    // Profitability
+    document.getElementById('inv-gross-margin').textContent = `${metrics.grossMargin || 0}%`;
+    document.getElementById('inv-net-margin').textContent = `${metrics.netMargin || 0}%`;
+    document.getElementById('inv-opex').textContent = `${currency} ${formatNumber(current.opex)}`;
+
+    // Liquidity
+    document.getElementById('inv-current-ratio').textContent = `${metrics.currentRatio || 0}x`;
+    document.getElementById('inv-receivables').textContent = `${currency} ${formatNumber(current.receivables)}`;
+    document.getElementById('inv-payables').textContent = `${currency} ${formatNumber(current.payables)}`;
+
+    // Working capital cycle
+    document.getElementById('inv-dso').textContent = metrics.dso || 0;
+    document.getElementById('inv-dio').textContent = metrics.dio || 0;
+    document.getElementById('inv-dpo').textContent = metrics.dpo || 0;
+    const cccEl = document.getElementById('inv-ccc');
+    cccEl.textContent = metrics.ccc || 0;
+    cccEl.style.color = metrics.ccc > 45 ? '#dc2626' : metrics.ccc > 20 ? '#d97706' : '#059669';
+
+    // Executive summary
+    const summaryText = document.querySelector('.meeting-summary blockquote')?.textContent ||
+        `Revenue of ${currency} ${formatNumber(current.revenue)} with ${metrics.netMargin || 0}% net margin. Current ratio at ${metrics.currentRatio || 0}x.`;
+    document.getElementById('inv-summary').textContent = summaryText.replace(/^"|"$/g, '');
+
+    // Generate PDF
+    const investorPage = document.getElementById('investorSummary');
+    investorPage.style.display = 'block';
+    investorPage.style.position = 'static';
+
+    const companyName = reportData.company?.name || 'Report';
+    const filename = `${companyName.replace(/\s+/g, '_')}_Executive_Summary.pdf`;
+
+    const options = {
+        margin: 0,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(options).from(investorPage.querySelector('.investor-page')).save().then(() => {
+        investorPage.style.display = 'none';
+        investorPage.style.position = 'absolute';
+    });
+}
 
 function downloadPDF() {
     const reportContainer = document.querySelector('.report-container');
