@@ -31,8 +31,14 @@
    |-----|-------|-----------------|
    | `OPENAI_API_KEY` | Your OpenAI key (starts with `sk-`) | https://platform.openai.com/api-keys |
    | `RESEND_API_KEY` | Your Resend key (starts with `re_`) | https://resend.com/api-keys |
+   | `STRIPE_SECRET_KEY` | Stripe secret key (starts with `sk_`) | https://dashboard.stripe.com/apikeys |
+   | `STRIPE_WEBHOOK_SECRET` | Webhook signing secret (starts with `whsec_`) | https://dashboard.stripe.com/webhooks |
+   | `STRIPE_PRICE_PROFESSIONAL` | Price ID for Professional plan | https://dashboard.stripe.com/products |
+   | `STRIPE_PRICE_PREMIUM` | Price ID for Premium plan | https://dashboard.stripe.com/products |
+   | `SUPABASE_URL` | Your Supabase project URL | https://supabase.com/dashboard |
+   | `SUPABASE_SERVICE_KEY` | Supabase service role key (secret) | Project Settings > API |
 
-   Note: Supabase keys are in `js/supabase.js` (client-side, safe to expose)
+   Note: Client-side Supabase anon key is in `js/supabase.js` (safe to expose)
 
 5. Click "Save"
 6. Trigger a redeploy for the changes to take effect
@@ -65,6 +71,11 @@ create table profiles (
   id uuid references auth.users primary key,
   email text,
   full_name text,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  subscription_plan text default 'free',
+  subscription_status text,
+  subscription_ends_at timestamp with time zone,
   created_at timestamp with time zone default now()
 );
 
@@ -109,7 +120,24 @@ create policy "Users can delete own reports" on reports
    - Go to Authentication > Providers
    - Enable Google and add your OAuth credentials
 
-### 5. Test the Deployment
+### 5. Set Up Stripe (for payments)
+
+1. Sign up at https://stripe.com
+2. Go to Developers > API keys and copy your secret key
+3. Create two Products in the Products section:
+   - Professional: AED 249/month
+   - Premium + Expert: AED 499/month
+4. Copy the Price IDs (start with `price_`) for each plan
+5. Go to Developers > Webhooks
+6. Add an endpoint: `https://your-site.netlify.app/api/stripe-webhook`
+7. Select events to listen for:
+   - `checkout.session.completed`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+8. Copy the webhook signing secret
+9. Add all Stripe values to Netlify environment variables
+
+### 6. Test the Deployment
 
 1. Visit your Netlify site URL
 2. Sign up for an account

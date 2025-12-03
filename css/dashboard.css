@@ -41,6 +41,57 @@
     padding: 0 20px;
 }
 
+/* Subscription Banner */
+.subscription-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 24px;
+}
+
+.subscription-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.plan-badge {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #94a3b8;
+    color: white;
+}
+
+.plan-badge.plan-free {
+    background: #94a3b8;
+}
+
+.plan-badge.plan-professional {
+    background: #3b82f6;
+}
+
+.plan-badge.plan-premium {
+    background: #8b5cf6;
+}
+
+.reports-count {
+    font-size: 14px;
+    color: #475569;
+}
+
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Header */
 .dashboard-header {
     display: flex;

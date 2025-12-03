@@ -402,6 +402,22 @@ function animateLoadingSteps() {
 
 async function sendToAnalyze(formData) {
     try {
+        // Check subscription limits for logged-in users
+        if (typeof canCreateReport === 'function') {
+            const reportCheck = await canCreateReport();
+            if (!reportCheck.allowed) {
+                loadingState.style.display = 'none';
+                form.style.display = 'block';
+                showStep(1);
+
+                const message = `You have used all ${reportCheck.limit} reports for this month on the Free plan. Upgrade to Professional for unlimited reports.`;
+                if (confirm(message + '\n\nWould you like to view pricing options?')) {
+                    window.location.href = 'pricing.html';
+                }
+                return;
+            }
+        }
+
         // For file uploads, we would need a different approach
         // For now, only form data is fully supported
         if (inputMethod === 'upload' && uploadedFiles.length > 0) {

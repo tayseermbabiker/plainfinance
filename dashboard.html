@@ -32,13 +32,22 @@
     <!-- Dashboard Content -->
     <main class="dashboard-main">
         <div class="dashboard-container">
+            <!-- Subscription Banner -->
+            <div class="subscription-banner" id="subscriptionBanner" style="display: none;">
+                <div class="subscription-info">
+                    <span class="plan-badge" id="planBadge">Free</span>
+                    <span class="reports-count" id="reportsCount"></span>
+                </div>
+                <a href="pricing.html" class="btn btn-sm btn-primary" id="upgradeBtn">Upgrade</a>
+            </div>
+
             <!-- Header -->
             <header class="dashboard-header">
                 <div>
                     <h1>My Reports</h1>
                     <p>View and manage your financial reports</p>
                 </div>
-                <a href="analyze.html" class="btn btn-primary">
+                <a href="analyze.html" class="btn btn-primary" id="newReportBtn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -95,9 +104,54 @@
             const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
             document.getElementById('userName').textContent = userName;
 
+            // Load subscription info
+            await loadSubscriptionInfo();
+
             // Load reports
             await loadReports();
         });
+
+        async function loadSubscriptionInfo() {
+            const banner = document.getElementById('subscriptionBanner');
+            const planBadge = document.getElementById('planBadge');
+            const reportsCount = document.getElementById('reportsCount');
+            const upgradeBtn = document.getElementById('upgradeBtn');
+            const newReportBtn = document.getElementById('newReportBtn');
+
+            try {
+                const reportCheck = await canCreateReport();
+                banner.style.display = 'flex';
+
+                const planNames = {
+                    'free': 'Free',
+                    'professional': 'Professional',
+                    'premium': 'Premium + Expert'
+                };
+
+                planBadge.textContent = planNames[reportCheck.plan] || 'Free';
+                planBadge.className = 'plan-badge plan-' + reportCheck.plan;
+
+                if (reportCheck.remaining === -1) {
+                    // Unlimited plan
+                    reportsCount.textContent = 'Unlimited reports';
+                    upgradeBtn.style.display = 'none';
+                } else {
+                    reportsCount.textContent = `${reportCheck.remaining} of ${reportCheck.limit} reports remaining this month`;
+
+                    if (reportCheck.remaining === 0) {
+                        newReportBtn.classList.add('disabled');
+                        newReportBtn.onclick = (e) => {
+                            e.preventDefault();
+                            if (confirm('You have used all your free reports this month. Upgrade to Professional for unlimited reports.')) {
+                                window.location.href = 'pricing.html';
+                            }
+                        };
+                    }
+                }
+            } catch (e) {
+                console.log('Could not load subscription info');
+            }
+        }
 
         async function loadReports() {
             const loadingState = document.getElementById('loadingState');

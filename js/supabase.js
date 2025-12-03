@@ -82,6 +82,73 @@ async function getSession() {
     return session;
 }
 
+// ===== Subscription =====
+
+async function getUserProfile() {
+    const client = getSupabase();
+    if (!client) return { data: null, error: { message: 'Supabase not initialized' } };
+
+    const user = await getUser();
+    if (!user) return { data: null, error: { message: 'Not authenticated' } };
+
+    const { data, error } = await client
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+    return { data, error };
+}
+
+async function getMonthlyReportCount() {
+    const client = getSupabase();
+    if (!client) return 0;
+
+    const user = await getUser();
+    if (!user) return 0;
+
+    // Get start of current month
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+    const { count, error } = await client
+        .from('reports')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', startOfMonth);
+
+    return error ? 0 : (count || 0);
+}
+
+function getReportLimit(plan) {
+    const limits = {
+        'free': 2,
+        'professional': -1, // unlimited
+        'premium': -1       // unlimited
+    };
+    return limits[plan] ?? 2;
+}
+
+async function canCreateReport() {
+    const { data: profile } = await getUserProfile();
+    const plan = profile?.subscription_plan || 'free';
+    const limit = getReportLimit(plan);
+
+    // Unlimited for paid plans
+    if (limit === -1) return { allowed: true, remaining: -1, plan };
+
+    const used = await getMonthlyReportCount();
+    const remaining = Math.max(0, limit - used);
+
+    return {
+        allowed: remaining > 0,
+        remaining,
+        used,
+        limit,
+        plan
+    };
+}
+
 // ===== Reports =====
 
 async function saveReport(reportData) {

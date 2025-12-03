@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | PlainFinance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a5f'/><text x='50' y='65' font-size='50' fill='white' text-anchor='middle' font-family='Arial'>PF</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-text">PlainFinance</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#how-it-works">How It Works</a>
+                <a href="pricing.html" class="active">Pricing</a>
+                <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
+                <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Pricing Section -->
+    <section class="pricing-page">
+        <div class="container">
+            <div class="pricing-header">
+                <h1>Simple, Transparent Pricing</h1>
+                <p>Start free. Upgrade when you need more reports and features.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Free</div>
+                    <div class="pricing-price">
+                        <span class="currency">AED</span>
+                        <span class="amount">0</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p class="pricing-desc">Perfect for trying out PlainFinance</p>
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> 2 reports per month</li>
+                        <li><span class="check">✓</span> Basic AI analysis</li>
+                        <li><span class="check">✓</span> PDF download</li>
+                        <li><span class="check">✓</span> Email delivery</li>
+                        <li class="disabled"><span class="x">×</span> Report history</li>
+                        <li class="disabled"><span class="x">×</span> Trend tracking</li>
+                    </ul>
+                    <a href="signup.html" class="btn btn-secondary btn-block">Get Started Free</a>
+                </div>
+
+                <!-- Professional Plan -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-name">Professional</div>
+                    <div class="pricing-price">
+                        <span class="currency">AED</span>
+                        <span class="amount">249</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p class="pricing-desc">For growing businesses that need regular insights</p>
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> Unlimited reports</li>
+                        <li><span class="check">✓</span> Advanced AI analysis</li>
+                        <li><span class="check">✓</span> PDF download</li>
+                        <li><span class="check">✓</span> Email delivery</li>
+                        <li><span class="check">✓</span> Report history</li>
+                        <li><span class="check">✓</span> Trend tracking</li>
+                        <li><span class="check">✓</span> Priority support</li>
+                    </ul>
+                    <button class="btn btn-primary btn-block" onclick="subscribe('professional')">
+                        Subscribe Now
+                    </button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Premium + Expert</div>
+                    <div class="pricing-price">
+                        <span class="currency">AED</span>
+                        <span class="amount">499</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p class="pricing-desc">For businesses that want expert guidance</p>
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> Everything in Professional</li>
+                        <li><span class="check">✓</span> 1hr monthly call with FCCA</li>
+                        <li><span class="check">✓</span> WhatsApp support</li>
+                        <li><span class="check">✓</span> Team access (3 users)</li>
+                        <li><span class="check">✓</span> Custom report templates</li>
+                        <li><span class="check">✓</span> Cash flow projections</li>
+                    </ul>
+                    <button class="btn btn-secondary btn-block" onclick="subscribe('premium')">
+                        Subscribe Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="pricing-faq">
+                <h2>Common Questions</h2>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>Can I cancel anytime?</h3>
+                        <p>Yes. No contracts, no commitments. Cancel from your dashboard anytime.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>What payment methods do you accept?</h3>
+                        <p>All major credit and debit cards via Stripe. Secure and encrypted.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Do you offer refunds?</h3>
+                        <p>Yes. If you are not satisfied within 14 days, we will refund you in full.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I change plans later?</h3>
+                        <p>Absolutely. Upgrade or downgrade anytime from your dashboard.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-text">PlainFinance</span>
+                    <p>Your numbers, finally explained.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="index.html#how-it-works">How It Works</a>
+                        <a href="pricing.html">Pricing</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Contact</h4>
+                        <a href="mailto:tayseer.babiker@hotmail.com">Email</a>
+                        <a href="https://wa.me/971565522442">WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 PlainFinance. Built in UAE.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script>
+        // Stripe Price IDs (set these in production)
+        const STRIPE_PRICES = {
+            professional: 'price_professional_id_here',
+            premium: 'price_premium_id_here'
+        };
+
+        async function subscribe(plan) {
+            const user = await getUser();
+
+            if (!user) {
+                // Redirect to signup with plan parameter
+                window.location.href = `signup.html?plan=${plan}`;
+                return;
+            }
+
+            // Create checkout session
+            try {
+                const response = await fetch('/api/create-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        priceId: STRIPE_PRICES[plan],
+                        userId: user.id,
+                        userEmail: user.email
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.url) {
+                    window.location.href = result.url;
+                } else {
+                    alert('Failed to start checkout. Please try again.');
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
