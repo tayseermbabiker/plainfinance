@@ -537,6 +537,149 @@
     line-height: 1.5;
 }
 
+/* ===== Benchmark Section ===== */
+
+.benchmark-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.benchmark-item {
+    padding: 20px;
+    background: var(--report-gray-100);
+    border-radius: 12px;
+    border: 1px solid var(--report-gray-300);
+}
+
+.benchmark-item.good {
+    border-color: #a7f3d0;
+    background: #f0fdf4;
+}
+
+.benchmark-item.warning {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.benchmark-item.danger {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.benchmark-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.benchmark-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--report-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.benchmark-status-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.benchmark-item.good .benchmark-status-icon {
+    background: var(--report-good);
+    color: white;
+}
+
+.benchmark-item.warning .benchmark-status-icon {
+    background: var(--report-warning);
+    color: white;
+}
+
+.benchmark-item.danger .benchmark-status-icon {
+    background: var(--report-danger);
+    color: white;
+}
+
+.benchmark-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--report-dark);
+    margin-bottom: 12px;
+}
+
+.benchmark-bar {
+    position: relative;
+    height: 8px;
+    background: var(--report-gray-300);
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.benchmark-range {
+    position: absolute;
+    height: 100%;
+    background: var(--report-gray-300);
+    border-radius: 4px;
+}
+
+.benchmark-ideal {
+    position: absolute;
+    width: 2px;
+    height: 16px;
+    top: -4px;
+    background: var(--report-primary);
+    transform: translateX(-50%);
+}
+
+.benchmark-marker {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: -4px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.benchmark-marker.good {
+    background: var(--report-good);
+}
+
+.benchmark-marker.warning {
+    background: var(--report-warning);
+}
+
+.benchmark-marker.danger {
+    background: var(--report-danger);
+}
+
+.benchmark-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--report-gray-500);
+}
+
+.benchmark-typical {
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .benchmark-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ===== VAT Section ===== */
 
 .vat-summary {

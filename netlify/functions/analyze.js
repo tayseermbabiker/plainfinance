@@ -29,6 +29,9 @@ exports.handler = async (event, context) => {
         // Generate plain English analysis using OpenAI
         const analysis = await generateAnalysis(data, metrics);
 
+        // Get industry benchmarks
+        const benchmarks = getIndustryBenchmarks(data.company.industry);
+
         // Return complete report data
         return {
             statusCode: 200,
@@ -42,6 +45,7 @@ exports.handler = async (event, context) => {
                 current: data.current,
                 previous: data.previous,
                 metrics: metrics,
+                benchmarks: benchmarks,
                 analysis: analysis
             })
         };
@@ -54,6 +58,86 @@ exports.handler = async (event, context) => {
         };
     }
 };
+
+function getIndustryBenchmarks(industry) {
+    // UAE/GCC industry benchmarks based on typical ranges
+    const benchmarks = {
+        product: {
+            name: 'Product/Retail',
+            grossMargin: { min: 25, max: 40, ideal: 30 },
+            netMargin: { min: 3, max: 10, ideal: 5 },
+            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
+            dso: { min: 15, max: 45, ideal: 30 },
+            dio: { min: 30, max: 90, ideal: 45 },
+            dpo: { min: 30, max: 60, ideal: 45 }
+        },
+        online: {
+            name: 'Online/SaaS',
+            grossMargin: { min: 60, max: 85, ideal: 70 },
+            netMargin: { min: 10, max: 30, ideal: 20 },
+            currentRatio: { min: 1.5, max: 3.0, ideal: 2.0 },
+            dso: { min: 0, max: 30, ideal: 15 },
+            dio: { min: 0, max: 0, ideal: 0 },
+            dpo: { min: 15, max: 45, ideal: 30 }
+        },
+        services: {
+            name: 'Services/Consulting',
+            grossMargin: { min: 40, max: 70, ideal: 50 },
+            netMargin: { min: 10, max: 25, ideal: 15 },
+            currentRatio: { min: 1.2, max: 2.5, ideal: 1.5 },
+            dso: { min: 30, max: 60, ideal: 45 },
+            dio: { min: 0, max: 0, ideal: 0 },
+            dpo: { min: 15, max: 30, ideal: 20 }
+        },
+        food: {
+            name: 'Food & Hospitality',
+            grossMargin: { min: 55, max: 75, ideal: 65 },
+            netMargin: { min: 3, max: 12, ideal: 8 },
+            currentRatio: { min: 0.8, max: 1.5, ideal: 1.0 },
+            dso: { min: 0, max: 15, ideal: 7 },
+            dio: { min: 3, max: 14, ideal: 7 },
+            dpo: { min: 15, max: 30, ideal: 20 }
+        },
+        construction: {
+            name: 'Construction/Real Estate',
+            grossMargin: { min: 15, max: 30, ideal: 20 },
+            netMargin: { min: 5, max: 15, ideal: 10 },
+            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
+            dso: { min: 45, max: 90, ideal: 60 },
+            dio: { min: 30, max: 60, ideal: 45 },
+            dpo: { min: 30, max: 60, ideal: 45 }
+        },
+        manufacturing: {
+            name: 'Manufacturing',
+            grossMargin: { min: 20, max: 40, ideal: 30 },
+            netMargin: { min: 5, max: 12, ideal: 8 },
+            currentRatio: { min: 1.5, max: 2.5, ideal: 2.0 },
+            dso: { min: 30, max: 60, ideal: 45 },
+            dio: { min: 45, max: 90, ideal: 60 },
+            dpo: { min: 30, max: 60, ideal: 45 }
+        },
+        healthcare: {
+            name: 'Healthcare/Wellness',
+            grossMargin: { min: 40, max: 60, ideal: 50 },
+            netMargin: { min: 8, max: 20, ideal: 12 },
+            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
+            dso: { min: 30, max: 60, ideal: 45 },
+            dio: { min: 15, max: 45, ideal: 30 },
+            dpo: { min: 30, max: 45, ideal: 35 }
+        },
+        other: {
+            name: 'General Business',
+            grossMargin: { min: 25, max: 50, ideal: 35 },
+            netMargin: { min: 5, max: 15, ideal: 10 },
+            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
+            dso: { min: 30, max: 60, ideal: 45 },
+            dio: { min: 30, max: 60, ideal: 45 },
+            dpo: { min: 30, max: 45, ideal: 35 }
+        }
+    };
+
+    return benchmarks[industry] || benchmarks.other;
+}
 
 function calculateMetrics(current, previous) {
     const days = 30;

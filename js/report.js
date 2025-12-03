@@ -58,7 +58,12 @@ function populateReportFromAPI(reportData) {
             renderComparisonChart(current, previous, currency);
         }
 
-        // Section 4: Cash Flow Story (with AI explanation)
+        // Section 4: Industry Benchmarks
+        if (reportData.benchmarks) {
+            updateBenchmarkSection(metrics, reportData.benchmarks);
+        }
+
+        // Section 5: Cash Flow Story (with AI explanation)
         updateCashFlowStoryFromAPI(metrics, currency, analysis);
 
         // Section 5: Actions (from AI)
@@ -375,6 +380,95 @@ function updateMetricStatus(metricId, status) {
             statusEl.className = `metric-status ${status}`;
         }
     }
+}
+
+function updateBenchmarkSection(metrics, benchmarks) {
+    const grid = document.getElementById('benchmarkGrid');
+    const industryName = document.getElementById('industryName');
+
+    if (!grid) return;
+
+    industryName.textContent = benchmarks.name || 'businesses';
+
+    const benchmarkItems = [
+        {
+            label: 'Gross Margin',
+            value: metrics.grossMargin,
+            unit: '%',
+            benchmark: benchmarks.grossMargin,
+            higherIsBetter: true
+        },
+        {
+            label: 'Net Margin',
+            value: metrics.netMargin,
+            unit: '%',
+            benchmark: benchmarks.netMargin,
+            higherIsBetter: true
+        },
+        {
+            label: 'Current Ratio',
+            value: metrics.currentRatio,
+            unit: '',
+            benchmark: benchmarks.currentRatio,
+            higherIsBetter: true
+        },
+        {
+            label: 'Days Sales Outstanding',
+            value: metrics.dso,
+            unit: ' days',
+            benchmark: benchmarks.dso,
+            higherIsBetter: false
+        }
+    ];
+
+    grid.innerHTML = benchmarkItems.map(item => {
+        const status = getBenchmarkStatus(item.value, item.benchmark, item.higherIsBetter);
+        const position = getBenchmarkPosition(item.value, item.benchmark);
+
+        return `
+            <div class="benchmark-item ${status}">
+                <div class="benchmark-header">
+                    <span class="benchmark-label">${item.label}</span>
+                    <span class="benchmark-status-icon">${status === 'good' ? '✓' : status === 'warning' ? '!' : '✗'}</span>
+                </div>
+                <div class="benchmark-value">${item.value}${item.unit}</div>
+                <div class="benchmark-bar">
+                    <div class="benchmark-range" style="left: 0%; width: 100%;"></div>
+                    <div class="benchmark-ideal" style="left: ${position.idealPos}%"></div>
+                    <div class="benchmark-marker ${status}" style="left: ${position.valuePos}%"></div>
+                </div>
+                <div class="benchmark-range-labels">
+                    <span>${item.benchmark.min}${item.unit}</span>
+                    <span class="benchmark-typical">Typical: ${item.benchmark.min}-${item.benchmark.max}${item.unit}</span>
+                    <span>${item.benchmark.max}${item.unit}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getBenchmarkStatus(value, benchmark, higherIsBetter) {
+    if (higherIsBetter) {
+        if (value >= benchmark.min) return 'good';
+        if (value >= benchmark.min * 0.7) return 'warning';
+        return 'danger';
+    } else {
+        if (value <= benchmark.max) return 'good';
+        if (value <= benchmark.max * 1.3) return 'warning';
+        return 'danger';
+    }
+}
+
+function getBenchmarkPosition(value, benchmark) {
+    const range = benchmark.max - benchmark.min;
+    const extendedMin = benchmark.min - range * 0.3;
+    const extendedMax = benchmark.max + range * 0.3;
+    const totalRange = extendedMax - extendedMin;
+
+    const valuePos = Math.max(0, Math.min(100, ((value - extendedMin) / totalRange) * 100));
+    const idealPos = ((benchmark.ideal - extendedMin) / totalRange) * 100;
+
+    return { valuePos, idealPos };
 }
 
 function renderComparisonChart(current, previous, currency) {
