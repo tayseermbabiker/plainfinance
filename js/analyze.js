@@ -431,6 +431,15 @@ async function sendToAnalyze(formData) {
             // Store the complete response for the report page
             localStorage.setItem('plainfinance_report', JSON.stringify(result));
 
+            // Save to user account if logged in
+            if (typeof saveReport === 'function') {
+                try {
+                    await saveReport(result);
+                } catch (e) {
+                    console.log('Not logged in or save failed, continuing...');
+                }
+            }
+
             // Redirect to report page
             window.location.href = 'report.html';
         } else {

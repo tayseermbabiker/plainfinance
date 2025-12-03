@@ -5,6 +5,7 @@
 - Netlify account (free tier works)
 - OpenAI API key (for AI-powered analysis)
 - Resend API key (for email delivery - free tier: 3000 emails/month)
+- Supabase account (for user accounts - free tier: 50,000 MAU)
 
 ## Setup Steps
 
@@ -31,6 +32,8 @@
    | `OPENAI_API_KEY` | Your OpenAI key (starts with `sk-`) | https://platform.openai.com/api-keys |
    | `RESEND_API_KEY` | Your Resend key (starts with `re_`) | https://resend.com/api-keys |
 
+   Note: Supabase keys are in `js/supabase.js` (client-side, safe to expose)
+
 5. Click "Save"
 6. Trigger a redeploy for the changes to take effect
 
@@ -43,13 +46,78 @@
 
 Note: For testing, Resend allows sending to your own email without domain verification.
 
-### 4. Test the Deployment
+### 4. Set Up Supabase (for user accounts)
+
+1. Sign up at https://supabase.com
+2. Create a new project
+3. Go to Project Settings > API
+4. Copy your Project URL and anon/public key
+5. Update `js/supabase.js` with your values:
+   ```javascript
+   const SUPABASE_URL = 'https://your-project.supabase.co';
+   const SUPABASE_ANON_KEY = 'your-anon-key';
+   ```
+6. Go to SQL Editor and run this to create the tables:
+
+```sql
+-- Create profiles table
+create table profiles (
+  id uuid references auth.users primary key,
+  email text,
+  full_name text,
+  created_at timestamp with time zone default now()
+);
+
+-- Create reports table
+create table reports (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users not null,
+  company_name text,
+  period_month text,
+  period_year text,
+  currency text default 'AED',
+  revenue numeric,
+  net_profit numeric,
+  cash numeric,
+  report_data jsonb,
+  created_at timestamp with time zone default now()
+);
+
+-- Enable Row Level Security
+alter table profiles enable row level security;
+alter table reports enable row level security;
+
+-- Policies for profiles
+create policy "Users can view own profile" on profiles
+  for select using (auth.uid() = id);
+
+create policy "Users can update own profile" on profiles
+  for update using (auth.uid() = id);
+
+-- Policies for reports
+create policy "Users can view own reports" on reports
+  for select using (auth.uid() = user_id);
+
+create policy "Users can insert own reports" on reports
+  for insert with check (auth.uid() = user_id);
+
+create policy "Users can delete own reports" on reports
+  for delete using (auth.uid() = user_id);
+```
+
+7. (Optional) Enable Google OAuth:
+   - Go to Authentication > Providers
+   - Enable Google and add your OAuth credentials
+
+### 5. Test the Deployment
 
 1. Visit your Netlify site URL
-2. Fill out the analysis form
-3. Submit and verify the AI-generated report loads correctly
-4. Click "Download PDF" to test PDF generation
-5. Click "Email Report" and send to yourself to test email delivery
+2. Sign up for an account
+3. Fill out the analysis form
+4. Submit and verify the AI-generated report loads correctly
+5. Click "Download PDF" to test PDF generation
+6. Click "Email Report" and send to yourself to test email delivery
+7. Go to Dashboard and verify your report is saved
 
 ## Local Development
 
