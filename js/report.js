@@ -72,12 +72,15 @@ function populateReportFromAPI(reportData) {
         // Section 6: Bills Check
         updateBillsCheck(metrics, currency);
 
-        // Section 7: VAT Summary (if data available)
+        // Section 7: Cash Flow Forecast
+        updateCashForecast(current, metrics, currency, reportData.company?.period);
+
+        // Section 8: VAT Summary (if data available)
         if (metrics.hasVatData) {
             updateVatSection(metrics, currency);
         }
 
-        // Section 8: Meeting Summary (from AI)
+        // Section 9: Meeting Summary (from AI)
         updateMeetingSummaryFromAPI(analysis);
     }
 }
@@ -633,6 +636,111 @@ function updateActions(current, metrics, currency) {
             </div>
         </div>
     `).join('');
+}
+
+function updateCashForecast(current, metrics, currency, period) {
+    const timeline = document.getElementById('forecastTimeline');
+    const insight = document.getElementById('forecastInsight');
+    if (!timeline || !insight) return;
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Current values
+    const currentCash = current.cash || 0;
+    const monthlyBurn = current.opex || 0;
+    const netProfit = current.netProfit || 0;
+    const receivables = current.receivables || 0;
+
+    // Calculate monthly cash flow (simplified)
+    // Net cash change = Net Profit + Receivables Collection - New Receivables
+    // Assuming ~30% of receivables collected each month and same level of new receivables
+    const collectionRate = 0.3;
+    const expectedCollections = receivables * collectionRate;
+    const monthlyCashFlow = netProfit + expectedCollections - expectedCollections; // Net zero if steady state
+    const adjustedCashFlow = netProfit; // Simplified to net profit
+
+    // Generate 3 month forecast
+    const startMonth = period?.month ? parseInt(period.month) : new Date().getMonth() + 1;
+    const startYear = period?.year ? parseInt(period.year) : new Date().getFullYear();
+
+    const forecast = [];
+    let runningCash = currentCash;
+
+    // Current month
+    forecast.push({
+        label: `${monthNames[startMonth - 1]} (Now)`,
+        cash: runningCash,
+        isNow: true
+    });
+
+    // Next 3 months
+    for (let i = 1; i <= 3; i++) {
+        runningCash += adjustedCashFlow;
+        const monthIdx = (startMonth - 1 + i) % 12;
+        const year = startYear + Math.floor((startMonth - 1 + i) / 12);
+        forecast.push({
+            label: `${monthNames[monthIdx]} '${year.toString().slice(-2)}`,
+            cash: runningCash,
+            isNow: false
+        });
+    }
+
+    // Render timeline
+    const maxCash = Math.max(...forecast.map(f => f.cash), 0);
+    const minCash = Math.min(...forecast.map(f => f.cash), 0);
+    const range = maxCash - minCash || 1;
+
+    timeline.innerHTML = forecast.map((f, idx) => {
+        const heightPct = ((f.cash - minCash) / range) * 100;
+        const isNegative = f.cash < 0;
+        const statusClass = f.cash > monthlyBurn * 3 ? 'good' : f.cash > monthlyBurn ? 'warning' : 'danger';
+
+        return `
+            <div class="forecast-month ${f.isNow ? 'current' : ''} ${statusClass}">
+                <div class="forecast-bar-container">
+                    <div class="forecast-bar ${isNegative ? 'negative' : ''}" style="height: ${Math.max(heightPct, 10)}%"></div>
+                </div>
+                <div class="forecast-value ${isNegative ? 'negative' : ''}">${currency} ${formatNumber(f.cash)}</div>
+                <div class="forecast-label">${f.label}</div>
+            </div>
+        `;
+    }).join('');
+
+    // Generate insight
+    const finalCash = forecast[forecast.length - 1].cash;
+    let insightHtml = '';
+
+    if (finalCash < 0) {
+        insightHtml = `
+            <div class="insight-box danger">
+                <strong>Warning: Cash may run out</strong>
+                <p>At this rate, you could be ${currency} ${formatNumber(Math.abs(finalCash))} in the red within 3 months. Take action now to improve collections or reduce expenses.</p>
+            </div>
+        `;
+    } else if (finalCash < monthlyBurn) {
+        insightHtml = `
+            <div class="insight-box warning">
+                <strong>Cash getting tight</strong>
+                <p>In 3 months, you may have less than 1 month of expenses in reserve. Consider building your cash buffer.</p>
+            </div>
+        `;
+    } else if (adjustedCashFlow > 0) {
+        insightHtml = `
+            <div class="insight-box good">
+                <strong>Cash position improving</strong>
+                <p>At this pace, you will have ${currency} ${formatNumber(finalCash)} in 3 months. Your runway is extending.</p>
+            </div>
+        `;
+    } else {
+        insightHtml = `
+            <div class="insight-box neutral">
+                <strong>Cash position stable</strong>
+                <p>Your cash position is expected to remain around ${currency} ${formatNumber(finalCash)} over the next 3 months.</p>
+            </div>
+        `;
+    }
+
+    insight.innerHTML = insightHtml;
 }
 
 function updateVatSection(metrics, currency) {

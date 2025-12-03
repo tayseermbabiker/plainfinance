@@ -537,6 +537,124 @@
     line-height: 1.5;
 }
 
+/* ===== Cash Flow Forecast ===== */
+
+.forecast-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.forecast-month {
+    text-align: center;
+}
+
+.forecast-bar-container {
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.forecast-bar {
+    width: 40px;
+    background: var(--report-gray-300);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+}
+
+.forecast-month.good .forecast-bar {
+    background: var(--report-good);
+}
+
+.forecast-month.warning .forecast-bar {
+    background: var(--report-warning);
+}
+
+.forecast-month.danger .forecast-bar {
+    background: var(--report-danger);
+}
+
+.forecast-bar.negative {
+    background: var(--report-danger);
+}
+
+.forecast-month.current .forecast-bar {
+    outline: 3px solid var(--report-primary);
+    outline-offset: 2px;
+}
+
+.forecast-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--report-dark);
+    margin-bottom: 4px;
+}
+
+.forecast-value.negative {
+    color: var(--report-danger);
+}
+
+.forecast-label {
+    font-size: 12px;
+    color: var(--report-gray-500);
+}
+
+.forecast-month.current .forecast-label {
+    font-weight: 600;
+    color: var(--report-primary);
+}
+
+.forecast-insight {
+    margin-bottom: 20px;
+}
+
+.insight-box {
+    padding: 16px 20px;
+    border-radius: 10px;
+}
+
+.insight-box.good {
+    background: #ecfdf5;
+    border-left: 4px solid var(--report-good);
+}
+
+.insight-box.warning {
+    background: #fffbeb;
+    border-left: 4px solid var(--report-warning);
+}
+
+.insight-box.danger {
+    background: #fef2f2;
+    border-left: 4px solid var(--report-danger);
+}
+
+.insight-box.neutral {
+    background: var(--report-gray-100);
+    border-left: 4px solid var(--report-gray-500);
+}
+
+.insight-box strong {
+    display: block;
+    color: var(--report-dark);
+    margin-bottom: 4px;
+}
+
+.insight-box p {
+    color: var(--report-gray-700);
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+    .forecast-timeline {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 /* ===== Benchmark Section ===== */
 
 .benchmark-grid {
