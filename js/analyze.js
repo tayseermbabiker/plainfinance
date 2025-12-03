@@ -1,0 +1,463 @@
+// ===== PlainFinance - Analyze Form Logic =====
+
+// State
+let currentStep = 1;
+let inputMethod = 'form'; // 'form' or 'upload'
+let includeComparison = false;
+let uploadedFiles = [];
+
+// DOM Elements
+const form = document.getElementById('analyzeForm');
+const progressFill = document.querySelector('.progress-fill');
+const progressSteps = document.querySelectorAll('.progress-bar .step');
+const loadingState = document.getElementById('loadingState');
+
+// ===== Step Navigation =====
+
+function showStep(stepNumber) {
+    // Hide all steps
+    document.querySelectorAll('.form-step').forEach(step => {
+        step.classList.remove('active');
+    });
+
+    // Show the correct step based on input method
+    let targetStep;
+    if (stepNumber === 2) {
+        targetStep = document.querySelector(`.form-step[data-step="2"][data-method="${inputMethod}"]`);
+    } else if (stepNumber >= 3 && inputMethod === 'upload') {
+        // Skip steps 3-5 for upload method, go straight to submit
+        submitForm();
+        return;
+    } else {
+        targetStep = document.querySelector(`.form-step[data-step="${stepNumber}"][data-method="form"]`) ||
+                     document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+    }
+
+    if (targetStep) {
+        targetStep.classList.add('active');
+    }
+
+    // Update progress bar
+    updateProgress(stepNumber);
+    currentStep = stepNumber;
+}
+
+function updateProgress(stepNumber) {
+    const totalSteps = 5;
+    const percentage = (stepNumber / totalSteps) * 100;
+    progressFill.style.width = `${percentage}%`;
+
+    progressSteps.forEach((step, index) => {
+        const stepNum = index + 1;
+        step.classList.remove('active', 'completed');
+        if (stepNum < stepNumber) {
+            step.classList.add('completed');
+        } else if (stepNum === stepNumber) {
+            step.classList.add('active');
+        }
+    });
+}
+
+// ===== Next/Prev Button Handlers =====
+
+document.querySelectorAll('.next-step').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (validateCurrentStep()) {
+            showStep(currentStep + 1);
+        }
+    });
+});
+
+document.querySelectorAll('.prev-step').forEach(btn => {
+    btn.addEventListener('click', () => {
+        showStep(currentStep - 1);
+    });
+});
+
+// ===== Input Method Toggle =====
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        inputMethod = btn.dataset.method;
+    });
+});
+
+// ===== Comparison Choice =====
+
+document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        includeComparison = btn.dataset.compare === 'yes';
+        const comparisonFields = document.getElementById('comparisonFields');
+
+        if (includeComparison) {
+            comparisonFields.style.display = 'block';
+        } else {
+            comparisonFields.style.display = 'none';
+        }
+    });
+});
+
+// ===== Currency Prefix Update =====
+
+const currencySelect = document.getElementById('currency');
+if (currencySelect) {
+    currencySelect.addEventListener('change', () => {
+        const currency = currencySelect.value;
+        document.querySelectorAll('.currency-prefix').forEach(prefix => {
+            prefix.textContent = currency;
+        });
+    });
+}
+
+// ===== Live Calculations =====
+
+function updateCalculations() {
+    const getValue = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+    const currency = document.getElementById('currency')?.value || 'AED';
+
+    // Gross Profit
+    const revenue = getValue('revenue');
+    const cogs = getValue('cogs');
+    const grossProfit = revenue - cogs;
+    const grossProfitDisplay = document.getElementById('grossProfitDisplay');
+    if (grossProfitDisplay) {
+        grossProfitDisplay.textContent = `${currency} ${formatNumber(grossProfit)}`;
+    }
+
+    // Net Margin
+    const netProfit = getValue('netProfit');
+    const netMargin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
+    const netMarginDisplay = document.getElementById('netMarginDisplay');
+    if (netMarginDisplay) {
+        netMarginDisplay.textContent = `${netMargin}%`;
+        netMarginDisplay.style.color = netMargin >= 10 ? '#10b981' : netMargin >= 0 ? '#f59e0b' : '#ef4444';
+    }
+
+    // Total Current Assets
+    const cash = getValue('cash');
+    const receivables = getValue('receivables');
+    const inventory = getValue('inventory');
+    const totalCurrentAssets = cash + receivables + inventory;
+    const totalCurrentAssetsDisplay = document.getElementById('totalCurrentAssets');
+    if (totalCurrentAssetsDisplay) {
+        totalCurrentAssetsDisplay.textContent = `${currency} ${formatNumber(totalCurrentAssets)}`;
+    }
+
+    // Total Current Liabilities
+    const payables = getValue('payables');
+    const shortTermLoans = getValue('shortTermLoans');
+    const otherLiabilities = getValue('otherLiabilities');
+    const totalCurrentLiabilities = payables + shortTermLoans + otherLiabilities;
+    const totalCurrentLiabilitiesDisplay = document.getElementById('totalCurrentLiabilities');
+    if (totalCurrentLiabilitiesDisplay) {
+        totalCurrentLiabilitiesDisplay.textContent = `${currency} ${formatNumber(totalCurrentLiabilities)}`;
+    }
+
+    // Working Capital
+    const workingCapital = totalCurrentAssets - totalCurrentLiabilities;
+    const workingCapitalDisplay = document.getElementById('workingCapital');
+    if (workingCapitalDisplay) {
+        workingCapitalDisplay.textContent = `${currency} ${formatNumber(workingCapital)}`;
+        workingCapitalDisplay.style.color = workingCapital >= 0 ? '#10b981' : '#ef4444';
+    }
+}
+
+// Add listeners to all number inputs
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', updateCalculations);
+});
+
+function formatNumber(num) {
+    return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+// ===== File Upload Handling =====
+
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileUpload');
+const uploadedFilesContainer = document.getElementById('uploadedFiles');
+const uploadContinueBtn = document.getElementById('uploadContinue');
+
+if (uploadZone) {
+    // Click to upload
+    uploadZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Drag and drop
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('drag-over');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('drag-over');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    // File input change
+    fileInput.addEventListener('change', () => {
+        handleFiles(fileInput.files);
+    });
+}
+
+function handleFiles(files) {
+    Array.from(files).forEach(file => {
+        // Check file type
+        const validTypes = ['.xlsx', '.xls', '.csv', '.pdf'];
+        const extension = '.' + file.name.split('.').pop().toLowerCase();
+
+        if (!validTypes.includes(extension)) {
+            alert(`Invalid file type: ${file.name}. Please upload Excel, CSV, or PDF files.`);
+            return;
+        }
+
+        // Check if already uploaded
+        if (uploadedFiles.some(f => f.name === file.name)) {
+            return;
+        }
+
+        uploadedFiles.push(file);
+        renderUploadedFiles();
+    });
+
+    updateUploadButton();
+}
+
+function renderUploadedFiles() {
+    uploadedFilesContainer.innerHTML = uploadedFiles.map((file, index) => `
+        <div class="uploaded-file">
+            <div class="file-info">
+                <div class="file-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${formatFileSize(file.size)}</div>
+                </div>
+            </div>
+            <button type="button" class="remove-file" onclick="removeFile(${index})">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    `).join('');
+}
+
+function removeFile(index) {
+    uploadedFiles.splice(index, 1);
+    renderUploadedFiles();
+    updateUploadButton();
+}
+
+function updateUploadButton() {
+    if (uploadContinueBtn) {
+        uploadContinueBtn.disabled = uploadedFiles.length === 0;
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// ===== Form Validation =====
+
+function validateCurrentStep() {
+    const currentStepEl = document.querySelector(`.form-step.active`);
+    if (!currentStepEl) return true;
+
+    const requiredFields = currentStepEl.querySelectorAll('[required]');
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+        if (!field.value) {
+            field.style.borderColor = '#ef4444';
+            isValid = false;
+        } else {
+            field.style.borderColor = '#e2e8f0';
+        }
+    });
+
+    if (!isValid) {
+        // Find first invalid field and focus
+        const firstInvalid = currentStepEl.querySelector('[required]:invalid, [required][value=""]');
+        if (firstInvalid) {
+            firstInvalid.focus();
+        }
+    }
+
+    return isValid;
+}
+
+// ===== Form Submission =====
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitForm();
+});
+
+function submitForm() {
+    // Collect form data
+    const formData = collectFormData();
+
+    // Show loading state
+    form.style.display = 'none';
+    loadingState.style.display = 'block';
+
+    // Animate loading steps
+    animateLoadingSteps();
+
+    // Send to n8n webhook (replace with actual URL)
+    sendToAnalyze(formData);
+}
+
+function collectFormData() {
+    const data = {
+        company: {
+            name: document.getElementById('companyName')?.value,
+            industry: document.getElementById('industry')?.value,
+            period: {
+                month: document.getElementById('reportMonth')?.value,
+                year: document.getElementById('reportYear')?.value
+            },
+            currency: document.getElementById('currency')?.value
+        },
+        inputMethod: inputMethod,
+        includeComparison: includeComparison
+    };
+
+    if (inputMethod === 'form') {
+        data.current = {
+            revenue: parseFloat(document.getElementById('revenue')?.value) || 0,
+            cogs: parseFloat(document.getElementById('cogs')?.value) || 0,
+            opex: parseFloat(document.getElementById('opex')?.value) || 0,
+            netProfit: parseFloat(document.getElementById('netProfit')?.value) || 0,
+            cash: parseFloat(document.getElementById('cash')?.value) || 0,
+            receivables: parseFloat(document.getElementById('receivables')?.value) || 0,
+            inventory: parseFloat(document.getElementById('inventory')?.value) || 0,
+            payables: parseFloat(document.getElementById('payables')?.value) || 0,
+            shortTermLoans: parseFloat(document.getElementById('shortTermLoans')?.value) || 0,
+            otherLiabilities: parseFloat(document.getElementById('otherLiabilities')?.value) || 0
+        };
+
+        if (includeComparison) {
+            data.previous = {
+                revenue: parseFloat(document.getElementById('prevRevenue')?.value) || 0,
+                netProfit: parseFloat(document.getElementById('prevNetProfit')?.value) || 0,
+                cash: parseFloat(document.getElementById('prevCash')?.value) || 0,
+                receivables: parseFloat(document.getElementById('prevReceivables')?.value) || 0,
+                inventory: parseFloat(document.getElementById('prevInventory')?.value) || 0,
+                payables: parseFloat(document.getElementById('prevPayables')?.value) || 0
+            };
+        }
+    } else {
+        data.files = uploadedFiles.map(f => f.name);
+    }
+
+    return data;
+}
+
+function animateLoadingSteps() {
+    const steps = document.querySelectorAll('.loading-step');
+    const messages = [
+        'Reading your data',
+        'Calculating metrics',
+        'Comparing to benchmarks',
+        'Writing your report'
+    ];
+
+    let currentLoadingStep = 0;
+
+    const interval = setInterval(() => {
+        if (currentLoadingStep > 0) {
+            steps[currentLoadingStep - 1].classList.add('completed');
+        }
+
+        if (currentLoadingStep < steps.length) {
+            steps[currentLoadingStep].classList.add('active');
+            document.querySelector('.loading-message').textContent = messages[currentLoadingStep];
+            currentLoadingStep++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 1500);
+}
+
+async function sendToAnalyze(formData) {
+    try {
+        // For file uploads, we would need a different approach
+        // For now, only form data is fully supported
+        if (inputMethod === 'upload' && uploadedFiles.length > 0) {
+            // File upload processing would require additional setup
+            // For MVP, redirect to form entry with a message
+            alert('File upload processing is coming soon. Please use Quick Entry for now.');
+            loadingState.style.display = 'none';
+            form.style.display = 'block';
+            showStep(1);
+            return;
+        }
+
+        // Call the Netlify Function
+        const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Analysis failed');
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Store the complete response for the report page
+            localStorage.setItem('plainfinance_report', JSON.stringify(result));
+
+            // Redirect to report page
+            window.location.href = 'report.html';
+        } else {
+            throw new Error(result.error || 'Analysis failed');
+        }
+
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Something went wrong. Please try again.');
+
+        // Reset form
+        loadingState.style.display = 'none';
+        form.style.display = 'block';
+        showStep(1);
+    }
+}
+
+// ===== Initialize =====
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Set current month/year as default
+    const now = new Date();
+    const monthSelect = document.getElementById('reportMonth');
+    const yearSelect = document.getElementById('reportYear');
+
+    if (monthSelect) monthSelect.value = now.getMonth() + 1;
+    if (yearSelect) yearSelect.value = now.getFullYear();
+
+    updateProgress(1);
+});

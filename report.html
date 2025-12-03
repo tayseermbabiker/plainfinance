@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Financial Report | PlainFinance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/report.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav nav-report">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-plain">Plain</span><span class="logo-finance">Finance</span>
+            </a>
+            <div class="nav-actions">
+                <button class="btn btn-secondary btn-sm" onclick="window.print()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Print / PDF
+                </button>
+                <a href="analyze.html" class="btn btn-primary btn-sm">New Analysis</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Report Content -->
+    <main class="report-main">
+        <div class="report-container">
+
+            <!-- Report Header -->
+            <header class="report-header">
+                <div class="report-meta">
+                    <h1 id="companyName">Gulf Trading LLC</h1>
+                    <p class="report-period">Monthly Briefing: <span id="reportPeriod">November 2024</span></p>
+                </div>
+                <div class="report-badge">
+                    <span>PlainFinance Report</span>
+                </div>
+            </header>
+
+            <!-- Section 1: Did You Make Money? -->
+            <section class="report-section hero-section">
+                <h2>Did you make money this month?</h2>
+                <div class="hero-answer" id="heroAnswer">
+                    <div class="hero-status good">
+                        <span class="status-text">Yes, you made a profit</span>
+                    </div>
+                    <div class="hero-amount">
+                        <span class="currency" id="currency">AED</span>
+                        <span class="amount" id="netProfitAmount">55,000</span>
+                    </div>
+                    <p class="hero-explanation" id="heroExplanation">
+                        From every <strong>AED 1</strong> of sales, you kept <strong>AED 0.11</strong> as profit after all expenses.
+                    </p>
+                </div>
+                <div class="why-matters">
+                    <strong>Why this matters:</strong> This is your real earnings. If this number is negative or shrinking, your business is losing money even if sales look good.
+                </div>
+            </section>
+
+            <!-- Section 2: 5 Key Numbers -->
+            <section class="report-section">
+                <h2>Your 5 key numbers</h2>
+                <p class="section-subtitle">These tell you if your business is healthy</p>
+
+                <div class="key-metrics">
+                    <!-- Metric 1: Revenue -->
+                    <div class="key-metric" id="revenueMetric">
+                        <div class="metric-header">
+                            <span class="metric-status good"></span>
+                            <span class="metric-title">Total Sales</span>
+                        </div>
+                        <div class="metric-value"><span id="revenueValue">AED 500,000</span></div>
+                        <div class="metric-change positive" id="revenueChange">▲ 7.5% vs last month</div>
+                        <div class="metric-why">Money that came in from customers this month</div>
+                    </div>
+
+                    <!-- Metric 2: Gross Margin -->
+                    <div class="key-metric" id="marginMetric">
+                        <div class="metric-header">
+                            <span class="metric-status warning"></span>
+                            <span class="metric-title">Profit per Sale</span>
+                        </div>
+                        <div class="metric-value"><span id="grossMarginValue">35%</span></div>
+                        <div class="metric-change neutral" id="marginChange">Industry average: 25-35%</div>
+                        <div class="metric-why">From each AED 1 sale, you keep AED 0.35 after product cost</div>
+                    </div>
+
+                    <!-- Metric 3: Cash -->
+                    <div class="key-metric" id="cashMetric">
+                        <div class="metric-header">
+                            <span class="metric-status danger"></span>
+                            <span class="metric-title">Cash in Bank</span>
+                        </div>
+                        <div class="metric-value"><span id="cashValue">AED 45,000</span></div>
+                        <div class="metric-change negative" id="cashChange">▼ 37% vs last month</div>
+                        <div class="metric-why">Money available right now to pay bills</div>
+                    </div>
+
+                    <!-- Metric 4: Cash Safety -->
+                    <div class="key-metric" id="runwayMetric">
+                        <div class="metric-header">
+                            <span class="metric-status danger"></span>
+                            <span class="metric-title">Cash Safety</span>
+                        </div>
+                        <div class="metric-value"><span id="runwayValue">1.0 months</span></div>
+                        <div class="metric-change negative">Needs 3+ months to be safe</div>
+                        <div class="metric-why">How long you can pay bills if sales stop today</div>
+                    </div>
+
+                    <!-- Metric 5: Money Owed to You -->
+                    <div class="key-metric" id="arMetric">
+                        <div class="metric-header">
+                            <span class="metric-status warning"></span>
+                            <span class="metric-title">Money Customers Owe You</span>
+                        </div>
+                        <div class="metric-value"><span id="arValue">AED 187,000</span></div>
+                        <div class="metric-change neutral" id="arChange">They pay in ~11 days</div>
+                        <div class="metric-why">Invoices sent but not yet paid</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Comparison Chart -->
+            <section class="report-section">
+                <h2>This month vs last month</h2>
+                <p class="section-subtitle">See how your numbers changed</p>
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Section 4: Cash Flow Story -->
+            <section class="report-section">
+                <h2>How fast does cash move through your business?</h2>
+                <p class="section-subtitle">This explains why you might be profitable but short on cash</p>
+
+                <div class="cash-flow-story">
+                    <div class="flow-step">
+                        <div class="flow-label-top">Stock sits in warehouse</div>
+                        <div class="flow-days" id="dioDisplay">19 days</div>
+                    </div>
+                    <div class="flow-arrow">then</div>
+                    <div class="flow-step">
+                        <div class="flow-label-top">Customers pay you</div>
+                        <div class="flow-days" id="dsoDisplay">11 days</div>
+                    </div>
+                    <div class="flow-arrow">but</div>
+                    <div class="flow-step">
+                        <div class="flow-label-top">You pay suppliers in</div>
+                        <div class="flow-days" id="dpoDisplay">9 days</div>
+                    </div>
+                </div>
+
+                <div class="cash-cycle-result" id="cashCycleResult">
+                    <div class="cycle-summary warning">
+                        <div class="cycle-number" id="cccDisplay">21 days</div>
+                        <div class="cycle-text">
+                            <strong>Your cash is tied up for 21 days</strong>
+                            <p>You pay suppliers in 9 days but wait 11 days to get paid. Plus stock sits for 19 days. That's 21 days where your money is stuck and you can't use it.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <strong>Why this matters:</strong> This is often why profitable businesses run out of cash. The longer this cycle, the more money you need just to keep operating.
+                </div>
+            </section>
+
+            <!-- Section 5: Your 3 Actions This Week -->
+            <section class="report-section actions-section">
+                <h2>Your 3 actions this week</h2>
+                <p class="section-subtitle">Do these to improve your business</p>
+
+                <div class="action-list" id="actionList">
+                    <!-- Action 1 -->
+                    <div class="action-item priority-1">
+                        <div class="action-number">1</div>
+                        <div class="action-content">
+                            <h3>Collect AED 50,000 from late customers</h3>
+                            <p>You have AED 187,000 waiting to be collected. Call or WhatsApp your top 3 customers who owe you money and agree on payment dates this week. Target: collect at least AED 50,000.</p>
+                            <div class="action-result">
+                                <span>Result: This adds AED 50,000 to your bank account</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action 2 -->
+                    <div class="action-item priority-2">
+                        <div class="action-number">2</div>
+                        <div class="action-content">
+                            <h3>Ask suppliers for 30-day payment terms</h3>
+                            <p>You're paying suppliers in 9 days, which is very fast. Call your main suppliers and ask if you can pay in 30 days instead. Even getting this on half your purchases helps.</p>
+                            <div class="action-result">
+                                <span>Result: Keeps cash in your account 21 days longer</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action 3 -->
+                    <div class="action-item priority-3">
+                        <div class="action-number">3</div>
+                        <div class="action-content">
+                            <h3>Pause non-essential spending until cash improves</h3>
+                            <p>With only 1 month of cash safety, hold off on any spending that isn't critical: extra marketing, office upgrades, new equipment. Wait until you have at least 3 months of runway.</p>
+                            <div class="action-result">
+                                <span>Result: Protects your cash buffer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 6: Can You Pay Your Bills? -->
+            <section class="report-section">
+                <h2>Can you pay your upcoming bills?</h2>
+
+                <div class="bills-check">
+                    <div class="bills-item good">
+                        <div class="bills-content">
+                            <strong>Short-term: Yes</strong>
+                            <p>You have AED 2.99 of assets for every AED 1 you owe soon. That's healthy.</p>
+                        </div>
+                    </div>
+                    <div class="bills-item warning">
+                        <div class="bills-content">
+                            <strong>But watch your cash</strong>
+                            <p>Most of your assets are in stock and customer IOUs, not actual cash. If customers pay late or stock doesn't sell, you could still face a crunch.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <strong>Why this matters:</strong> Having assets doesn't mean you have cash. Make sure you can convert stock to sales and collect from customers before big bills are due.
+                </div>
+            </section>
+
+            <!-- Section 7: Summary for Bank/Investor Meetings -->
+            <section class="report-section summary-section">
+                <h2>Summary for bank or investor meetings</h2>
+                <p class="section-subtitle">Use this when someone asks "how is your business doing?"</p>
+
+                <div class="meeting-summary" id="meetingSummary">
+                    <blockquote>
+                        "Sales are up 7.5% this month at AED 500,000, and we are profitable with AED 55,000 net profit (11% margin).
+                        Our main focus right now is improving cash flow. We are collecting from customers faster than average
+                        but paying suppliers too quickly. We are working on extending payment terms and have AED 187,000
+                        in receivables to collect. Current ratio is healthy at 2.99."
+                    </blockquote>
+                </div>
+            </section>
+
+            <!-- Report Footer -->
+            <footer class="report-footer">
+                <div class="footer-content">
+                    <p class="disclaimer">This report helps you understand your numbers but is not financial advice. For important decisions, consult a qualified accountant or financial advisor.</p>
+                    <div class="footer-branding">
+                        <span>Generated by</span>
+                        <strong>PlainFinance</strong>
+                        <span class="footer-date" id="generatedDate">December 3, 2024</span>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script src="js/report.js"></script>
+</body>
+</html>
