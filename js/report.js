@@ -607,3 +607,133 @@ function formatNumber(num) {
     if (num === undefined || num === null) return '0';
     return Math.abs(num).toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
+
+// ===== PDF Download =====
+
+function downloadPDF() {
+    const reportContainer = document.querySelector('.report-container');
+    const companyName = document.getElementById('companyName').textContent || 'Report';
+    const period = document.getElementById('reportPeriod').textContent || '';
+    const filename = `${companyName.replace(/\s+/g, '_')}_${period.replace(/\s+/g, '_')}.pdf`;
+
+    // Hide nav for PDF
+    const nav = document.querySelector('.nav-report');
+    nav.style.display = 'none';
+
+    const options = {
+        margin: [10, 10, 10, 10],
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(options).from(reportContainer).save().then(() => {
+        nav.style.display = '';
+    });
+}
+
+// ===== Email Modal =====
+
+function openEmailModal() {
+    document.getElementById('emailModal').classList.add('active');
+    document.getElementById('emailAddress').focus();
+    document.getElementById('emailStatus').textContent = '';
+    document.getElementById('emailStatus').className = 'modal-status';
+}
+
+function closeEmailModal() {
+    document.getElementById('emailModal').classList.remove('active');
+}
+
+async function sendEmail() {
+    const emailInput = document.getElementById('emailAddress');
+    const email = emailInput.value.trim();
+    const statusEl = document.getElementById('emailStatus');
+    const sendBtn = document.getElementById('sendEmailBtn');
+
+    // Validate email
+    if (!email || !email.includes('@')) {
+        statusEl.textContent = 'Please enter a valid email address';
+        statusEl.className = 'modal-status error';
+        return;
+    }
+
+    // Show loading
+    statusEl.textContent = 'Generating PDF and sending...';
+    statusEl.className = 'modal-status loading';
+    sendBtn.disabled = true;
+
+    try {
+        // Generate PDF as base64
+        const reportContainer = document.querySelector('.report-container');
+        const nav = document.querySelector('.nav-report');
+        nav.style.display = 'none';
+
+        const options = {
+            margin: [10, 10, 10, 10],
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        const pdfBlob = await html2pdf().set(options).from(reportContainer).outputPdf('blob');
+        nav.style.display = '';
+
+        // Convert blob to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(pdfBlob);
+
+        reader.onloadend = async () => {
+            const base64data = reader.result.split(',')[1];
+            const companyName = document.getElementById('companyName').textContent || 'Your Company';
+            const period = document.getElementById('reportPeriod').textContent || '';
+
+            // Send to API
+            const response = await fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    companyName: companyName,
+                    period: period,
+                    pdfBase64: base64data
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                statusEl.textContent = 'Report sent successfully. Check your inbox.';
+                statusEl.className = 'modal-status success';
+                setTimeout(() => {
+                    closeEmailModal();
+                }, 2000);
+            } else {
+                throw new Error(result.error || 'Failed to send email');
+            }
+        };
+
+    } catch (error) {
+        console.error('Email error:', error);
+        statusEl.textContent = 'Failed to send email. Please try again.';
+        statusEl.className = 'modal-status error';
+    } finally {
+        sendBtn.disabled = false;
+    }
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeEmailModal();
+    }
+});
+
+// Close modal on overlay click
+document.getElementById('emailModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'emailModal') {
+        closeEmailModal();
+    }
+});

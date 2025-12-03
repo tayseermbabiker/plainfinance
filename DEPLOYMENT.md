@@ -4,6 +4,7 @@
 
 - Netlify account (free tier works)
 - OpenAI API key (for AI-powered analysis)
+- Resend API key (for email delivery - free tier: 3000 emails/month)
 
 ## Setup Steps
 
@@ -23,17 +24,32 @@
 1. In Netlify, go to your site dashboard
 2. Click "Site configuration" > "Environment variables"
 3. Click "Add a variable"
-4. Add the following:
-   - **Key:** `OPENAI_API_KEY`
-   - **Value:** Your OpenAI API key (starts with `sk-`)
+4. Add the following variables:
+
+   | Key | Value | Where to get it |
+   |-----|-------|-----------------|
+   | `OPENAI_API_KEY` | Your OpenAI key (starts with `sk-`) | https://platform.openai.com/api-keys |
+   | `RESEND_API_KEY` | Your Resend key (starts with `re_`) | https://resend.com/api-keys |
+
 5. Click "Save"
 6. Trigger a redeploy for the changes to take effect
 
-### 3. Test the Deployment
+### 3. Configure Resend Domain (for email delivery)
+
+1. Sign up at https://resend.com
+2. Go to Domains and add your domain (e.g., plainfinance.co)
+3. Add the DNS records Resend provides
+4. Once verified, update the `from` address in `netlify/functions/send-email.js`
+
+Note: For testing, Resend allows sending to your own email without domain verification.
+
+### 4. Test the Deployment
 
 1. Visit your Netlify site URL
 2. Fill out the analysis form
 3. Submit and verify the AI-generated report loads correctly
+4. Click "Download PDF" to test PDF generation
+5. Click "Email Report" and send to yourself to test email delivery
 
 ## Local Development
 
