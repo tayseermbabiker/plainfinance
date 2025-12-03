@@ -68,6 +68,8 @@ function calculateMetrics(current, previous) {
     const payables = current.payables || 0;
     const shortTermLoans = current.shortTermLoans || 0;
     const otherLiabilities = current.otherLiabilities || 0;
+    const vatCollected = current.vatCollected || 0;
+    const vatPaid = current.vatPaid || 0;
 
     // Profitability
     const grossProfit = revenue - cogs;
@@ -93,6 +95,10 @@ function calculateMetrics(current, previous) {
     const monthlyBurn = opex;
     const cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : 0;
 
+    // VAT
+    const vatPayable = vatCollected - vatPaid;
+    const hasVatData = vatCollected > 0 || vatPaid > 0;
+
     // Changes vs previous
     const revenueChange = previous.revenue ? ((revenue - previous.revenue) / previous.revenue) * 100 : null;
     const profitChange = previous.netProfit !== undefined && previous.netProfit !== 0
@@ -114,6 +120,10 @@ function calculateMetrics(current, previous) {
         dpo: Math.round(dpo),
         ccc: Math.round(ccc),
         cashRunway: Math.round(cashRunway * 10) / 10,
+        vatCollected: Math.round(vatCollected),
+        vatPaid: Math.round(vatPaid),
+        vatPayable: Math.round(vatPayable),
+        hasVatData: hasVatData,
         revenueChange: revenueChange !== null ? Math.round(revenueChange * 10) / 10 : null,
         profitChange: profitChange !== null ? Math.round(profitChange * 10) / 10 : null,
         cashChange: cashChange !== null ? Math.round(cashChange * 10) / 10 : null

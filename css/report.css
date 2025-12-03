@@ -52,6 +52,16 @@
     gap: 6px;
 }
 
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+    border: none;
+}
+
+.btn-whatsapp:hover {
+    background: #1da851;
+}
+
 /* ===== Report Header ===== */
 
 .report-header {
@@ -525,6 +535,74 @@
     font-size: 14px;
     margin: 0;
     line-height: 1.5;
+}
+
+/* ===== VAT Section ===== */
+
+.vat-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.vat-item {
+    padding: 20px;
+    background: var(--report-gray-100);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.vat-item.result {
+    background: var(--report-primary);
+    color: white;
+}
+
+.vat-item.result.payable {
+    background: #dc2626;
+}
+
+.vat-item.result.refund {
+    background: #059669;
+}
+
+.vat-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--report-gray-500);
+    margin-bottom: 8px;
+}
+
+.vat-item.result .vat-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.vat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--report-dark);
+    margin-bottom: 4px;
+}
+
+.vat-item.result .vat-value {
+    color: white;
+}
+
+.vat-item small {
+    font-size: 12px;
+    color: var(--report-gray-500);
+}
+
+.vat-item.result small {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+    .vat-summary {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ===== Meeting Summary ===== */

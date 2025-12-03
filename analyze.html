@@ -404,6 +404,40 @@
                         </div>
                     </div>
 
+                    <div class="vat-section">
+                        <h3>VAT Summary (Optional)</h3>
+                        <p class="section-hint">UAE VAT is 5%. Add these if you want VAT analysis in your report.</p>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vatCollected">
+                                    VAT Collected (Output VAT)
+                                    <span class="tooltip" data-tip="VAT you charged customers on your sales">?</span>
+                                </label>
+                                <div class="input-with-currency">
+                                    <span class="currency-prefix">AED</span>
+                                    <input type="number" id="vatCollected" name="vatCollected" placeholder="0" min="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="vatPaid">
+                                    VAT Paid (Input VAT)
+                                    <span class="tooltip" data-tip="VAT you paid on your purchases and expenses">?</span>
+                                </label>
+                                <div class="input-with-currency">
+                                    <span class="currency-prefix">AED</span>
+                                    <input type="number" id="vatPaid" name="vatPaid" placeholder="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="calculated-field">
+                            <span>VAT Payable to FTA</span>
+                            <span class="calculated-value" id="vatPayable">AED 0</span>
+                            <small>Output VAT - Input VAT</small>
+                        </div>
+                    </div>
+
                     <div class="calculated-field">
                         <span>Total Current Liabilities</span>
                         <span class="calculated-value" id="totalCurrentLiabilities">AED 0</span>

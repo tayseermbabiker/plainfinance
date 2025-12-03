@@ -148,11 +148,22 @@ function updateCalculations() {
         totalCurrentAssetsDisplay.textContent = `${currency} ${formatNumber(totalCurrentAssets)}`;
     }
 
-    // Total Current Liabilities
+    // VAT Calculation
+    const vatCollected = getValue('vatCollected');
+    const vatPaid = getValue('vatPaid');
+    const vatPayable = vatCollected - vatPaid;
+    const vatPayableDisplay = document.getElementById('vatPayable');
+    if (vatPayableDisplay) {
+        vatPayableDisplay.textContent = `${currency} ${formatNumber(vatPayable)}`;
+        vatPayableDisplay.style.color = vatPayable > 0 ? '#ef4444' : '#10b981';
+    }
+
+    // Total Current Liabilities (including VAT payable if positive)
     const payables = getValue('payables');
     const shortTermLoans = getValue('shortTermLoans');
     const otherLiabilities = getValue('otherLiabilities');
-    const totalCurrentLiabilities = payables + shortTermLoans + otherLiabilities;
+    const vatLiability = vatPayable > 0 ? vatPayable : 0;
+    const totalCurrentLiabilities = payables + shortTermLoans + otherLiabilities + vatLiability;
     const totalCurrentLiabilitiesDisplay = document.getElementById('totalCurrentLiabilities');
     if (totalCurrentLiabilitiesDisplay) {
         totalCurrentLiabilitiesDisplay.textContent = `${currency} ${formatNumber(totalCurrentLiabilities)}`;
@@ -354,7 +365,9 @@ function collectFormData() {
             inventory: parseFloat(document.getElementById('inventory')?.value) || 0,
             payables: parseFloat(document.getElementById('payables')?.value) || 0,
             shortTermLoans: parseFloat(document.getElementById('shortTermLoans')?.value) || 0,
-            otherLiabilities: parseFloat(document.getElementById('otherLiabilities')?.value) || 0
+            otherLiabilities: parseFloat(document.getElementById('otherLiabilities')?.value) || 0,
+            vatCollected: parseFloat(document.getElementById('vatCollected')?.value) || 0,
+            vatPaid: parseFloat(document.getElementById('vatPaid')?.value) || 0
         };
 
         if (includeComparison) {
