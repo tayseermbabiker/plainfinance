@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a5f'/><text x='50' y='65' font-size='50' fill='white' text-anchor='middle' font-family='Arial'>PF</text></svg>">
 </head>
 <body>
@@ -55,6 +56,31 @@
                     New Report
                 </a>
             </header>
+
+            <!-- Trends Section (shown when 2+ reports exist) -->
+            <div class="trends-section" id="trendsSection" style="display: none;">
+                <h2>Your Business Trends</h2>
+                <p class="section-subtitle">How your key metrics have changed over time</p>
+
+                <div class="trends-summary" id="trendsSummary">
+                    <div class="trend-card">
+                        <span class="trend-label">Revenue Trend</span>
+                        <span class="trend-value" id="revenueTrend">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Profit Trend</span>
+                        <span class="trend-value" id="profitTrend">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Cash Trend</span>
+                        <span class="trend-value" id="cashTrend">-</span>
+                    </div>
+                </div>
+
+                <div class="trends-chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+            </div>
 
             <!-- Reports List -->
             <div class="reports-section">
@@ -172,6 +198,11 @@
                 return;
             }
 
+            // Show trends if 2+ reports
+            if (reports.length >= 2) {
+                renderTrends(reports);
+            }
+
             reportsList.innerHTML = reports.map(report => {
                 const period = `${monthNames[parseInt(report.period_month) - 1] || ''} ${report.period_year || ''}`;
                 const createdDate = new Date(report.created_at).toLocaleDateString('en-US', {
@@ -246,6 +277,117 @@
 
             // Reload reports
             await loadReports();
+        }
+
+        function renderTrends(reports) {
+            const trendsSection = document.getElementById('trendsSection');
+            trendsSection.style.display = 'block';
+
+            // Sort reports by period (oldest first)
+            const sortedReports = [...reports].sort((a, b) => {
+                const dateA = new Date(a.period_year, parseInt(a.period_month) - 1);
+                const dateB = new Date(b.period_year, parseInt(b.period_month) - 1);
+                return dateA - dateB;
+            }).slice(-6); // Last 6 reports max
+
+            // Prepare data
+            const labels = sortedReports.map(r => {
+                const monthShort = monthNames[parseInt(r.period_month) - 1]?.substring(0, 3) || '';
+                return `${monthShort} ${r.period_year?.toString().slice(-2) || ''}`;
+            });
+
+            const revenueData = sortedReports.map(r => r.revenue || 0);
+            const profitData = sortedReports.map(r => r.net_profit || 0);
+            const cashData = sortedReports.map(r => r.cash || 0);
+
+            // Calculate trends (comparing latest to earliest)
+            const calcTrend = (data) => {
+                if (data.length < 2) return { text: '-', class: '' };
+                const first = data[0] || 1;
+                const last = data[data.length - 1];
+                const change = ((last - first) / Math.abs(first)) * 100;
+                const arrow = change >= 0 ? '↑' : '↓';
+                const cls = change >= 0 ? 'positive' : 'negative';
+                return { text: `${arrow} ${Math.abs(change).toFixed(0)}%`, class: cls };
+            };
+
+            const revenueTrend = calcTrend(revenueData);
+            const profitTrend = calcTrend(profitData);
+            const cashTrend = calcTrend(cashData);
+
+            document.getElementById('revenueTrend').textContent = revenueTrend.text;
+            document.getElementById('revenueTrend').className = `trend-value ${revenueTrend.class}`;
+            document.getElementById('profitTrend').textContent = profitTrend.text;
+            document.getElementById('profitTrend').className = `trend-value ${profitTrend.class}`;
+            document.getElementById('cashTrend').textContent = cashTrend.text;
+            document.getElementById('cashTrend').className = `trend-value ${cashTrend.class}`;
+
+            // Render chart
+            const ctx = document.getElementById('trendsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: revenueData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Net Profit',
+                            data: profitData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Cash',
+                            data: cashData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: AED ${formatNumber(context.raw)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                                    if (value >= 1000) return (value / 1000).toFixed(0) + 'K';
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
