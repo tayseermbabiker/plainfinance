@@ -67,6 +67,7 @@
     font-size: 12px;
     color: #64748b;
     text-align: center;
+    white-space: nowrap;
 }
 
 .progress-line {
