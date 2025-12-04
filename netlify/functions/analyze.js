@@ -501,17 +501,29 @@ Please provide:
 
 7. MEETING_SUMMARY: 2-3 sentences an owner can say when asked "How is your business doing?" Include revenue, profit margin, and one key focus area.
 
-Format your response exactly like this:
-HERO_SUMMARY: [your text]
-NARRATIVE: [your text]
-CASH_CYCLE_EXPLANATION: [your text]
-ACTION_1_TITLE: [title]
-ACTION_1_DESC: [description]
-ACTION_2_TITLE: [title]
-ACTION_2_DESC: [description]
-ACTION_3_TITLE: [title]
-ACTION_3_DESC: [description]
-MEETING_SUMMARY: [your text]`;
+Format your response EXACTLY like this (each label on its own line):
+
+HERO_SUMMARY: [your text here]
+
+NARRATIVE: [your text here]
+
+CASH_CYCLE_EXPLANATION: [your text here]
+
+ACTION_1_TITLE: [title here]
+
+ACTION_1_DESC: [description here]
+
+ACTION_2_TITLE: [title here]
+
+ACTION_2_DESC: [description here]
+
+ACTION_3_TITLE: [title here]
+
+ACTION_3_DESC: [description here]
+
+MEETING_SUMMARY: [your text here]
+
+IMPORTANT: Put each section on its own line. Do not combine multiple sections on one line.`;
 
     return prompt;
 }
@@ -539,9 +551,18 @@ function parseAnalysisResponse(content, data, metrics, currency) {
 }
 
 function extractSection(content, sectionName) {
-    const regex = new RegExp(`${sectionName}:\\s*(.+?)(?=\\n[A-Z_]+:|$)`, 's');
+    // More robust regex that handles missing newlines
+    // Stops at the next SECTION_NAME: pattern or end of string
+    const regex = new RegExp(`${sectionName}:\\s*(.+?)(?=\\s*[A-Z_]+:|$)`, 's');
     const match = content.match(regex);
-    return match ? match[1].trim() : null;
+    if (match) {
+        // Clean up the result - remove any trailing section labels that got captured
+        let result = match[1].trim();
+        // Remove any captured trailing labels like "ACTION_2_TITLE:" etc.
+        result = result.replace(/\s*(ACTION_\d+_TITLE|ACTION_\d+_DESC|HERO_SUMMARY|NARRATIVE|CASH_CYCLE_EXPLANATION|MEETING_SUMMARY):.*$/s, '');
+        return result.trim();
+    }
+    return null;
 }
 
 function getDefaultAnalysis(data, metrics) {
