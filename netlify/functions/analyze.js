@@ -48,6 +48,12 @@ exports.handler = async (event, context) => {
         // Get industry benchmarks
         const benchmarks = getIndustryBenchmarks(data.company.industry);
 
+        // Calculate YTD metrics if YTD data provided
+        let ytdMetrics = null;
+        if (data.ytd && data.ytd.revenue > 0) {
+            ytdMetrics = calculateYtdMetrics(data.ytd);
+        }
+
         // Return complete report data
         return {
             statusCode: 200,
@@ -57,7 +63,9 @@ exports.handler = async (event, context) => {
                 company: data.company,
                 current: data.current,
                 previous: data.previous,
+                ytd: data.ytd,
                 metrics: metrics,
+                ytdMetrics: ytdMetrics,
                 benchmarks: benchmarks,
                 analysis: analysis
             })
@@ -245,6 +253,35 @@ function calculateMetrics(current, previous, industryType = 'other') {
     };
 }
 
+function calculateYtdMetrics(ytd) {
+    const revenue = ytd.revenue || 0;
+    const cogs = ytd.cogs || 0;
+    const opex = ytd.opex || 0;
+    const netProfit = ytd.netProfit || 0;
+    const monthsElapsed = ytd.monthsElapsed || 1;
+
+    const grossProfit = revenue - cogs;
+    const grossMargin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+    const netMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+
+    // Monthly averages
+    const avgMonthlyRevenue = revenue / monthsElapsed;
+    const avgMonthlyProfit = netProfit / monthsElapsed;
+
+    return {
+        revenue: Math.round(revenue),
+        cogs: Math.round(cogs),
+        opex: Math.round(opex),
+        netProfit: Math.round(netProfit),
+        grossProfit: Math.round(grossProfit),
+        grossMargin: Math.round(grossMargin * 10) / 10,
+        netMargin: Math.round(netMargin * 10) / 10,
+        monthsElapsed: monthsElapsed,
+        avgMonthlyRevenue: Math.round(avgMonthlyRevenue),
+        avgMonthlyProfit: Math.round(avgMonthlyProfit)
+    };
+}
+
 async function generateAnalysis(data, metrics) {
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -405,6 +442,28 @@ LAST MONTH NUMBERS:
 - Revenue: ${currency} ${previous.revenue.toLocaleString()}
 - Net Profit: ${currency} ${previous.netProfit.toLocaleString()}
 - Cash: ${currency} ${previous.cash.toLocaleString()}
+`;
+    }
+
+    // Add YTD data if available
+    if (data.ytd && data.ytd.revenue > 0) {
+        const ytd = data.ytd;
+        const ytdGrossMargin = ytd.revenue > 0 ? ((ytd.revenue - ytd.cogs) / ytd.revenue * 100).toFixed(1) : 0;
+        const ytdNetMargin = ytd.revenue > 0 ? (ytd.netProfit / ytd.revenue * 100).toFixed(1) : 0;
+        const avgMonthlyRevenue = Math.round(ytd.revenue / ytd.monthsElapsed);
+        const avgMonthlyProfit = Math.round(ytd.netProfit / ytd.monthsElapsed);
+
+        prompt += `
+YEAR TO DATE (${ytd.monthsElapsed} months):
+- YTD Revenue: ${currency} ${ytd.revenue.toLocaleString()} (avg ${currency} ${avgMonthlyRevenue.toLocaleString()}/month)
+- YTD Net Profit: ${currency} ${ytd.netProfit.toLocaleString()} (avg ${currency} ${avgMonthlyProfit.toLocaleString()}/month)
+- YTD Gross Margin: ${ytdGrossMargin}%
+- YTD Net Margin: ${ytdNetMargin}%
+
+YTD COMPARISON RULES:
+- In the HERO_SUMMARY, include YTD context with direction, e.g. "You made AED 55K profit this month (AED 320K YTD, slightly above your usual month)."
+- Only mention YTD in the NARRATIVE if this month differs from YTD average by more than 10-15%.
+- Keep the focus on THIS MONTH - YTD is context, not the main story.
 `;
     }
 

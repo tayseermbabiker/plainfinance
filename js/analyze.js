@@ -120,7 +120,7 @@ function updateCalculations() {
     const getValue = (id) => parseFloat(document.getElementById(id)?.value) || 0;
     const currency = document.getElementById('currency')?.value || 'AED';
 
-    // Gross Profit
+    // MTD Gross Profit
     const revenue = getValue('revenue');
     const cogs = getValue('cogs');
     const grossProfit = revenue - cogs;
@@ -129,13 +129,31 @@ function updateCalculations() {
         grossProfitDisplay.textContent = `${currency} ${formatNumber(grossProfit)}`;
     }
 
-    // Net Margin
+    // YTD Gross Profit
+    const ytdRevenue = getValue('ytdRevenue');
+    const ytdCogs = getValue('ytdCogs');
+    const ytdGrossProfit = ytdRevenue - ytdCogs;
+    const ytdGrossProfitDisplay = document.getElementById('ytdGrossProfitDisplay');
+    if (ytdGrossProfitDisplay) {
+        ytdGrossProfitDisplay.textContent = `${currency} ${formatNumber(ytdGrossProfit)}`;
+    }
+
+    // MTD Net Margin
     const netProfit = getValue('netProfit');
     const netMargin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
     const netMarginDisplay = document.getElementById('netMarginDisplay');
     if (netMarginDisplay) {
         netMarginDisplay.textContent = `${netMargin}%`;
         netMarginDisplay.style.color = netMargin >= 10 ? '#10b981' : netMargin >= 0 ? '#f59e0b' : '#ef4444';
+    }
+
+    // YTD Net Margin
+    const ytdNetProfit = getValue('ytdNetProfit');
+    const ytdNetMargin = ytdRevenue > 0 ? ((ytdNetProfit / ytdRevenue) * 100).toFixed(1) : 0;
+    const ytdNetMarginDisplay = document.getElementById('ytdNetMarginDisplay');
+    if (ytdNetMarginDisplay) {
+        ytdNetMarginDisplay.textContent = `${ytdNetMargin}%`;
+        ytdNetMarginDisplay.style.color = ytdNetMargin >= 10 ? '#10b981' : ytdNetMargin >= 0 ? '#f59e0b' : '#ef4444';
     }
 
     // Total Current Assets
@@ -374,6 +392,20 @@ function collectFormData() {
             vatPaid: parseFloat(document.getElementById('vatPaid')?.value) || 0
         };
 
+        // YTD data (Year to Date)
+        const ytdRevenue = parseFloat(document.getElementById('ytdRevenue')?.value) || 0;
+        if (ytdRevenue > 0) {
+            data.ytd = {
+                revenue: ytdRevenue,
+                cogs: parseFloat(document.getElementById('ytdCogs')?.value) || 0,
+                opex: parseFloat(document.getElementById('ytdOpex')?.value) || 0,
+                netProfit: parseFloat(document.getElementById('ytdNetProfit')?.value) || 0
+            };
+            // Calculate months elapsed (current month number)
+            const currentMonth = parseInt(document.getElementById('reportMonth')?.value) || 1;
+            data.ytd.monthsElapsed = currentMonth;
+        }
+
         if (includeComparison) {
             data.previous = {
                 revenue: parseFloat(document.getElementById('prevRevenue')?.value) || 0,
@@ -487,6 +519,21 @@ async function sendToAnalyze(formData) {
         loadingState.style.display = 'none';
         form.style.display = 'block';
         showStep(1);
+    }
+}
+
+// ===== Format Guide Toggle =====
+
+function toggleFormatGuide() {
+    const content = document.getElementById('formatGuideContent');
+    const toggle = document.querySelector('.format-guide-toggle');
+
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.classList.add('open');
+    } else {
+        content.style.display = 'none';
+        toggle.classList.remove('open');
     }
 }
 

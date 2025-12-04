@@ -34,6 +34,7 @@ function populateReportFromAPI(reportData) {
     const current = reportData.current;
     const previous = reportData.previous || {};
     const metrics = reportData.metrics;
+    const ytdMetrics = reportData.ytdMetrics || null;
     const analysis = reportData.analysis;
 
     // Company Info
@@ -48,10 +49,10 @@ function populateReportFromAPI(reportData) {
 
     if (current && metrics) {
         // Section 1: Did You Make Money? (with AI hero summary)
-        updateHeroSectionFromAPI(current, metrics, currency, analysis);
+        updateHeroSectionFromAPI(current, metrics, currency, analysis, ytdMetrics);
 
         // Section 2: 5 Key Numbers
-        updateKeyMetrics(current, previous, metrics, currency);
+        updateKeyMetrics(current, previous, metrics, currency, ytdMetrics);
 
         // Section 3: Comparison Chart
         if (previous && previous.revenue) {
@@ -83,12 +84,17 @@ function populateReportFromAPI(reportData) {
         // Section 9: Meeting Summary (from AI)
         updateMeetingSummaryFromAPI(analysis);
 
+        // Section 10: YTD Summary (if YTD data available)
+        if (ytdMetrics) {
+            updateYtdSummary(current, metrics, currency, ytdMetrics);
+        }
+
         // Health Strip (Traffic Light)
         updateHealthStrip(current, metrics);
     }
 }
 
-function updateHeroSectionFromAPI(current, metrics, currency, analysis) {
+function updateHeroSectionFromAPI(current, metrics, currency, analysis, ytdMetrics = null) {
     const netProfit = current.netProfit || 0;
     const heroAnswer = document.getElementById('heroAnswer');
 
@@ -116,6 +122,24 @@ function updateHeroSectionFromAPI(current, metrics, currency, analysis) {
         document.getElementById('heroExplanation').innerHTML = `
             From every <strong>${currency} 1</strong> of sales, you kept <strong>${currency} ${marginPerAED}</strong> as profit after all expenses.
         `;
+    }
+
+    // Add YTD context if available
+    if (ytdMetrics && ytdMetrics.avgMonthlyProfit) {
+        const vsYtdAvg = ((netProfit - ytdMetrics.avgMonthlyProfit) / Math.abs(ytdMetrics.avgMonthlyProfit || 1) * 100).toFixed(0);
+        const direction = vsYtdAvg >= 0 ? 'above' : 'below';
+        const directionIcon = vsYtdAvg >= 0 ? '▲' : '▼';
+
+        // Add YTD comparison badge
+        let ytdBadge = document.getElementById('heroYtdBadge');
+        if (!ytdBadge) {
+            ytdBadge = document.createElement('div');
+            ytdBadge.id = 'heroYtdBadge';
+            ytdBadge.className = 'hero-ytd-badge';
+            heroAnswer.appendChild(ytdBadge);
+        }
+        ytdBadge.className = `hero-ytd-badge ${vsYtdAvg >= 0 ? 'positive' : 'negative'}`;
+        ytdBadge.innerHTML = `${directionIcon} ${Math.abs(vsYtdAvg)}% ${direction} YTD monthly average`;
     }
 }
 
@@ -342,18 +366,31 @@ function updateHeroSection(current, metrics, currency) {
     `;
 }
 
-function updateKeyMetrics(current, previous, metrics, currency) {
+function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = null) {
     // Revenue
     document.getElementById('revenueValue').textContent = `${currency} ${formatNumber(current.revenue)}`;
-    if (metrics.revenueChange !== null) {
-        const revenueChangeEl = document.getElementById('revenueChange');
+    const revenueChangeEl = document.getElementById('revenueChange');
+    if (ytdMetrics) {
+        // Show YTD comparison
+        const vsYtdAvg = ytdMetrics.avgMonthlyRevenue > 0
+            ? ((current.revenue - ytdMetrics.avgMonthlyRevenue) / ytdMetrics.avgMonthlyRevenue * 100).toFixed(0)
+            : 0;
+        revenueChangeEl.textContent = `${vsYtdAvg >= 0 ? '▲' : '▼'} ${Math.abs(vsYtdAvg)}% vs YTD avg`;
+        revenueChangeEl.className = `metric-change ${vsYtdAvg >= 0 ? 'positive' : 'negative'}`;
+        updateMetricStatus('revenueMetric', vsYtdAvg >= -10 ? 'good' : 'warning');
+    } else if (metrics.revenueChange !== null) {
         revenueChangeEl.textContent = `${metrics.revenueChange >= 0 ? '▲' : '▼'} ${Math.abs(metrics.revenueChange).toFixed(1)}% vs last month`;
         revenueChangeEl.className = `metric-change ${metrics.revenueChange >= 0 ? 'positive' : 'negative'}`;
         updateMetricStatus('revenueMetric', metrics.revenueChange >= 0 ? 'good' : 'warning');
     }
 
-    // Gross Margin
-    document.getElementById('grossMarginValue').textContent = `${metrics.grossMargin.toFixed(0)}%`;
+    // Gross Margin - show MTD / YTD
+    if (ytdMetrics) {
+        document.getElementById('grossMarginValue').textContent = `${metrics.grossMargin.toFixed(0)}% / ${ytdMetrics.grossMargin.toFixed(0)}%`;
+        document.getElementById('marginChange').textContent = `This month / YTD`;
+    } else {
+        document.getElementById('grossMarginValue').textContent = `${metrics.grossMargin.toFixed(0)}%`;
+    }
     const marginStatus = metrics.grossMargin >= 25 ? 'good' : metrics.grossMargin >= 15 ? 'warning' : 'danger';
     updateMetricStatus('marginMetric', marginStatus);
 
@@ -562,6 +599,72 @@ function updateCashFlowStory(metrics, currency) {
         <div class="cycle-number">${Math.round(metrics.ccc)} days</div>
         <div class="cycle-text">${message}</div>
     </div>`;
+}
+
+// YTD Summary Card
+function updateYtdSummary(current, metrics, currency, ytdMetrics) {
+    const ytdSection = document.getElementById('ytdSummarySection');
+    if (!ytdSection || !ytdMetrics) {
+        if (ytdSection) ytdSection.style.display = 'none';
+        return;
+    }
+
+    ytdSection.style.display = 'block';
+
+    // Calculate comparisons
+    const revenueVsAvg = ytdMetrics.avgMonthlyRevenue > 0
+        ? ((current.revenue - ytdMetrics.avgMonthlyRevenue) / ytdMetrics.avgMonthlyRevenue * 100).toFixed(0)
+        : 0;
+    const profitVsAvg = ytdMetrics.avgMonthlyProfit !== 0
+        ? ((current.netProfit - ytdMetrics.avgMonthlyProfit) / Math.abs(ytdMetrics.avgMonthlyProfit) * 100).toFixed(0)
+        : 0;
+    const marginDiff = (metrics.grossMargin - ytdMetrics.grossMargin).toFixed(1);
+
+    // Populate YTD values
+    document.getElementById('ytdRevenue').textContent = `${currency} ${formatNumber(ytdMetrics.revenue)}`;
+    document.getElementById('ytdProfit').textContent = `${currency} ${formatNumber(ytdMetrics.netProfit)}`;
+    document.getElementById('ytdGrossMargin').textContent = `${ytdMetrics.grossMargin.toFixed(1)}%`;
+    document.getElementById('ytdNetMargin').textContent = `${ytdMetrics.netMargin.toFixed(1)}%`;
+    document.getElementById('ytdMonths').textContent = `${ytdMetrics.monthsElapsed} month${ytdMetrics.monthsElapsed > 1 ? 's' : ''}`;
+
+    // Populate MTD vs YTD comparison
+    const revenueCompEl = document.getElementById('ytdRevenueComp');
+    revenueCompEl.textContent = `${revenueVsAvg >= 0 ? '▲' : '▼'} ${Math.abs(revenueVsAvg)}% vs avg`;
+    revenueCompEl.className = `ytd-comp ${revenueVsAvg >= 0 ? 'positive' : 'negative'}`;
+
+    const profitCompEl = document.getElementById('ytdProfitComp');
+    profitCompEl.textContent = `${profitVsAvg >= 0 ? '▲' : '▼'} ${Math.abs(profitVsAvg)}% vs avg`;
+    profitCompEl.className = `ytd-comp ${profitVsAvg >= 0 ? 'positive' : 'negative'}`;
+
+    const marginCompEl = document.getElementById('ytdMarginComp');
+    marginCompEl.textContent = `${marginDiff >= 0 ? '+' : ''}${marginDiff}% this month`;
+    marginCompEl.className = `ytd-comp ${marginDiff >= 0 ? 'positive' : 'negative'}`;
+
+    // Generate insight
+    const insightEl = document.getElementById('ytdInsight');
+    let insight = '';
+
+    if (Math.abs(revenueVsAvg) > 15) {
+        if (revenueVsAvg > 0) {
+            insight = `Strong month! Revenue is ${revenueVsAvg}% above your YTD average. `;
+        } else {
+            insight = `Revenue is ${Math.abs(revenueVsAvg)}% below your YTD average. `;
+        }
+    }
+
+    if (Math.abs(profitVsAvg) > 15 && ytdMetrics.avgMonthlyProfit !== 0) {
+        if (profitVsAvg > 0) {
+            insight += `Profit significantly outperforming YTD trend.`;
+        } else {
+            insight += `Profit below YTD trend - review costs.`;
+        }
+    }
+
+    if (!insight) {
+        insight = 'This month is tracking close to your year-to-date averages.';
+    }
+
+    insightEl.textContent = insight;
 }
 
 // Health Strip (Traffic Light Summary)

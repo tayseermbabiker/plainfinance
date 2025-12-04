@@ -371,7 +371,43 @@
                 </div>
             </section>
 
-            <!-- Section 9: WhatsApp Alerts -->
+            <!-- Section 10: YTD Summary (conditional - only shown if YTD data provided) -->
+            <section class="report-section ytd-section" id="ytdSummarySection" style="display: none;">
+                <h2>Year-to-Date Summary</h2>
+                <p class="section-subtitle">How this month compares to your <span id="ytdMonths">year</span> so far</p>
+
+                <div class="ytd-grid">
+                    <div class="ytd-card">
+                        <div class="ytd-label">YTD Revenue</div>
+                        <div class="ytd-value" id="ytdRevenue">AED 0</div>
+                        <div class="ytd-comp" id="ytdRevenueComp">This month vs avg</div>
+                    </div>
+                    <div class="ytd-card">
+                        <div class="ytd-label">YTD Net Profit</div>
+                        <div class="ytd-value" id="ytdProfit">AED 0</div>
+                        <div class="ytd-comp" id="ytdProfitComp">This month vs avg</div>
+                    </div>
+                    <div class="ytd-card">
+                        <div class="ytd-label">YTD Gross Margin</div>
+                        <div class="ytd-value" id="ytdGrossMargin">0%</div>
+                        <div class="ytd-comp" id="ytdMarginComp">MTD vs YTD</div>
+                    </div>
+                    <div class="ytd-card">
+                        <div class="ytd-label">YTD Net Margin</div>
+                        <div class="ytd-value" id="ytdNetMargin">0%</div>
+                    </div>
+                </div>
+
+                <div class="ytd-insight" id="ytdInsight">
+                    This month is tracking close to your year-to-date averages.
+                </div>
+
+                <div class="why-matters">
+                    <strong>Note:</strong> YTD figures help you see if this month is an outlier or part of a trend. Focus on MTD for immediate actions.
+                </div>
+            </section>
+
+            <!-- Section 11: WhatsApp Alerts -->
             <section class="report-section alerts-section" id="alertsSection">
                 <h2>Set up WhatsApp alerts</h2>
                 <p class="section-subtitle">Get notified when key metrics cross your thresholds</p>

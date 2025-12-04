@@ -1,0 +1,13 @@
+Field,This Month,Year to Date,Notes
+Revenue / Sales,500000,2500000,Total sales for the period
+Cost of Goods Sold (COGS),325000,1600000,Direct costs of products/services sold
+Operating Expenses (OPEX),120000,650000,Salaries + rent + utilities + marketing etc
+Net Profit,55000,250000,Bottom line after all expenses
+Cash in Bank,45000,,Current bank balance (end of month)
+Accounts Receivable (AR),187000,,Money customers owe you
+Inventory,210000,,Value of stock on hand (0 if services)
+Accounts Payable (AP),98000,,Money you owe suppliers
+Short-term Loans,50000,,Loans due within 12 months
+Other Liabilities,0,,Credit cards + accrued expenses etc
+VAT Collected,25000,,Output VAT charged to customers
+VAT Paid,16250,,Input VAT paid on purchases
