@@ -222,8 +222,8 @@
 
 .dual-column-header {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: 200px 1fr 1fr;
+    gap: 16px;
     margin-bottom: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid #e2e8f0;
@@ -244,8 +244,8 @@
 
 .dual-column-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: 200px 1fr 1fr;
+    gap: 16px;
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid #f1f5f9;
@@ -271,9 +271,9 @@
 
 .dual-column-row.calculated {
     background: #f8fafc;
-    margin: 8px -20px;
-    padding: 12px 20px;
-    border-radius: 0;
+    margin: 8px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
     border-bottom: none;
 }
 

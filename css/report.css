@@ -24,9 +24,9 @@
 }
 
 .report-container {
-    max-width: 800px;
+    max-width: 960px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
 /* ===== Navigation ===== */
@@ -408,15 +408,24 @@
 
 .key-metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
 }
 
 .key-metric {
     background: var(--report-gray-100);
     border-radius: 10px;
-    padding: 20px;
+    padding: 16px;
     border: 1px solid var(--report-gray-300);
+}
+
+.metric-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--report-gray-700);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
 }
 
 .metric-header {
@@ -1193,6 +1202,12 @@
 
 /* ===== Responsive ===== */
 
+@media (max-width: 960px) {
+    .key-metrics {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .report-header {
         flex-direction: column;
@@ -1200,7 +1215,12 @@
     }
 
     .key-metrics {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .metric-title {
+        white-space: normal;
+        font-size: 11px;
     }
 
     .cash-flow-story {
