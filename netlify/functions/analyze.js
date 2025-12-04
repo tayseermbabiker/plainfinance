@@ -38,8 +38,9 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Calculate all metrics
-        const metrics = calculateMetrics(data.current, data.previous || {});
+        // Calculate all metrics (industry needed for runway calculation)
+        const industryType = data.company.industry || 'other';
+        const metrics = calculateMetrics(data.current, data.previous || {}, industryType);
 
         // Generate plain English analysis using OpenAI
         const analysis = await generateAnalysis(data, metrics);
@@ -70,6 +71,20 @@ exports.handler = async (event, context) => {
             body: JSON.stringify({ error: 'Analysis failed: ' + error.message })
         };
     }
+};
+
+// ===== CONFIGURABLE: Fixed cost share of COGS for cash runway =====
+// Represents how much of COGS must be paid even with zero sales
+// Source: Industry analysis, adjust based on real user feedback
+const RUNWAY_COGS_SHARE = {
+    product: 0,        // Product/Retail/Trading: COGS is inventory, variable
+    online: 1.0,       // SaaS/Software: COGS is hosting + support, fixed
+    services: 1.0,     // Services/IT/Consulting: COGS is staff, fixed
+    food: 0.3,         // Food & Hospitality: 30% fixed (staff), 70% variable (ingredients)
+    construction: 0,   // Construction: COGS is materials, variable per project
+    manufacturing: 0.5, // Manufacturing: 50% fixed (labor), 50% variable (materials)
+    healthcare: 1.0,   // Healthcare: COGS is mostly staff, fixed
+    other: 0.3         // Default: conservative 30%
 };
 
 function getIndustryBenchmarks(industry) {
@@ -152,7 +167,7 @@ function getIndustryBenchmarks(industry) {
     return benchmarks[industry] || benchmarks.other;
 }
 
-function calculateMetrics(current, previous) {
+function calculateMetrics(current, previous, industryType = 'other') {
     const days = 30;
 
     const revenue = current.revenue || 0;
@@ -188,9 +203,12 @@ function calculateMetrics(current, previous) {
     const dpo = cogs > 0 ? (payables / cogs) * days : 0;
     const ccc = dso + dio - dpo;
 
-    // Cash runway
-    const monthlyBurn = opex;
-    const cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : 0;
+    // Cash runway (industry-aware)
+    // Formula: Cash / Fixed Monthly Costs
+    // Fixed costs = OPEX + (COGS × industry-specific fixed share)
+    const cogsShare = RUNWAY_COGS_SHARE[industryType] || RUNWAY_COGS_SHARE.other;
+    const fixedMonthlyCosts = opex + (cogs * cogsShare);
+    const cashRunway = fixedMonthlyCosts > 0 ? cash / fixedMonthlyCosts : 0;
 
     // VAT
     const vatPayable = vatCollected - vatPaid;

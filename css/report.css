@@ -426,6 +426,54 @@
     margin-bottom: 12px;
 }
 
+.metric-header .tooltip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: var(--report-gray-400);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: help;
+    margin-left: auto;
+    position: relative;
+}
+
+.metric-header .tooltip:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--report-dark);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    white-space: normal;
+    width: 220px;
+    text-align: left;
+    z-index: 100;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.metric-header .tooltip:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--report-dark);
+    margin-bottom: -4px;
+    z-index: 101;
+}
+
 .metric-status {
     width: 12px;
     height: 12px;
