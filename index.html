@@ -9,10 +9,11 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/rtl.css">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a5f'/><text x='50' y='65' font-size='50' fill='white' text-anchor='middle' font-family='Arial'>PF</text></svg>">
@@ -25,11 +26,15 @@
                 <span class="logo-text">PlainFinance</span>
             </a>
             <div class="nav-links">
-                <a href="#how-it-works">How It Works</a>
-                <a href="#pricing">Pricing</a>
+                <a href="#how-it-works" data-i18n="nav_how_it_works">How It Works</a>
+                <a href="#pricing" data-i18n="nav_pricing">Pricing</a>
                 <a href="#about">About</a>
-                <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
-                <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+                <div class="lang-tabs">
+                    <button class="lang-tab" onclick="setLang('en')" data-lang="en">EN</button>
+                    <button class="lang-tab" onclick="setLang('ar')" data-lang="ar">عربي</button>
+                </div>
+                <a href="login.html" class="btn btn-secondary btn-sm" data-i18n="nav_login">Log In</a>
+                <a href="signup.html" class="btn btn-primary btn-sm" data-i18n="nav_signup">Sign Up</a>
             </div>
             <button class="nav-toggle" aria-label="Toggle menu">
                 <span></span>
@@ -442,6 +447,7 @@ Current Ratio: 1.2
         </div>
     </footer>
 
+    <script src="js/i18n.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

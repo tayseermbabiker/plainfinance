@@ -340,6 +340,9 @@ function submitForm() {
 }
 
 function collectFormData() {
+    // Get language preference (from i18n.js if available)
+    const lang = typeof getCurrentLang === 'function' ? getCurrentLang() : 'en';
+
     const data = {
         company: {
             name: document.getElementById('companyName')?.value,
@@ -350,6 +353,7 @@ function collectFormData() {
             },
             currency: document.getElementById('currency')?.value
         },
+        language: lang,
         inputMethod: inputMethod,
         includeComparison: includeComparison
     };

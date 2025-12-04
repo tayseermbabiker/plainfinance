@@ -6,9 +6,10 @@
     <title>Analyze Your Numbers | PlainFinance</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/analyze.css">
+    <link rel="stylesheet" href="css/rtl.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -18,9 +19,13 @@
                 <span class="logo-plain">Plain</span><span class="logo-finance">Finance</span>
             </a>
             <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="index.html#how-it-works">How It Works</a>
-                <a href="index.html#pricing">Pricing</a>
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="index.html#how-it-works" data-i18n="nav_how_it_works">How It Works</a>
+                <a href="index.html#pricing" data-i18n="nav_pricing">Pricing</a>
+                <div class="lang-tabs">
+                    <button class="lang-tab" onclick="setLang('en')" data-lang="en">EN</button>
+                    <button class="lang-tab" onclick="setLang('ar')" data-lang="ar">عربي</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -606,6 +611,7 @@
         </div>
     </main>
 
+    <script src="js/i18n.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/analyze.js"></script>

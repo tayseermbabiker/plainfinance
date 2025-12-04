@@ -237,8 +237,40 @@ async function generateAnalysis(data, metrics) {
 
     const currency = data.company.currency || 'AED';
     const industryType = data.company.industry || 'product';
+    const language = data.language || 'en';
 
-    const prompt = buildPrompt(data, metrics, currency, industryType);
+    const prompt = buildPrompt(data, metrics, currency, industryType, language);
+
+    // Build system message based on language
+    let systemMessage = '';
+    if (language === 'ar') {
+        systemMessage = `أنت مستشار مالي ودود تشرح الأمور المالية لصاحب عمل غير متخصص في المحاسبة في الإمارات.
+
+القواعد:
+- استخدم لغة بسيطة وواضحة. لا تستخدم المصطلحات المحاسبية المعقدة.
+- كن مباشراً ومحدداً بالأرقام.
+- ركز على ما يهم وما يجب فعله.
+- لا تستخدم الرموز التعبيرية.
+- كن مشجعاً لكن صادقاً بشأن المشاكل.
+- اجعل الشرح قصيراً وعملياً.
+- كل إجراء يجب أن يتضمن فعلاً واضحاً ورقماً محدداً (مثال: "اجمع 50,000 درهم من العملاء" وليس "حسن التحصيل").
+- عندما يكون مقياس ما جيداً أو سيئاً بشكل ملحوظ، قارنه بالنطاقات النموذجية.
+- اكتب التقرير بالكامل باللغة العربية.`;
+    } else {
+        systemMessage = `You are a friendly financial advisor explaining business finances to a non-finance business owner in the UAE.
+
+Rules:
+- Use simple, everyday language. No jargon.
+- Be direct and specific with numbers.
+- Focus on what matters and what to do about it.
+- Do not use emojis.
+- Do not use em dashes. Use commas or periods instead.
+- Do not use contractions (use "do not" instead of "don't").
+- Be encouraging but honest about problems.
+- Keep explanations short and actionable.
+- Every action must include a clear verb and a specific number (e.g. "Collect AED 50,000 from customers" not "improve collections").
+- When a metric is notably good or bad, compare it to typical ranges (e.g. "Your gross margin is 18%, which is below the typical 25-35% for product businesses").`;
+    }
 
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -252,19 +284,7 @@ async function generateAnalysis(data, metrics) {
                 messages: [
                     {
                         role: 'system',
-                        content: `You are a friendly financial advisor explaining business finances to a non-finance business owner in the UAE.
-
-Rules:
-- Use simple, everyday language. No jargon.
-- Be direct and specific with numbers.
-- Focus on what matters and what to do about it.
-- Do not use emojis.
-- Do not use em dashes. Use commas or periods instead.
-- Do not use contractions (use "do not" instead of "don't").
-- Be encouraging but honest about problems.
-- Keep explanations short and actionable.
-- Every action must include a clear verb and a specific number (e.g. "Collect AED 50,000 from customers" not "improve collections").
-- When a metric is notably good or bad, compare it to typical ranges (e.g. "Your gross margin is 18%, which is below the typical 25-35% for product businesses").`
+                        content: systemMessage
                     },
                     {
                         role: 'user',
@@ -292,12 +312,21 @@ Rules:
     }
 }
 
-function buildPrompt(data, metrics, currency, industryType) {
+function buildPrompt(data, metrics, currency, industryType, language = 'en') {
     const current = data.current;
     const previous = data.previous || {};
 
-    // Map industry type to readable name
-    const industryNames = {
+    // Map industry type to readable name (Arabic or English)
+    const industryNames = language === 'ar' ? {
+        'product': 'تجارة المنتجات (تجزئة، جملة، تجارة)',
+        'online': 'أعمال إلكترونية (تطبيقات، SaaS، خدمات رقمية)',
+        'services': 'أعمال خدمية (وكالات، استشارات، عمل حر)',
+        'food': 'أغذية وضيافة',
+        'construction': 'بناء وعقارات',
+        'manufacturing': 'تصنيع وصناعة',
+        'healthcare': 'صحة وعافية',
+        'other': 'أخرى'
+    } : {
         'product': 'Product-based business (retail, wholesale, trading)',
         'online': 'Online-only business (apps, SaaS, digital services)',
         'services': 'Services business (agency, consulting, freelance)',
