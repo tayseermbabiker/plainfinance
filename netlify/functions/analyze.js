@@ -551,15 +551,24 @@ function parseAnalysisResponse(content, data, metrics, currency) {
 }
 
 function extractSection(content, sectionName) {
-    // More robust regex that handles missing newlines
-    // [A-Z0-9_]+ matches section names like ACTION_1_DESC (includes digits)
-    const regex = new RegExp(`${sectionName}:\\s*(.+?)(?=\\s*[A-Z][A-Z0-9_]*:|$)`, 's');
-    const match = content.match(regex);
-    if (match) {
-        let result = match[1].trim();
-        return result;
+    // Split approach: find the section start and extract until next section
+    const sectionStart = content.indexOf(sectionName + ':');
+    if (sectionStart === -1) return null;
+
+    // Get content after the label
+    const afterLabel = content.substring(sectionStart + sectionName.length + 1);
+
+    // Find where the next section starts (pattern: UPPERCASE_WORD:)
+    const nextSectionMatch = afterLabel.match(/\s+([A-Z][A-Z0-9_]+):/);
+
+    if (nextSectionMatch) {
+        // Extract text before the next section
+        const endIndex = afterLabel.indexOf(nextSectionMatch[0]);
+        return afterLabel.substring(0, endIndex).trim();
     }
-    return null;
+
+    // No next section found, return everything after label
+    return afterLabel.trim();
 }
 
 function getDefaultAnalysis(data, metrics) {
