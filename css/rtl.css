@@ -306,3 +306,34 @@
 [dir="rtl"] th:first-child {
     text-align: right;
 }
+
+/* Alerts Section */
+[dir="rtl"] .alert-item {
+    flex-direction: row-reverse;
+    border-left: none;
+    border-right: 4px solid;
+}
+
+[dir="rtl"] .alert-item.warning {
+    border-right-color: #fbbf24;
+}
+
+[dir="rtl"] .alert-item.danger {
+    border-right-color: #ef4444;
+}
+
+[dir="rtl"] .alert-content {
+    text-align: right;
+}
+
+[dir="rtl"] .alert-setting-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .alert-setting label {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .alert-threshold {
+    flex-direction: row-reverse;
+}

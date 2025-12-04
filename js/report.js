@@ -1095,3 +1095,210 @@ document.getElementById('emailModal')?.addEventListener('click', (e) => {
         closeEmailModal();
     }
 });
+
+// ===== Alert System =====
+
+// Load saved alert settings
+function loadAlertSettings() {
+    const saved = localStorage.getItem('plainfinance_alerts');
+    if (saved) {
+        const settings = JSON.parse(saved);
+
+        // Apply saved values
+        if (settings.runway !== undefined) {
+            document.getElementById('alertRunway').checked = settings.runway.enabled;
+            document.getElementById('alertRunwayValue').value = settings.runway.value;
+        }
+        if (settings.margin !== undefined) {
+            document.getElementById('alertMargin').checked = settings.margin.enabled;
+            document.getElementById('alertMarginValue').value = settings.margin.value;
+        }
+        if (settings.dso !== undefined) {
+            document.getElementById('alertDSO').checked = settings.dso.enabled;
+            document.getElementById('alertDSOValue').value = settings.dso.value;
+        }
+        if (settings.cash !== undefined) {
+            document.getElementById('alertCash').checked = settings.cash.enabled;
+            document.getElementById('alertCashValue').value = settings.cash.value;
+        }
+    }
+}
+
+// Save alert settings
+function saveAlertSettings() {
+    const settings = {
+        runway: {
+            enabled: document.getElementById('alertRunway').checked,
+            value: parseInt(document.getElementById('alertRunwayValue').value) || 4
+        },
+        margin: {
+            enabled: document.getElementById('alertMargin').checked,
+            value: parseInt(document.getElementById('alertMarginValue').value) || 10
+        },
+        dso: {
+            enabled: document.getElementById('alertDSO').checked,
+            value: parseInt(document.getElementById('alertDSOValue').value) || 45
+        },
+        cash: {
+            enabled: document.getElementById('alertCash').checked,
+            value: parseInt(document.getElementById('alertCashValue').value) || 50000
+        }
+    };
+
+    localStorage.setItem('plainfinance_alerts', JSON.stringify(settings));
+
+    // Show confirmation
+    const btn = document.querySelector('.alert-config .btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Saved';
+    btn.style.background = '#10b981';
+    btn.style.color = 'white';
+
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = '';
+        btn.style.color = '';
+    }, 2000);
+
+    // Re-check alerts with new settings
+    checkAlerts();
+}
+
+// Check if any thresholds are crossed
+function checkAlerts() {
+    const storedReport = localStorage.getItem('plainfinance_report');
+    if (!storedReport) return;
+
+    const reportData = JSON.parse(storedReport);
+    const metrics = reportData.metrics;
+    const current = reportData.current;
+    const company = reportData.company;
+    const currency = company?.currency || 'AED';
+
+    if (!metrics) return;
+
+    const savedSettings = localStorage.getItem('plainfinance_alerts');
+    const settings = savedSettings ? JSON.parse(savedSettings) : {
+        runway: { enabled: true, value: 4 },
+        margin: { enabled: true, value: 10 },
+        dso: { enabled: false, value: 45 },
+        cash: { enabled: false, value: 50000 }
+    };
+
+    const alerts = [];
+
+    // Check cash runway
+    if (settings.runway.enabled && metrics.cashRunway !== undefined) {
+        const runwayWeeks = metrics.cashRunway;
+        if (runwayWeeks < settings.runway.value) {
+            alerts.push({
+                type: runwayWeeks < 2 ? 'danger' : 'warning',
+                title: 'Low Cash Runway',
+                message: `Your cash runway is ${runwayWeeks.toFixed(1)} weeks. This is below your threshold of ${settings.runway.value} weeks.`,
+                whatsappMsg: `ALERT: ${company?.name || 'Company'} - Cash runway is only ${runwayWeeks.toFixed(1)} weeks. Immediate attention needed.`
+            });
+        }
+    }
+
+    // Check profit margin
+    if (settings.margin.enabled && metrics.netProfitMargin !== undefined) {
+        const margin = metrics.netProfitMargin;
+        if (margin < settings.margin.value) {
+            alerts.push({
+                type: margin < 0 ? 'danger' : 'warning',
+                title: 'Low Profit Margin',
+                message: `Your net profit margin is ${margin.toFixed(1)}%. This is below your threshold of ${settings.margin.value}%.`,
+                whatsappMsg: `ALERT: ${company?.name || 'Company'} - Net profit margin dropped to ${margin.toFixed(1)}%. Review expenses and pricing.`
+            });
+        }
+    }
+
+    // Check DSO (Days Sales Outstanding)
+    if (settings.dso.enabled && metrics.dso !== undefined) {
+        const dso = metrics.dso;
+        if (dso > settings.dso.value) {
+            alerts.push({
+                type: dso > 60 ? 'danger' : 'warning',
+                title: 'Slow Customer Payments',
+                message: `Customers are taking ${dso.toFixed(0)} days to pay. This exceeds your threshold of ${settings.dso.value} days.`,
+                whatsappMsg: `ALERT: ${company?.name || 'Company'} - Customers taking ${dso.toFixed(0)} days to pay. Follow up on overdue invoices.`
+            });
+        }
+    }
+
+    // Check cash balance
+    if (settings.cash.enabled && current?.cash !== undefined) {
+        const cash = current.cash;
+        if (cash < settings.cash.value) {
+            alerts.push({
+                type: cash < settings.cash.value / 2 ? 'danger' : 'warning',
+                title: 'Low Cash Balance',
+                message: `Your cash balance is ${currency} ${formatNumber(cash)}. This is below your threshold of ${currency} ${formatNumber(settings.cash.value)}.`,
+                whatsappMsg: `ALERT: ${company?.name || 'Company'} - Cash balance is ${currency} ${formatNumber(cash)}. Below threshold of ${currency} ${formatNumber(settings.cash.value)}.`
+            });
+        }
+    }
+
+    renderAlerts(alerts);
+}
+
+// Render alerts in the UI
+function renderAlerts(alerts) {
+    const container = document.getElementById('activeAlerts');
+    if (!container) return;
+
+    if (alerts.length === 0) {
+        container.innerHTML = `
+            <div class="no-alerts">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <p>All metrics are within your thresholds. You are doing well.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = alerts.map(alert => `
+        <div class="alert-item ${alert.type}">
+            <div class="alert-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <div class="alert-content">
+                <h4>${alert.title}</h4>
+                <p>${alert.message}</p>
+            </div>
+            <div class="alert-action">
+                <button class="btn btn-whatsapp" onclick="sendAlertWhatsApp('${encodeURIComponent(alert.whatsappMsg)}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    Notify via WhatsApp
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Send alert via WhatsApp
+function sendAlertWhatsApp(encodedMessage) {
+    const message = decodeURIComponent(encodedMessage);
+    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
+
+// Initialize alerts on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved settings
+    loadAlertSettings();
+
+    // Check for alerts based on current report data
+    setTimeout(() => {
+        checkAlerts();
+    }, 500); // Small delay to ensure report data is loaded
+});

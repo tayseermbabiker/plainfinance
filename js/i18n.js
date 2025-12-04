@@ -74,6 +74,20 @@ const translations = {
         summary_title: 'Summary for bank or investor meetings',
         summary_subtitle: 'Use this when someone asks "how is your business doing?"',
 
+        // Alerts
+        alerts_title: 'Set up WhatsApp alerts',
+        alerts_subtitle: 'Get notified when key metrics cross your thresholds',
+        alerts_configure: 'Configure your alerts',
+        alerts_runway: 'Cash runway drops below',
+        alerts_margin: 'Profit margin drops below',
+        alerts_dso: 'Days to collect payment exceeds',
+        alerts_cash: 'Cash balance drops below',
+        alerts_save: 'Save Alert Settings',
+        alerts_how_works: 'When you generate a new report and any metric crosses your threshold, you will see an alert with a WhatsApp button to notify yourself or your team immediately.',
+        alerts_all_good: 'All metrics are within your thresholds. You are doing well.',
+        alerts_weeks: 'weeks',
+        alerts_days: 'days',
+
         // Common
         loading: 'Loading...',
         error: 'Error',
@@ -156,6 +170,20 @@ const translations = {
         vat_subtitle: 'وضعك الضريبي لهذه الفترة',
         summary_title: 'ملخص لاجتماعات البنوك أو المستثمرين',
         summary_subtitle: 'استخدم هذا عندما يسألك أحد "كيف يسير عملك؟"',
+
+        // Alerts
+        alerts_title: 'إعداد تنبيهات واتساب',
+        alerts_subtitle: 'احصل على إشعار عندما تتجاوز المقاييس الرئيسية حدودك',
+        alerts_configure: 'إعداد التنبيهات',
+        alerts_runway: 'رصيد النقد يقل عن',
+        alerts_margin: 'هامش الربح يقل عن',
+        alerts_dso: 'أيام التحصيل تتجاوز',
+        alerts_cash: 'رصيد النقد يقل عن',
+        alerts_save: 'حفظ إعدادات التنبيهات',
+        alerts_how_works: 'عند إنشاء تقرير جديد وتجاوز أي مقياس للحد المحدد، سترى تنبيهاً مع زر واتساب لإشعار نفسك أو فريقك فوراً.',
+        alerts_all_good: 'جميع المقاييس ضمن الحدود المحددة. أنت تسير بشكل جيد.',
+        alerts_weeks: 'أسابيع',
+        alerts_days: 'أيام',
 
         // Common
         loading: 'جاري التحميل...',

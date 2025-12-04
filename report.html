@@ -344,6 +344,78 @@
                 </div>
             </section>
 
+            <!-- Section 9: WhatsApp Alerts -->
+            <section class="report-section alerts-section" id="alertsSection">
+                <h2>Set up WhatsApp alerts</h2>
+                <p class="section-subtitle">Get notified when key metrics cross your thresholds</p>
+
+                <div class="alerts-container">
+                    <!-- Active Alerts -->
+                    <div class="active-alerts" id="activeAlerts">
+                        <!-- Alert items will be rendered here if thresholds are crossed -->
+                    </div>
+
+                    <!-- Alert Configuration -->
+                    <div class="alert-config">
+                        <h3>Configure your alerts</h3>
+                        <div class="alert-settings">
+                            <div class="alert-setting">
+                                <div class="alert-setting-header">
+                                    <label>
+                                        <input type="checkbox" id="alertRunway" checked>
+                                        Cash runway drops below
+                                    </label>
+                                    <div class="alert-threshold">
+                                        <input type="number" id="alertRunwayValue" value="4" min="1" max="12"> weeks
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert-setting">
+                                <div class="alert-setting-header">
+                                    <label>
+                                        <input type="checkbox" id="alertMargin" checked>
+                                        Profit margin drops below
+                                    </label>
+                                    <div class="alert-threshold">
+                                        <input type="number" id="alertMarginValue" value="10" min="1" max="50">%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert-setting">
+                                <div class="alert-setting-header">
+                                    <label>
+                                        <input type="checkbox" id="alertDSO">
+                                        Days to collect payment exceeds
+                                    </label>
+                                    <div class="alert-threshold">
+                                        <input type="number" id="alertDSOValue" value="45" min="15" max="90"> days
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert-setting">
+                                <div class="alert-setting-header">
+                                    <label>
+                                        <input type="checkbox" id="alertCash">
+                                        Cash balance drops below
+                                    </label>
+                                    <div class="alert-threshold">
+                                        <input type="number" id="alertCashValue" value="50000" min="1000" step="1000">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveAlertSettings()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                            Save Alert Settings
+                        </button>
+                    </div>
+                </div>
+
+                <div class="why-matters">
+                    <strong>How it works:</strong> When you generate a new report and any metric crosses your threshold, you will see an alert with a WhatsApp button to notify yourself or your team immediately.
+                </div>
+            </section>
+
             <!-- Report Footer -->
             <footer class="report-footer">
                 <div class="footer-content">
