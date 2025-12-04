@@ -552,15 +552,12 @@ function parseAnalysisResponse(content, data, metrics, currency) {
 
 function extractSection(content, sectionName) {
     // More robust regex that handles missing newlines
-    // Stops at the next SECTION_NAME: pattern or end of string
-    const regex = new RegExp(`${sectionName}:\\s*(.+?)(?=\\s*[A-Z_]+:|$)`, 's');
+    // [A-Z0-9_]+ matches section names like ACTION_1_DESC (includes digits)
+    const regex = new RegExp(`${sectionName}:\\s*(.+?)(?=\\s*[A-Z][A-Z0-9_]*:|$)`, 's');
     const match = content.match(regex);
     if (match) {
-        // Clean up the result - remove any trailing section labels that got captured
         let result = match[1].trim();
-        // Remove any captured trailing labels like "ACTION_2_TITLE:" etc.
-        result = result.replace(/\s*(ACTION_\d+_TITLE|ACTION_\d+_DESC|HERO_SUMMARY|NARRATIVE|CASH_CYCLE_EXPLANATION|MEETING_SUMMARY):.*$/s, '');
-        return result.trim();
+        return result;
     }
     return null;
 }
