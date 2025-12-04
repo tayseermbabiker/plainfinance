@@ -822,14 +822,43 @@ function updateCashForecast(current, metrics, currency, period) {
     const monthlyBurn = current.opex || 0;
     const netProfit = current.netProfit || 0;
     const receivables = current.receivables || 0;
+    const payables = current.payables || 0;
 
-    // Calculate monthly cash flow (simplified)
-    // Net cash change = Net Profit + Receivables Collection - New Receivables
-    // Assuming ~30% of receivables collected each month and same level of new receivables
-    const collectionRate = 0.3;
-    const expectedCollections = receivables * collectionRate;
-    const monthlyCashFlow = netProfit + expectedCollections - expectedCollections; // Net zero if steady state
-    const adjustedCashFlow = netProfit; // Simplified to net profit
+    // Working capital timing (DSO/DPO-based forecast)
+    // Collections per month = AR / DSO × 30 (how much you collect monthly)
+    // Payments per month = AP / DPO × 30 (how much you pay monthly)
+    const dso = metrics.dso || 30;  // Default 30 days if not available
+    const dpo = metrics.dpo || 30;  // Default 30 days if not available
+
+    // Monthly cash flows based on working capital cycle
+    const monthlyCollections = dso > 0 ? (receivables / dso) * 30 : 0;
+    const monthlyPayments = dpo > 0 ? (payables / dpo) * 30 : 0;
+
+    // Working capital effect on cash
+    // If you pay suppliers slower than you collect = positive cash effect
+    // If you collect slower than you pay = negative cash effect
+    const workingCapitalEffect = monthlyPayments - monthlyCollections;
+
+    // Calculate monthly cash change
+    // = Net Profit + Working Capital Effect (AP timing - AR timing)
+    let monthlyCashChange = netProfit + workingCapitalEffect;
+
+    // Safety caps to avoid unrealistic projections
+    // 1. If too optimistic (> 150% of net profit), cap at 50% of net profit
+    if (netProfit > 0 && monthlyCashChange > netProfit * 1.5) {
+        monthlyCashChange = netProfit * 0.5;
+    }
+
+    // 2. If loss-making, don't make it look better than the loss
+    if (netProfit < 0) {
+        monthlyCashChange = Math.min(monthlyCashChange, netProfit);
+    }
+
+    // 3. Floor at negative of monthly burn (can't lose more than fixed costs + some variable)
+    const maxMonthlyLoss = -(monthlyBurn * 1.5);
+    if (monthlyCashChange < maxMonthlyLoss) {
+        monthlyCashChange = maxMonthlyLoss;
+    }
 
     // Generate 3 month forecast
     const startMonth = period?.month ? parseInt(period.month) : new Date().getMonth() + 1;
@@ -847,7 +876,7 @@ function updateCashForecast(current, metrics, currency, period) {
 
     // Next 3 months
     for (let i = 1; i <= 3; i++) {
-        runningCash += adjustedCashFlow;
+        runningCash += monthlyCashChange;
         const monthIdx = (startMonth - 1 + i) % 12;
         const year = startYear + Math.floor((startMonth - 1 + i) / 12);
         forecast.push({
@@ -878,36 +907,44 @@ function updateCashForecast(current, metrics, currency, period) {
         `;
     }).join('');
 
-    // Generate insight
+    // Generate insight based on projection
     const finalCash = forecast[forecast.length - 1].cash;
+    const cashChange = finalCash - currentCash;
     let insightHtml = '';
 
     if (finalCash < 0) {
         insightHtml = `
             <div class="insight-box danger">
                 <strong>Warning: Cash may run out</strong>
-                <p>At this rate, you could be ${currency} ${formatNumber(Math.abs(finalCash))} in the red within 3 months. Take action now to improve collections or reduce expenses.</p>
+                <p>Based on your current collection and payment patterns, you could be ${currency} ${formatNumber(Math.abs(finalCash))} short within 3 months. Speed up collections or slow down payments.</p>
             </div>
         `;
     } else if (finalCash < monthlyBurn) {
         insightHtml = `
             <div class="insight-box warning">
-                <strong>Cash getting tight</strong>
-                <p>In 3 months, you may have less than 1 month of expenses in reserve. Consider building your cash buffer.</p>
+                <strong>Cash buffer shrinking</strong>
+                <p>At this pace, you may have less than 1 month of expenses in reserve. Consider collecting faster or delaying some payments.</p>
             </div>
         `;
-    } else if (adjustedCashFlow > 0) {
+    } else if (monthlyCashChange > 0) {
         insightHtml = `
             <div class="insight-box good">
                 <strong>Cash position improving</strong>
-                <p>At this pace, you will have ${currency} ${formatNumber(finalCash)} in 3 months. Your runway is extending.</p>
+                <p>If patterns continue, you could have ${currency} ${formatNumber(finalCash)} in 3 months (+${currency} ${formatNumber(cashChange)} from today).</p>
+            </div>
+        `;
+    } else if (monthlyCashChange < 0) {
+        insightHtml = `
+            <div class="insight-box warning">
+                <strong>Cash position declining</strong>
+                <p>Your payment cycle is consuming cash. In 3 months you may have ${currency} ${formatNumber(finalCash)} (${currency} ${formatNumber(Math.abs(cashChange))} less than today).</p>
             </div>
         `;
     } else {
         insightHtml = `
             <div class="insight-box neutral">
                 <strong>Cash position stable</strong>
-                <p>Your cash position is expected to remain around ${currency} ${formatNumber(finalCash)} over the next 3 months.</p>
+                <p>Based on current patterns, your cash should remain around ${currency} ${formatNumber(finalCash)} over the next 3 months.</p>
             </div>
         `;
     }
