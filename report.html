@@ -72,6 +72,32 @@
                 </div>
             </header>
 
+            <!-- Traffic Light Summary Strip -->
+            <div class="health-strip" id="healthStrip">
+                <div class="health-indicator" id="healthIndicator">
+                    <div class="health-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="health-text">
+                        <span class="health-status" id="healthStatus">Safe</span>
+                        <span class="health-reason" id="healthReason">Profitable with healthy cash runway</span>
+                    </div>
+                </div>
+                <div class="health-metrics">
+                    <div class="health-metric">
+                        <span class="health-metric-label">Cash Runway</span>
+                        <span class="health-metric-value" id="healthRunway">8 weeks</span>
+                    </div>
+                    <div class="health-metric">
+                        <span class="health-metric-label">Net Margin</span>
+                        <span class="health-metric-value" id="healthMargin">11%</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Section 1: Did You Make Money? -->
             <section class="report-section hero-section">
                 <h2>Did you make money this month?</h2>
@@ -113,11 +139,11 @@
                     <div class="key-metric" id="marginMetric">
                         <div class="metric-header">
                             <span class="metric-status warning"></span>
-                            <span class="metric-title">Profit per Sale</span>
+                            <span class="metric-title">Gross Margin</span>
                         </div>
                         <div class="metric-value"><span id="grossMarginValue">35%</span></div>
                         <div class="metric-change neutral" id="marginChange">Industry average: 25-35%</div>
-                        <div class="metric-why">From each AED 1 sale, you keep AED 0.35 after product cost</div>
+                        <div class="metric-why">What you keep after paying for what you sell</div>
                     </div>
 
                     <!-- Metric 3: Cash -->

@@ -246,30 +246,51 @@ async function generateAnalysis(data, metrics) {
     if (language === 'ar') {
         systemMessage = `أنت مستشار مالي ودود تشرح الأمور المالية لصاحب عمل غير متخصص في المحاسبة في الإمارات.
 
-القواعد:
-- استخدم لغة بسيطة وواضحة. لا تستخدم المصطلحات المحاسبية المعقدة.
+أسلوب الكتابة:
+- اكتب في فقرات قصيرة ومرئية، وليس نصوصاً طويلة.
+- كل فكرة يجب أن تكون جملة أو جملتين كحد أقصى.
 - كن مباشراً ومحدداً بالأرقام.
-- ركز على ما يهم وما يجب فعله.
 - لا تستخدم الرموز التعبيرية.
-- كن مشجعاً لكن صادقاً بشأن المشاكل.
-- اجعل الشرح قصيراً وعملياً.
-- كل إجراء يجب أن يتضمن فعلاً واضحاً ورقماً محدداً (مثال: "اجمع 50,000 درهم من العملاء" وليس "حسن التحصيل").
-- عندما يكون مقياس ما جيداً أو سيئاً بشكل ملحوظ، قارنه بالنطاقات النموذجية.
+
+تنويع الجمل (استخدم هذه الأنماط):
+- "هذا جيد لأن..."
+- "هذا خطر لأن..."
+- "سيتحسن هذا إذا..."
+- "راقب هذا لأن..."
+
+بطاقات الإجراءات:
+- العنوان: 3-6 كلمات كحد أقصى، يبدأ بفعل قوي.
+- الوصف: جملة واحدة قصيرة تحتوي على فعل ورقم محدد.
+- مثال: "اجمع 50,000 درهم هذا الأسبوع" وليس "حسن التحصيل"
+
+المقاييس:
+- عندما يكون مقياس جيداً أو سيئاً، قارنه بالنطاقات النموذجية.
+- اجعل شرح المقاييس في سطر واحد.
 - اكتب التقرير بالكامل باللغة العربية.`;
     } else {
         systemMessage = `You are a friendly financial advisor explaining business finances to a non-finance business owner in the UAE.
 
-Rules:
-- Use simple, everyday language. No jargon.
+WRITING STYLE:
+- Write in short visual blocks, not dense paragraphs.
+- Each insight should be 1-2 sentences max, designed to fit in a UI card.
 - Be direct and specific with numbers.
-- Focus on what matters and what to do about it.
-- Do not use emojis.
-- Do not use em dashes. Use commas or periods instead.
-- Do not use contractions (use "do not" instead of "don't").
-- Be encouraging but honest about problems.
-- Keep explanations short and actionable.
-- Every action must include a clear verb and a specific number (e.g. "Collect AED 50,000 from customers" not "improve collections").
-- When a metric is notably good or bad, compare it to typical ranges (e.g. "Your gross margin is 18%, which is below the typical 25-35% for product businesses").`;
+- Do not use emojis, em dashes, or contractions.
+
+SENTENCE VARIETY (vary between these structures):
+- "This is good because..."
+- "This is a risk because..."
+- "This will improve if you..."
+- "Watch this because..."
+
+ACTION CARDS:
+- Title: 3-6 words max, starting with a strong verb.
+- Description: One short sentence with a verb and a specific number.
+- Examples: "Collect AED 50,000 this week" not "improve collections"
+
+METRICS:
+- When a metric is good or bad, compare it to typical ranges.
+- Example: "Gross margin: 18%, below the typical 25-35%. This puts pressure on profit."
+- Keep metric explanations to single lines that can sit next to charts.`;
     }
 
     try {
@@ -384,17 +405,24 @@ Use these metrics in your analysis. If any metric is notably above or below the 
 
 Please provide:
 
-1. HERO_SUMMARY: One sentence answering "Did you make money this month?" with the profit/loss amount and what it means per ${currency} 1 of sales.
+1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept 11 fils."
 
-2. NARRATIVE: 2-3 short paragraphs explaining what happened this month. Start each paragraph with "The good news:", "The concern:", or "Watch out:" as appropriate. Be specific with numbers.
+2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with "Good:", "Risk:", or "Watch:" as appropriate. Be specific with numbers.
 
-3. CASH_CYCLE_EXPLANATION: One paragraph explaining the cash cycle in simple terms. How long is money tied up? Why? What does it mean for the business?
+3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only.
+   - First sentence: How many days cash is tied up and whether this is good, normal, or risky.
+   - Second sentence: What would improve it, with a specific number.
+   - Example: "Cash is tied up for 21 days, which is normal. Move supplier payments from 9 to 30 days to free up cash."
 
-4. ACTION_1: Most urgent action with specific numbers (title and description)
-5. ACTION_2: Second priority action with specific numbers (title and description)
-6. ACTION_3: Third action with specific numbers (title and description)
+4. ACTION_1: The most urgent action.
+   - Title: 3-6 words, starts with a verb (e.g. "Collect ${currency} 50,000 from customers")
+   - Description: One sentence with a verb and a number (e.g. "Call your top 3 late-paying customers and collect ${currency} 50,000 this week.")
 
-7. MEETING_SUMMARY: A 2-3 sentence script the owner can use when a banker or investor asks "How is your business doing?"
+5. ACTION_2: Second priority action. Same format as ACTION_1.
+
+6. ACTION_3: Third action. Same format as ACTION_1.
+
+7. MEETING_SUMMARY: 2-3 sentences an owner can say when asked "How is your business doing?" Include revenue, profit margin, and one key focus area.
 
 Format your response exactly like this:
 HERO_SUMMARY: [your text]

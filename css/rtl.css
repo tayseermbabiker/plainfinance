@@ -307,6 +307,27 @@
     text-align: right;
 }
 
+/* Health Strip */
+[dir="rtl"] .health-strip {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .health-indicator {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .health-text {
+    text-align: right;
+}
+
+[dir="rtl"] .health-metrics {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .health-metric {
+    align-items: flex-start;
+}
+
 /* Alerts Section */
 [dir="rtl"] .alert-item {
     flex-direction: row-reverse;

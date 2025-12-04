@@ -82,6 +82,9 @@ function populateReportFromAPI(reportData) {
 
         // Section 9: Meeting Summary (from AI)
         updateMeetingSummaryFromAPI(analysis);
+
+        // Health Strip (Traffic Light)
+        updateHealthStrip(current, metrics);
     }
 }
 
@@ -561,6 +564,72 @@ function updateCashFlowStory(metrics, currency) {
     </div>`;
 }
 
+// Health Strip (Traffic Light Summary)
+function updateHealthStrip(current, metrics) {
+    const strip = document.getElementById('healthStrip');
+    const icon = strip.querySelector('.health-icon');
+    const statusEl = document.getElementById('healthStatus');
+    const reasonEl = document.getElementById('healthReason');
+    const runwayEl = document.getElementById('healthRunway');
+    const marginEl = document.getElementById('healthMargin');
+
+    if (!strip) return;
+
+    const cashRunway = metrics.cashRunway || 0;
+    const netMargin = metrics.netProfitMargin || 0;
+    const netProfit = current.netProfit || 0;
+
+    // Update metric values
+    runwayEl.textContent = `${cashRunway.toFixed(1)} weeks`;
+    marginEl.textContent = `${netMargin.toFixed(1)}%`;
+
+    // Determine health status
+    let status, statusText, reason;
+
+    // Danger: Loss OR very low runway
+    if (netProfit < 0 || cashRunway < 4) {
+        status = 'danger';
+        if (netProfit < 0 && cashRunway < 4) {
+            statusText = 'Danger';
+            reason = 'Making a loss with low cash runway';
+        } else if (netProfit < 0) {
+            statusText = 'At Risk';
+            reason = 'Making a loss this period';
+        } else {
+            statusText = 'Danger';
+            reason = 'Cash runway below 4 weeks';
+        }
+        icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+    }
+    // Tight: Low margin OR moderate runway concerns
+    else if (netMargin < 5 || cashRunway < 8) {
+        status = 'tight';
+        if (netMargin < 5 && cashRunway < 8) {
+            statusText = 'Tight';
+            reason = 'Low margin with limited cash buffer';
+        } else if (netMargin < 5) {
+            statusText = 'Tight';
+            reason = 'Profit margin below 5%';
+        } else {
+            statusText = 'Tight';
+            reason = 'Cash runway below 8 weeks';
+        }
+        icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+    }
+    // Safe: Good profit and runway
+    else {
+        status = 'safe';
+        statusText = 'Safe';
+        reason = 'Profitable with healthy cash runway';
+        icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+    }
+
+    // Apply status class
+    strip.className = `health-strip ${status}`;
+    statusEl.textContent = statusText;
+    reasonEl.textContent = reason;
+}
+
 function updateActions(current, metrics, currency) {
     const actionList = document.getElementById('actionList');
     const actions = [];
@@ -597,9 +666,9 @@ function updateActions(current, metrics, currency) {
     if (metrics.grossMargin < 25) {
         actions.push({
             priority: actions.length + 1,
-            title: 'Improve your profit per sale',
-            description: `You keep only ${currency} ${(metrics.grossMargin / 100).toFixed(2)} from each ${currency} 1 of sales. Look at raising prices slightly or finding cheaper suppliers.`,
-            result: 'More money stays with you from each sale'
+            title: 'Improve your gross margin',
+            description: `Your gross margin is only ${metrics.grossMargin.toFixed(0)}%. Raise prices by 5-10% or negotiate better rates with suppliers.`,
+            result: 'More profit from each sale'
         });
     }
 
