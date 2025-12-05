@@ -1119,7 +1119,32 @@ https://plainfinance.co`;
 
 // ===== PDF Download =====
 
-function downloadInvestorPDF() {
+// Check if user can download PDF (Owner or Pro plan only)
+async function canDownloadPDF() {
+    // Check if Supabase is available
+    if (typeof getUserProfile !== 'function') {
+        return true; // Allow if Supabase not loaded (testing mode)
+    }
+
+    try {
+        const { data: profile } = await getUserProfile();
+        const plan = profile?.subscription_plan || 'free';
+        return plan === 'owner' || plan === 'pro';
+    } catch (e) {
+        console.log('Could not check subscription');
+        return true; // Allow on error (be permissive during testing)
+    }
+}
+
+async function downloadInvestorPDF() {
+    // Check if user can download
+    const canDownload = await canDownloadPDF();
+    if (!canDownload) {
+        if (confirm('PDF downloads are available on Owner and Pro plans. Would you like to upgrade?')) {
+            window.location.href = 'index.html#pricing';
+        }
+        return;
+    }
     // Get stored report data
     const storedReport = localStorage.getItem('plainfinance_report');
     if (!storedReport) {
@@ -1196,7 +1221,16 @@ function downloadInvestorPDF() {
     });
 }
 
-function downloadPDF() {
+async function downloadPDF() {
+    // Check if user can download
+    const canDownload = await canDownloadPDF();
+    if (!canDownload) {
+        if (confirm('PDF downloads are available on Owner and Pro plans. Would you like to upgrade?')) {
+            window.location.href = 'index.html#pricing';
+        }
+        return;
+    }
+
     const reportContainer = document.querySelector('.report-container');
     const companyName = document.getElementById('companyName').textContent || 'Report';
     const period = document.getElementById('reportPeriod').textContent || '';
@@ -1529,4 +1563,187 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         checkAlerts();
     }, 500); // Small delay to ensure report data is loaded
+
+    // Initialize scenario analysis for Pro users
+    initScenarioAnalysis();
 });
+
+// ===== Scenario Analysis (Pro Only) =====
+
+let scenarioBaseData = null;
+
+async function initScenarioAnalysis() {
+    const scenarioSection = document.getElementById('scenarioSection');
+    if (!scenarioSection) return;
+
+    // Check if user is Pro
+    const isPro = await checkIfProUser();
+
+    if (isPro) {
+        scenarioSection.style.display = 'block';
+        setupScenarioListeners();
+        loadScenarioBaseData();
+    }
+}
+
+async function checkIfProUser() {
+    if (typeof getUserProfile !== 'function') {
+        return false; // Supabase not loaded
+    }
+
+    try {
+        const { data: profile } = await getUserProfile();
+        return profile?.subscription_plan === 'pro';
+    } catch (e) {
+        return false;
+    }
+}
+
+function loadScenarioBaseData() {
+    const storedReport = localStorage.getItem('plainfinance_report');
+    if (!storedReport) return;
+
+    const reportData = JSON.parse(storedReport);
+    const current = reportData.current || {};
+    const metrics = reportData.metrics || {};
+
+    scenarioBaseData = {
+        revenue: current.revenue || 0,
+        cogs: current.cogs || 0,
+        opex: current.opex || 0,
+        netProfit: current.netProfit || 0,
+        netMargin: metrics.netMargin || 0,
+        cash: current.cash || 0,
+        cashRunway: metrics.cashRunway || 0,
+        currency: reportData.company?.currency || 'AED'
+    };
+
+    // Set initial values
+    updateScenarioResults();
+}
+
+function setupScenarioListeners() {
+    const revenueSlider = document.getElementById('scenarioRevenue');
+    const opexSlider = document.getElementById('scenarioOpex');
+    const cogsSlider = document.getElementById('scenarioCogs');
+
+    if (revenueSlider) {
+        revenueSlider.addEventListener('input', (e) => {
+            document.getElementById('scenarioRevenueValue').textContent = e.target.value + '%';
+            calculateScenario();
+        });
+    }
+
+    if (opexSlider) {
+        opexSlider.addEventListener('input', (e) => {
+            document.getElementById('scenarioOpexValue').textContent = e.target.value + '%';
+            calculateScenario();
+        });
+    }
+
+    if (cogsSlider) {
+        cogsSlider.addEventListener('input', (e) => {
+            document.getElementById('scenarioCogsValue').textContent = e.target.value + '%';
+            calculateScenario();
+        });
+    }
+}
+
+function calculateScenario() {
+    if (!scenarioBaseData) return;
+
+    const revenueChange = parseInt(document.getElementById('scenarioRevenue').value) / 100;
+    const opexChange = parseInt(document.getElementById('scenarioOpex').value) / 100;
+    const cogsChange = parseInt(document.getElementById('scenarioCogs').value) / 100;
+
+    // Calculate new values
+    const newRevenue = scenarioBaseData.revenue * (1 + revenueChange);
+    const newCogs = scenarioBaseData.cogs * (1 + cogsChange);
+    const newOpex = scenarioBaseData.opex * (1 + opexChange);
+
+    const newGrossProfit = newRevenue - newCogs;
+    const newNetProfit = newGrossProfit - newOpex;
+    const newNetMargin = newRevenue > 0 ? (newNetProfit / newRevenue) * 100 : 0;
+
+    // Calculate new runway
+    const monthlyBurn = newOpex > 0 ? newOpex : scenarioBaseData.opex;
+    const newRunway = monthlyBurn > 0 ? Math.round(scenarioBaseData.cash / monthlyBurn) : 12;
+
+    // Calculate changes
+    const profitChange = scenarioBaseData.netProfit !== 0
+        ? ((newNetProfit - scenarioBaseData.netProfit) / Math.abs(scenarioBaseData.netProfit)) * 100
+        : (newNetProfit > 0 ? 100 : -100);
+
+    // Update display
+    updateScenarioDisplay(newNetProfit, newNetMargin, newRunway, profitChange);
+}
+
+function updateScenarioDisplay(newProfit, newMargin, newRunway, profitChange) {
+    const currency = scenarioBaseData?.currency || 'AED';
+
+    // Current values
+    document.getElementById('scenarioCurrentProfit').textContent =
+        `${currency} ${formatNumber(scenarioBaseData.netProfit)}`;
+    document.getElementById('scenarioCurrentMargin').textContent =
+        `${scenarioBaseData.netMargin.toFixed(1)}%`;
+    document.getElementById('scenarioCurrentRunway').textContent =
+        `${scenarioBaseData.cashRunway} months`;
+
+    // New values
+    const newProfitEl = document.getElementById('scenarioNewProfit');
+    newProfitEl.textContent = `${currency} ${formatNumber(newProfit)}`;
+    newProfitEl.className = 'new-value ' + (newProfit >= scenarioBaseData.netProfit ? 'positive' : 'negative');
+
+    const newMarginEl = document.getElementById('scenarioNewMargin');
+    newMarginEl.textContent = `${newMargin.toFixed(1)}%`;
+    newMarginEl.className = 'new-value ' + (newMargin >= scenarioBaseData.netMargin ? 'positive' : 'negative');
+
+    const newRunwayEl = document.getElementById('scenarioNewRunway');
+    newRunwayEl.textContent = `${Math.max(0, newRunway)} months`;
+    newRunwayEl.className = 'new-value ' + (newRunway >= scenarioBaseData.cashRunway ? 'positive' : 'negative');
+
+    // Change percentage
+    const changeEl = document.getElementById('scenarioProfitChange');
+    const changeSign = profitChange >= 0 ? '+' : '';
+    changeEl.textContent = `${changeSign}${profitChange.toFixed(0)}%`;
+    changeEl.className = 'change-value ' + (profitChange >= 0 ? 'positive' : 'negative');
+
+    // Insight
+    updateScenarioInsight(newProfit, newMargin, newRunway);
+}
+
+function updateScenarioInsight(newProfit, newMargin, newRunway) {
+    const insightEl = document.getElementById('scenarioInsight');
+    let insight = '';
+
+    if (newProfit < 0 && scenarioBaseData.netProfit >= 0) {
+        insight = '⚠️ This scenario would push you into a loss position.';
+    } else if (newRunway < 3) {
+        insight = '⚠️ Warning: Cash runway drops below 3 months in this scenario.';
+    } else if (newProfit > scenarioBaseData.netProfit * 1.2) {
+        insight = '✅ Strong improvement! This scenario increases profit by 20%+.';
+    } else if (newMargin < 5 && scenarioBaseData.netMargin >= 5) {
+        insight = '⚠️ Net margin drops below 5% - tight territory.';
+    } else {
+        insight = 'Adjust the sliders to explore different scenarios.';
+    }
+
+    insightEl.textContent = insight;
+}
+
+function updateScenarioResults() {
+    if (!scenarioBaseData) return;
+    calculateScenario();
+}
+
+function resetScenario() {
+    document.getElementById('scenarioRevenue').value = 0;
+    document.getElementById('scenarioOpex').value = 0;
+    document.getElementById('scenarioCogs').value = 0;
+
+    document.getElementById('scenarioRevenueValue').textContent = '0%';
+    document.getElementById('scenarioOpexValue').textContent = '0%';
+    document.getElementById('scenarioCogsValue').textContent = '0%';
+
+    calculateScenario();
+}

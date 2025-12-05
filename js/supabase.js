@@ -1,9 +1,8 @@
 // ===== PlainFinance - Supabase Client =====
 
 // Initialize Supabase client
-// Replace these with your Supabase project values
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://yshqwuxfcxirqaolnfve.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzaHF3dXhmY3hpcnFhb2xuZnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MTI3MTMsImV4cCI6MjA4MDQ4ODcxM30.psrwfVzTtx5VTANYrTlyt7CUW87MEqccHx3HAh6vpu4';
 
 let supabaseClient = null;
 let supabaseEnabled = false;
@@ -134,11 +133,26 @@ async function getMonthlyReportCount() {
     return error ? 0 : (count || 0);
 }
 
+async function getTotalReportCount() {
+    const client = getSupabase();
+    if (!client) return 0;
+
+    const user = await getUser();
+    if (!user) return 0;
+
+    const { count, error } = await client
+        .from('reports')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+    return error ? 0 : (count || 0);
+}
+
 function getReportLimit(plan) {
     const limits = {
-        'free': 2,
-        'professional': -1, // unlimited
-        'premium': -1       // unlimited
+        'free': 2,      // 2 total (lifetime)
+        'owner': 6,     // 6 per month
+        'pro': 20       // 20 per month
     };
     return limits[plan] ?? 2;
 }
@@ -153,10 +167,12 @@ async function canCreateReport() {
     const plan = profile?.subscription_plan || 'free';
     const limit = getReportLimit(plan);
 
-    // Unlimited for paid plans
-    if (limit === -1) return { allowed: true, remaining: -1, plan };
+    // Free tier: 2 total lifetime reports
+    // Paid tiers: monthly limit
+    const used = plan === 'free'
+        ? await getTotalReportCount()
+        : await getMonthlyReportCount();
 
-    const used = await getMonthlyReportCount();
     const remaining = Math.max(0, limit - used);
 
     return {
@@ -164,7 +180,8 @@ async function canCreateReport() {
         remaining,
         used,
         limit,
-        plan
+        plan,
+        isLifetime: plan === 'free'
     };
 }
 

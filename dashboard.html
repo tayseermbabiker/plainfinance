@@ -42,6 +42,48 @@
                 <a href="pricing.html" class="btn btn-sm btn-primary" id="upgradeBtn">Upgrade</a>
             </div>
 
+            <!-- Pro Features Section -->
+            <div class="pro-features" id="proFeatures" style="display: none;">
+                <!-- Branding Section -->
+                <div class="pro-card branding-section">
+                    <h3>Your Brand</h3>
+                    <p>Upload your logo for branded PDF reports</p>
+                    <div class="logo-upload-area">
+                        <div class="current-logo" id="currentLogo">
+                            <span class="no-logo">No logo uploaded</span>
+                        </div>
+                        <div class="logo-actions">
+                            <input type="file" id="logoInput" accept="image/*" style="display: none;">
+                            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('logoInput').click()">
+                                Upload Logo
+                            </button>
+                            <button class="btn btn-sm" onclick="removeLogo()" id="removeLogoBtn" style="display: none;">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Section -->
+                <div class="pro-card team-section">
+                    <h3>Team Access</h3>
+                    <p>Invite team members to view your reports (up to 5)</p>
+
+                    <div class="team-members" id="teamMembers">
+                        <!-- Team members will be listed here -->
+                    </div>
+
+                    <div class="invite-form" id="inviteForm">
+                        <input type="email" id="inviteEmail" placeholder="colleague@company.com">
+                        <button class="btn btn-primary btn-sm" onclick="inviteTeamMember()">
+                            Invite
+                        </button>
+                    </div>
+
+                    <div id="inviteStatus" class="invite-status"></div>
+                </div>
+            </div>
+
             <!-- Header -->
             <header class="dashboard-header">
                 <div>
@@ -150,29 +192,30 @@
 
                 const planNames = {
                     'free': 'Free',
-                    'professional': 'Professional',
-                    'premium': 'Premium + Expert'
+                    'owner': 'Owner',
+                    'pro': 'Pro'
                 };
 
                 planBadge.textContent = planNames[reportCheck.plan] || 'Free';
                 planBadge.className = 'plan-badge plan-' + reportCheck.plan;
 
-                if (reportCheck.remaining === -1) {
-                    // Unlimited plan
-                    reportsCount.textContent = 'Unlimited reports';
-                    upgradeBtn.style.display = 'none';
-                } else {
-                    reportsCount.textContent = `${reportCheck.remaining} of ${reportCheck.limit} reports remaining this month`;
+                if (reportCheck.plan === 'free') {
+                    // Free tier - lifetime limit
+                    reportsCount.textContent = `${reportCheck.remaining} of ${reportCheck.limit} free reports remaining`;
 
                     if (reportCheck.remaining === 0) {
                         newReportBtn.classList.add('disabled');
                         newReportBtn.onclick = (e) => {
                             e.preventDefault();
-                            if (confirm('You have used all your free reports this month. Upgrade to Professional for unlimited reports.')) {
+                            if (confirm('You have used your 2 free reports. Upgrade to Owner for 6 reports per month.')) {
                                 window.location.href = 'pricing.html';
                             }
                         };
                     }
+                } else {
+                    // Paid tier - monthly limit
+                    reportsCount.textContent = `${reportCheck.remaining} of ${reportCheck.limit} reports remaining this month`;
+                    upgradeBtn.style.display = reportCheck.plan === 'pro' ? 'none' : 'inline-flex';
                 }
             } catch (e) {
                 console.log('Could not load subscription info');
@@ -388,6 +431,328 @@
                     }
                 }
             });
+        }
+
+        // ===== Branding / Logo Upload (Pro Only) =====
+
+        async function initBranding() {
+            const brandingSection = document.getElementById('brandingSection');
+            if (!brandingSection) return;
+
+            // Check if Pro user
+            const { data: profile } = await getUserProfile();
+            const plan = profile?.subscription_plan || 'free';
+
+            if (plan === 'pro') {
+                brandingSection.style.display = 'block';
+                loadCurrentLogo();
+                setupLogoUpload();
+            }
+        }
+
+        function setupLogoUpload() {
+            const logoInput = document.getElementById('logoInput');
+            if (!logoInput) return;
+
+            logoInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Validate file
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload an image file');
+                    return;
+                }
+
+                if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                    alert('Logo must be less than 2MB');
+                    return;
+                }
+
+                await uploadLogo(file);
+            });
+        }
+
+        async function uploadLogo(file) {
+            const client = getSupabase();
+            if (!client) return;
+
+            const user = await getUser();
+            if (!user) return;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}/logo.${fileExt}`;
+
+            try {
+                // Upload to Supabase storage
+                const { data, error } = await client.storage
+                    .from('logos')
+                    .upload(fileName, file, { upsert: true });
+
+                if (error) {
+                    console.error('Upload error:', error);
+                    alert('Failed to upload logo. Please try again.');
+                    return;
+                }
+
+                // Get public URL
+                const { data: urlData } = client.storage
+                    .from('logos')
+                    .getPublicUrl(fileName);
+
+                // Save URL to profile
+                await client.from('profiles').update({
+                    logo_url: urlData.publicUrl
+                }).eq('id', user.id);
+
+                // Update display
+                displayLogo(urlData.publicUrl);
+                alert('Logo uploaded successfully!');
+
+            } catch (error) {
+                console.error('Logo upload error:', error);
+                alert('Failed to upload logo');
+            }
+        }
+
+        async function loadCurrentLogo() {
+            const { data: profile } = await getUserProfile();
+            if (profile?.logo_url) {
+                displayLogo(profile.logo_url);
+            }
+        }
+
+        function displayLogo(url) {
+            const container = document.getElementById('currentLogo');
+            container.innerHTML = `<img src="${url}" alt="Your logo" style="max-width: 150px; max-height: 80px; object-fit: contain;">`;
+            document.getElementById('removeLogoBtn').style.display = 'inline-flex';
+        }
+
+        async function removeLogo() {
+            const client = getSupabase();
+            if (!client) return;
+
+            const user = await getUser();
+            if (!user) return;
+
+            try {
+                // Remove from profile
+                await client.from('profiles').update({
+                    logo_url: null
+                }).eq('id', user.id);
+
+                // Update display
+                document.getElementById('currentLogo').innerHTML = '<span class="no-logo">No logo uploaded</span>';
+                document.getElementById('removeLogoBtn').style.display = 'none';
+                alert('Logo removed');
+            } catch (error) {
+                console.error('Remove logo error:', error);
+            }
+        }
+
+        // Initialize branding section
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initProFeatures, 100);
+        });
+
+        // ===== Pro Features Initialization =====
+
+        async function initProFeatures() {
+            const proFeaturesSection = document.getElementById('proFeatures');
+            if (!proFeaturesSection) return;
+
+            // Check if Pro user
+            const { data: profile } = await getUserProfile();
+            const plan = profile?.subscription_plan || 'free';
+
+            if (plan === 'pro') {
+                proFeaturesSection.style.display = 'block';
+                loadCurrentLogo();
+                setupLogoUpload();
+                loadTeamMembers();
+            }
+        }
+
+        // ===== Team Access (Pro Only) =====
+
+        async function loadTeamMembers() {
+            const container = document.getElementById('teamMembers');
+            if (!container) return;
+
+            const client = getSupabase();
+            if (!client) return;
+
+            const user = await getUser();
+            if (!user) return;
+
+            try {
+                // Get user's team
+                const { data: profile } = await client
+                    .from('profiles')
+                    .select('team_id')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile?.team_id) {
+                    // User doesn't have a team yet, create one
+                    container.innerHTML = '<p class="team-empty">No team members yet. Invite your first colleague above.</p>';
+                    return;
+                }
+
+                // Get team members
+                const { data: members, error } = await client
+                    .from('team_members')
+                    .select('id, invited_email, status, user_id, created_at')
+                    .eq('team_id', profile.team_id);
+
+                if (error) throw error;
+
+                if (!members || members.length === 0) {
+                    container.innerHTML = '<p class="team-empty">No team members yet. Invite your first colleague above.</p>';
+                    return;
+                }
+
+                container.innerHTML = members.map(member => {
+                    const statusClass = member.status === 'active' ? 'active' : 'pending';
+                    const statusText = member.status === 'active' ? 'Active' : 'Pending';
+                    return `
+                        <div class="team-member" data-id="${member.id}">
+                            <div class="member-info">
+                                <span class="member-email">${member.invited_email}</span>
+                                <span class="member-status ${statusClass}">${statusText}</span>
+                            </div>
+                            <button class="btn btn-sm btn-danger" onclick="removeTeamMember('${member.id}')">Remove</button>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Load team error:', error);
+                container.innerHTML = '<p class="team-error">Failed to load team members.</p>';
+            }
+        }
+
+        async function inviteTeamMember() {
+            const emailInput = document.getElementById('inviteEmail');
+            const statusDiv = document.getElementById('inviteStatus');
+            const email = emailInput.value.trim().toLowerCase();
+
+            if (!email || !email.includes('@')) {
+                statusDiv.innerHTML = '<span class="status-error">Please enter a valid email</span>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<span class="status-loading">Sending invite...</span>';
+
+            const client = getSupabase();
+            if (!client) return;
+
+            const user = await getUser();
+            if (!user) return;
+
+            try {
+                // First, ensure user has a team
+                let { data: profile } = await client
+                    .from('profiles')
+                    .select('team_id')
+                    .eq('id', user.id)
+                    .single();
+
+                let teamId = profile?.team_id;
+
+                if (!teamId) {
+                    // Create team for user
+                    const { data: team, error: teamError } = await client
+                        .from('teams')
+                        .insert({
+                            name: `${user.email}'s Team`,
+                            owner_id: user.id
+                        })
+                        .select()
+                        .single();
+
+                    if (teamError) throw teamError;
+                    teamId = team.id;
+
+                    // Update user's profile with team_id
+                    await client.from('profiles').update({ team_id: teamId }).eq('id', user.id);
+                }
+
+                // Check team member limit (max 5)
+                const { data: existingMembers } = await client
+                    .from('team_members')
+                    .select('id')
+                    .eq('team_id', teamId);
+
+                if (existingMembers && existingMembers.length >= 5) {
+                    statusDiv.innerHTML = '<span class="status-error">Maximum 5 team members allowed</span>';
+                    return;
+                }
+
+                // Check if already invited
+                const { data: existing } = await client
+                    .from('team_members')
+                    .select('id')
+                    .eq('team_id', teamId)
+                    .eq('invited_email', email)
+                    .maybeSingle();
+
+                if (existing) {
+                    statusDiv.innerHTML = '<span class="status-error">This email is already invited</span>';
+                    return;
+                }
+
+                // Add team member invitation
+                const { error: inviteError } = await client
+                    .from('team_members')
+                    .insert({
+                        team_id: teamId,
+                        invited_email: email,
+                        status: 'pending',
+                        role: 'member'
+                    });
+
+                if (inviteError) throw inviteError;
+
+                // Success
+                statusDiv.innerHTML = '<span class="status-success">Invitation sent!</span>';
+                emailInput.value = '';
+
+                // Reload team list
+                await loadTeamMembers();
+
+                // Clear status after 3 seconds
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                }, 3000);
+
+            } catch (error) {
+                console.error('Invite error:', error);
+                statusDiv.innerHTML = '<span class="status-error">Failed to send invite. Please try again.</span>';
+            }
+        }
+
+        async function removeTeamMember(memberId) {
+            if (!confirm('Remove this team member?')) return;
+
+            const client = getSupabase();
+            if (!client) return;
+
+            try {
+                const { error } = await client
+                    .from('team_members')
+                    .delete()
+                    .eq('id', memberId);
+
+                if (error) throw error;
+
+                // Reload team list
+                await loadTeamMembers();
+
+            } catch (error) {
+                console.error('Remove member error:', error);
+                alert('Failed to remove team member');
+            }
         }
     </script>
 </body>

@@ -30,8 +30,18 @@
     <section class="pricing-page">
         <div class="container">
             <div class="pricing-header">
-                <h1>Simple, Transparent Pricing</h1>
-                <p>Start free. Upgrade when you need more reports and features.</p>
+                <h1>Simple Pricing</h1>
+                <p>Start free. Upgrade when you need more.</p>
+
+                <!-- Billing Toggle -->
+                <div class="billing-toggle">
+                    <span class="toggle-label" data-billing="monthly">Monthly</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="billingToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" data-billing="annual">Annual <span class="save-badge">Save 2 months</span></span>
+                </div>
             </div>
 
             <div class="pricing-grid">
@@ -41,64 +51,81 @@
                     <div class="pricing-price">
                         <span class="currency">AED</span>
                         <span class="amount">0</span>
-                        <span class="period">/month</span>
                     </div>
-                    <p class="pricing-desc">Perfect for trying out PlainFinance</p>
+                    <p class="pricing-desc">Try it out</p>
                     <ul class="pricing-features">
-                        <li><span class="check">✓</span> 2 reports per month</li>
-                        <li><span class="check">✓</span> Basic AI analysis</li>
-                        <li><span class="check">✓</span> PDF download</li>
-                        <li><span class="check">✓</span> Email delivery</li>
-                        <li class="disabled"><span class="x">×</span> Report history</li>
-                        <li class="disabled"><span class="x">×</span> Trend tracking</li>
+                        <li><span class="check">✓</span> 2 reports (lifetime)</li>
+                        <li><span class="check">✓</span> Full AI analysis</li>
+                        <li><span class="check">✓</span> Health indicators</li>
+                        <li><span class="check">✓</span> Cash forecast</li>
+                        <li><span class="check">✓</span> Industry benchmarks</li>
+                        <li><span class="dash">–</span> No PDF download</li>
+                        <li><span class="dash">–</span> 30-day history only</li>
                     </ul>
-                    <a href="signup.html" class="btn btn-secondary btn-block">Get Started Free</a>
+                    <a href="signup.html" class="btn btn-secondary btn-block">Get Started</a>
                 </div>
 
-                <!-- Professional Plan -->
+                <!-- Owner Plan -->
                 <div class="pricing-card featured">
                     <div class="pricing-badge">Most Popular</div>
-                    <div class="pricing-name">Professional</div>
+                    <div class="pricing-name">Owner</div>
                     <div class="pricing-price">
                         <span class="currency">AED</span>
-                        <span class="amount">249</span>
+                        <span class="amount" data-monthly="109" data-annual="96">109</span>
                         <span class="period">/month</span>
                     </div>
-                    <p class="pricing-desc">For growing businesses that need regular insights</p>
+                    <p class="pricing-desc">Monthly clarity for your business</p>
                     <ul class="pricing-features">
-                        <li><span class="check">✓</span> Unlimited reports</li>
-                        <li><span class="check">✓</span> Advanced AI analysis</li>
-                        <li><span class="check">✓</span> PDF download</li>
-                        <li><span class="check">✓</span> Email delivery</li>
-                        <li><span class="check">✓</span> Report history</li>
-                        <li><span class="check">✓</span> Trend tracking</li>
-                        <li><span class="check">✓</span> Priority support</li>
+                        <li><span class="check">✓</span> 6 reports per month</li>
+                        <li><span class="check">✓</span> Full AI analysis</li>
+                        <li><span class="check">✓</span> Health indicators</li>
+                        <li><span class="check">✓</span> Cash forecast</li>
+                        <li><span class="check">✓</span> Industry benchmarks</li>
+                        <li><span class="check">✓</span> PDF downloads</li>
+                        <li><span class="check">✓</span> 12-month history</li>
+                        <li><span class="check">✓</span> Email support</li>
                     </ul>
-                    <button class="btn btn-primary btn-block" onclick="subscribe('professional')">
+                    <button class="btn btn-primary btn-block" onclick="subscribe('owner')">
                         Subscribe Now
                     </button>
+                    <p class="pricing-note" id="ownerNote">AED 1,149/year (save 2 months)</p>
                 </div>
 
-                <!-- Premium Plan -->
+                <!-- Pro Plan -->
                 <div class="pricing-card">
-                    <div class="pricing-name">Premium + Expert</div>
+                    <div class="pricing-name">Pro</div>
                     <div class="pricing-price">
                         <span class="currency">AED</span>
-                        <span class="amount">499</span>
+                        <span class="amount" data-monthly="309" data-annual="258">309</span>
                         <span class="period">/month</span>
                     </div>
-                    <p class="pricing-desc">For businesses that want expert guidance</p>
+                    <p class="pricing-desc">For growing businesses</p>
                     <ul class="pricing-features">
-                        <li><span class="check">✓</span> Everything in Professional</li>
-                        <li><span class="check">✓</span> 1hr monthly call with FCCA</li>
-                        <li><span class="check">✓</span> WhatsApp support</li>
-                        <li><span class="check">✓</span> Team access (3 users)</li>
-                        <li><span class="check">✓</span> Custom report templates</li>
-                        <li><span class="check">✓</span> Cash flow projections</li>
+                        <li><span class="check">✓</span> 20 reports per month</li>
+                        <li><span class="check">✓</span> Everything in Owner</li>
+                        <li><span class="check">✓</span> Scenario analysis</li>
+                        <li><span class="check">✓</span> Branded PDF reports</li>
+                        <li><span class="check">✓</span> Team access (up to 5)</li>
+                        <li><span class="check">✓</span> Priority support</li>
                     </ul>
-                    <button class="btn btn-secondary btn-block" onclick="subscribe('premium')">
+                    <button class="btn btn-secondary btn-block" onclick="subscribe('pro')">
                         Subscribe Now
                     </button>
+                    <p class="pricing-note" id="proNote">AED 3,099/year (save 2 months)</p>
+                </div>
+            </div>
+
+            <!-- Consultation Add-on -->
+            <div class="pricing-addon">
+                <div class="addon-content">
+                    <div class="addon-text">
+                        <h3>Need a human to walk you through it?</h3>
+                        <p>Book a 30-minute call with an FCCA-qualified advisor who speaks plain English.</p>
+                    </div>
+                    <div class="addon-cta">
+                        <span class="addon-price">AED 209</span>
+                        <a href="#" class="btn btn-secondary" onclick="bookConsultation()">Book a Call</a>
+                    </div>
                 </div>
             </div>
 
@@ -148,7 +175,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2024 PlainFinance. Built in UAE.</p>
+                <p>© 2025 PlainFinance. Built in UAE.</p>
             </div>
         </div>
     </footer>
@@ -156,11 +183,44 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script>
-        // Stripe Price IDs (set these in production)
+        // Stripe Price IDs - Set these in Netlify environment variables
         const STRIPE_PRICES = {
-            professional: 'price_professional_id_here',
-            premium: 'price_premium_id_here'
+            owner_monthly: 'STRIPE_PRICE_OWNER_MONTHLY',
+            owner_annual: 'STRIPE_PRICE_OWNER_ANNUAL',
+            pro_monthly: 'STRIPE_PRICE_PRO_MONTHLY',
+            pro_annual: 'STRIPE_PRICE_PRO_ANNUAL',
+            consultation: 'STRIPE_PRICE_CONSULTATION'
         };
+
+        let isAnnual = false;
+
+        // Billing toggle
+        document.getElementById('billingToggle').addEventListener('change', function() {
+            isAnnual = this.checked;
+            updatePricing();
+        });
+
+        function updatePricing() {
+            const amounts = document.querySelectorAll('.pricing-price .amount[data-monthly]');
+            amounts.forEach(el => {
+                const price = isAnnual ? el.dataset.annual : el.dataset.monthly;
+                el.textContent = price;
+            });
+
+            // Update notes
+            document.getElementById('ownerNote').textContent = isAnnual
+                ? 'Billed annually at AED 1,149'
+                : 'AED 1,149/year (save 2 months)';
+            document.getElementById('proNote').textContent = isAnnual
+                ? 'Billed annually at AED 3,099'
+                : 'AED 3,099/year (save 2 months)';
+
+            // Update toggle labels
+            document.querySelectorAll('.toggle-label').forEach(label => {
+                label.classList.toggle('active',
+                    (label.dataset.billing === 'annual') === isAnnual);
+            });
+        }
 
         async function subscribe(plan) {
             const user = await getUser();
@@ -171,13 +231,15 @@
                 return;
             }
 
+            const priceKey = `${plan}_${isAnnual ? 'annual' : 'monthly'}`;
+
             // Create checkout session
             try {
-                const response = await fetch('/api/create-checkout', {
+                const response = await fetch('/.netlify/functions/create-checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        priceId: STRIPE_PRICES[plan],
+                        priceId: STRIPE_PRICES[priceKey],
                         userId: user.id,
                         userEmail: user.email
                     })
@@ -195,6 +257,146 @@
                 alert('Something went wrong. Please try again.');
             }
         }
+
+        function bookConsultation() {
+            // For now, redirect to WhatsApp or Calendly
+            window.open('https://wa.me/971565522442?text=Hi, I would like to book a consultation call.', '_blank');
+        }
+
+        // Initialize
+        updatePricing();
     </script>
+
+    <style>
+        .pricing-page {
+            padding: 100px 0 60px;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .pricing-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+        }
+
+        .pricing-header p {
+            font-size: 18px;
+            color: var(--gray-600);
+            margin-bottom: 24px;
+        }
+
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: var(--gray-500);
+            cursor: pointer;
+        }
+
+        .toggle-label.active {
+            color: var(--gray-900);
+            font-weight: 600;
+        }
+
+        .save-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            margin-left: 4px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .faq-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .faq-item p {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .pricing-faq {
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .pricing-faq h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        @media (max-width: 768px) {
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </body>
 </html>

@@ -411,7 +411,74 @@
                 </div>
             </section>
 
-            <!-- Section 11: WhatsApp Alerts -->
+            <!-- Section 11: Scenario Analysis (Pro Only) -->
+            <section class="report-section scenario-section" id="scenarioSection" style="display: none;">
+                <h2>Scenario Analysis</h2>
+                <p class="section-subtitle">What if your numbers change? See the impact.</p>
+
+                <div class="scenario-container">
+                    <div class="scenario-controls">
+                        <div class="scenario-slider">
+                            <label>Revenue change</label>
+                            <div class="slider-row">
+                                <input type="range" id="scenarioRevenue" min="-50" max="50" value="0">
+                                <span class="slider-value" id="scenarioRevenueValue">0%</span>
+                            </div>
+                        </div>
+                        <div class="scenario-slider">
+                            <label>Operating expenses change</label>
+                            <div class="slider-row">
+                                <input type="range" id="scenarioOpex" min="-50" max="50" value="0">
+                                <span class="slider-value" id="scenarioOpexValue">0%</span>
+                            </div>
+                        </div>
+                        <div class="scenario-slider">
+                            <label>COGS change</label>
+                            <div class="slider-row">
+                                <input type="range" id="scenarioCogs" min="-50" max="50" value="0">
+                                <span class="slider-value" id="scenarioCogsValue">0%</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="resetScenario()">Reset</button>
+                    </div>
+
+                    <div class="scenario-results">
+                        <h3>Impact</h3>
+                        <div class="scenario-comparison">
+                            <div class="scenario-metric">
+                                <span class="scenario-label">Net Profit</span>
+                                <div class="scenario-values">
+                                    <span class="current-value" id="scenarioCurrentProfit">AED 0</span>
+                                    <span class="arrow">→</span>
+                                    <span class="new-value" id="scenarioNewProfit">AED 0</span>
+                                    <span class="change-value" id="scenarioProfitChange">0%</span>
+                                </div>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="scenario-label">Net Margin</span>
+                                <div class="scenario-values">
+                                    <span class="current-value" id="scenarioCurrentMargin">0%</span>
+                                    <span class="arrow">→</span>
+                                    <span class="new-value" id="scenarioNewMargin">0%</span>
+                                </div>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="scenario-label">Cash Runway</span>
+                                <div class="scenario-values">
+                                    <span class="current-value" id="scenarioCurrentRunway">0 months</span>
+                                    <span class="arrow">→</span>
+                                    <span class="new-value" id="scenarioNewRunway">0 months</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="scenario-insight" id="scenarioInsight">
+                            Adjust the sliders to see how changes would impact your business.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 12: WhatsApp Alerts -->
             <section class="report-section alerts-section" id="alertsSection">
                 <h2>Set up WhatsApp alerts</h2>
                 <p class="section-subtitle">Get notified when key metrics cross your thresholds</p>
@@ -608,6 +675,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/report.js"></script>
 </body>

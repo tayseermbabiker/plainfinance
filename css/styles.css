@@ -646,6 +646,20 @@ section {
     margin-top: 48px;
 }
 
+.pricing-grid.pricing-single {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pricing-note {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-top: 12px;
+    text-align: center;
+}
+
 .pricing-card {
     background: var(--white);
     border-radius: var(--radius-xl);
@@ -720,6 +734,69 @@ section {
     font-weight: bold;
 }
 
+.pricing-features .dash {
+    color: var(--gray-400);
+    font-weight: bold;
+}
+
+.pricing-desc {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin-bottom: 24px;
+}
+
+/* Pricing Add-on */
+.pricing-addon {
+    margin-top: 48px;
+    background: var(--gray-50);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    border: 2px solid var(--gray-200);
+}
+
+.addon-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+.addon-text h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+}
+
+.addon-text p {
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.addon-cta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.addon-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+@media (max-width: 768px) {
+    .addon-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .addon-cta {
+        flex-direction: column;
+    }
+}
+
 /* ===== About Section ===== */
 .about {
     background: var(--gray-50);
@@ -742,6 +819,14 @@ section {
     justify-content: center;
     color: var(--gray-500);
     font-size: 14px;
+}
+
+.about-placeholder.about-icon {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+    border-radius: 50%;
+    color: white;
 }
 
 .about-text h2 {

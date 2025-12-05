@@ -53,10 +53,13 @@ exports.handler = async (event, context) => {
 
                     // Determine plan based on price ID
                     let plan = 'free';
-                    if (priceId === process.env.STRIPE_PRICE_PROFESSIONAL) {
-                        plan = 'professional';
-                    } else if (priceId === process.env.STRIPE_PRICE_PREMIUM) {
-                        plan = 'premium';
+                    const ownerPrices = [process.env.STRIPE_PRICE_OWNER_MONTHLY, process.env.STRIPE_PRICE_OWNER_ANNUAL];
+                    const proPrices = [process.env.STRIPE_PRICE_PRO_MONTHLY, process.env.STRIPE_PRICE_PRO_ANNUAL];
+
+                    if (ownerPrices.includes(priceId)) {
+                        plan = 'owner';
+                    } else if (proPrices.includes(priceId)) {
+                        plan = 'pro';
                     }
 
                     // Update user profile
@@ -85,10 +88,13 @@ exports.handler = async (event, context) => {
                 if (profile) {
                     const priceId = subscription.items.data[0]?.price?.id;
                     let plan = 'free';
-                    if (priceId === process.env.STRIPE_PRICE_PROFESSIONAL) {
-                        plan = 'professional';
-                    } else if (priceId === process.env.STRIPE_PRICE_PREMIUM) {
-                        plan = 'premium';
+                    const ownerPrices = [process.env.STRIPE_PRICE_OWNER_MONTHLY, process.env.STRIPE_PRICE_OWNER_ANNUAL];
+                    const proPrices = [process.env.STRIPE_PRICE_PRO_MONTHLY, process.env.STRIPE_PRICE_PRO_ANNUAL];
+
+                    if (ownerPrices.includes(priceId)) {
+                        plan = 'owner';
+                    } else if (proPrices.includes(priceId)) {
+                        plan = 'pro';
                     }
 
                     await supabase.from('profiles').update({
