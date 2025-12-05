@@ -197,9 +197,11 @@ const translations = {
     }
 };
 
-// Get current language from localStorage or default to English
+// Get current language - English only for now (Arabic coming later)
 function getCurrentLang() {
-    return localStorage.getItem('plainfinance_lang') || 'en';
+    // Force English until Arabic is fully implemented
+    localStorage.setItem('plainfinance_lang', 'en');
+    return 'en';
 }
 
 // Set language
