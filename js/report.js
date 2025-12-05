@@ -731,6 +731,25 @@ function updateHealthStrip(current, metrics) {
     strip.className = `health-strip ${status}`;
     statusEl.textContent = statusText;
     reasonEl.textContent = reason;
+
+    // Loan Pressure Tag (only show if there's a loan)
+    const loanPressureTag = document.getElementById('loanPressureTag');
+    const loanPressureValue = document.getElementById('loanPressureValue');
+
+    if (metrics.hasLoan && loanPressureTag && loanPressureValue) {
+        loanPressureTag.style.display = 'flex';
+
+        const pressureLabels = {
+            'low': 'Low',
+            'medium': 'Medium',
+            'high': 'High'
+        };
+
+        loanPressureValue.textContent = pressureLabels[metrics.loanPressure] || 'None';
+        loanPressureTag.className = `health-metric loan-pressure-tag pressure-${metrics.loanPressure}`;
+    } else if (loanPressureTag) {
+        loanPressureTag.style.display = 'none';
+    }
 }
 
 function updateActions(current, metrics, currency) {

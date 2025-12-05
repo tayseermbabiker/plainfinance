@@ -222,6 +222,19 @@ function calculateMetrics(current, previous, industryType = 'other') {
     const vatPayable = vatCollected - vatPaid;
     const hasVatData = vatCollected > 0 || vatPaid > 0;
 
+    // Loan Pressure (based on loan vs cash on hand)
+    // More reliable than vs revenue since we only have one month
+    // Low: Loan < Cash, Medium: 1-3× Cash, High: > 3× Cash
+    const loanToCash = cash > 0 ? shortTermLoans / cash : (shortTermLoans > 0 ? 999 : 0);
+    let loanPressure = 'none';
+    if (shortTermLoans > 0) {
+        if (loanToCash < 1) loanPressure = 'low';
+        else if (loanToCash <= 3) loanPressure = 'medium';
+        else loanPressure = 'high';
+    }
+    const hasLoan = shortTermLoans > 0;
+    const netCash = cash - shortTermLoans;
+
     // Changes vs previous
     const revenueChange = previous.revenue ? ((revenue - previous.revenue) / previous.revenue) * 100 : null;
     const profitChange = previous.netProfit !== undefined && previous.netProfit !== 0
@@ -249,7 +262,13 @@ function calculateMetrics(current, previous, industryType = 'other') {
         hasVatData: hasVatData,
         revenueChange: revenueChange !== null ? Math.round(revenueChange * 10) / 10 : null,
         profitChange: profitChange !== null ? Math.round(profitChange * 10) / 10 : null,
-        cashChange: cashChange !== null ? Math.round(cashChange * 10) / 10 : null
+        cashChange: cashChange !== null ? Math.round(cashChange * 10) / 10 : null,
+        // Loan pressure metrics
+        hasLoan: hasLoan,
+        loanBalance: Math.round(shortTermLoans),
+        loanToCash: Math.round(loanToCash * 10) / 10,
+        loanPressure: loanPressure,
+        netCash: Math.round(netCash)
     };
 }
 
@@ -477,7 +496,15 @@ CALCULATED METRICS:
 - Days Inventory Outstanding (DIO): ${metrics.dio} days (how long stock sits before selling)
 - Days Payable Outstanding (DPO): ${metrics.dpo} days (how long you take to pay suppliers)
 - Cash Conversion Cycle: ${metrics.ccc} days (total days cash is tied up, lower is better)
-
+${metrics.hasLoan ? `
+LOAN SITUATION:
+- Short-term Loan Balance: ${currency} ${metrics.loanBalance.toLocaleString()}
+- Loan is ${metrics.loanToCash}× current cash (Pressure: ${metrics.loanPressure})
+- Net Cash (Cash minus Loan): ${currency} ${metrics.netCash.toLocaleString()}
+${metrics.loanPressure === 'high' ? '- HIGH PRESSURE: Loan exceeds 3× cash. Mention this risk in narrative and suggest building cash buffer.' : ''}
+${metrics.loanPressure === 'medium' ? '- MEDIUM PRESSURE: Loan is 1-3× cash. Worth mentioning to watch collections closely.' : ''}
+${metrics.loanPressure === 'low' ? '- LOW PRESSURE: Loan is less than cash. Manageable position.' : ''}
+` : ''}
 Use these metrics in your analysis. If any metric is notably above or below the typical range, explain what it means for this business.
 
 Please provide:

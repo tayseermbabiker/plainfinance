@@ -1614,6 +1614,27 @@
     }
 }
 
+/* ===== Loan Pressure Tag ===== */
+
+.loan-pressure-tag {
+    border-left: 2px solid #64748b;
+    padding-left: 12px;
+    margin-left: 8px;
+}
+
+.loan-pressure-tag.pressure-low .health-metric-value {
+    color: #10b981;
+}
+
+.loan-pressure-tag.pressure-medium .health-metric-value {
+    color: #f59e0b;
+}
+
+.loan-pressure-tag.pressure-high .health-metric-value {
+    color: #ef4444;
+    font-weight: 700;
+}
+
 /* ===== Hero YTD Badge ===== */
 
 .hero-ytd-badge {
