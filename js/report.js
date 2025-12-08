@@ -60,8 +60,9 @@ function populateReportFromAPI(reportData) {
         }
 
         // Section 4: Industry Benchmarks
-        if (reportData.benchmarks) {
-            updateBenchmarkSection(metrics, reportData.benchmarks);
+        const benchmarks = reportData.benchmarks || getDefaultBenchmarks(reportData.company?.industry);
+        if (benchmarks) {
+            updateBenchmarkSection(metrics, benchmarks);
         }
 
         // Section 5: Cash Flow Story (with AI explanation)
@@ -512,6 +513,71 @@ function getBenchmarkPosition(value, benchmark) {
     const idealPos = ((benchmark.ideal - extendedMin) / totalRange) * 100;
 
     return { valuePos, idealPos };
+}
+
+// Default benchmark data when API doesn't return benchmarks
+function getDefaultBenchmarks(industry) {
+    const benchmarksByIndustry = {
+        'retail': {
+            name: 'Retail businesses',
+            grossMargin: { min: 25, max: 50, ideal: 35 },
+            netMargin: { min: 2, max: 10, ideal: 5 },
+            currentRatio: { min: 1.2, max: 2.5, ideal: 1.8 },
+            dso: { min: 15, max: 45, ideal: 30 }
+        },
+        'product': {
+            name: 'Product-based businesses',
+            grossMargin: { min: 30, max: 55, ideal: 40 },
+            netMargin: { min: 5, max: 15, ideal: 10 },
+            currentRatio: { min: 1.2, max: 2.5, ideal: 1.8 },
+            dso: { min: 20, max: 45, ideal: 30 }
+        },
+        'service': {
+            name: 'Service businesses',
+            grossMargin: { min: 40, max: 70, ideal: 55 },
+            netMargin: { min: 10, max: 25, ideal: 15 },
+            currentRatio: { min: 1.0, max: 2.0, ideal: 1.5 },
+            dso: { min: 25, max: 60, ideal: 40 }
+        },
+        'ecommerce': {
+            name: 'E-commerce businesses',
+            grossMargin: { min: 20, max: 45, ideal: 30 },
+            netMargin: { min: 3, max: 12, ideal: 7 },
+            currentRatio: { min: 1.0, max: 2.0, ideal: 1.5 },
+            dso: { min: 5, max: 20, ideal: 10 }
+        },
+        'manufacturing': {
+            name: 'Manufacturing businesses',
+            grossMargin: { min: 20, max: 40, ideal: 30 },
+            netMargin: { min: 3, max: 12, ideal: 7 },
+            currentRatio: { min: 1.3, max: 2.5, ideal: 1.8 },
+            dso: { min: 30, max: 60, ideal: 45 }
+        },
+        'wholesale': {
+            name: 'Wholesale businesses',
+            grossMargin: { min: 15, max: 30, ideal: 22 },
+            netMargin: { min: 2, max: 8, ideal: 5 },
+            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
+            dso: { min: 25, max: 50, ideal: 35 }
+        },
+        'restaurant': {
+            name: 'Restaurant businesses',
+            grossMargin: { min: 55, max: 70, ideal: 62 },
+            netMargin: { min: 3, max: 10, ideal: 6 },
+            currentRatio: { min: 0.8, max: 1.5, ideal: 1.2 },
+            dso: { min: 5, max: 15, ideal: 7 }
+        },
+        'construction': {
+            name: 'Construction businesses',
+            grossMargin: { min: 15, max: 35, ideal: 25 },
+            netMargin: { min: 2, max: 10, ideal: 5 },
+            currentRatio: { min: 1.2, max: 2.5, ideal: 1.7 },
+            dso: { min: 45, max: 90, ideal: 60 }
+        }
+    };
+
+    // Return industry-specific benchmarks or default to product-based
+    return benchmarksByIndustry[industry?.toLowerCase()] || benchmarksByIndustry['product'];
 }
 
 function renderComparisonChart(current, previous, currency) {
