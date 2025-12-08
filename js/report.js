@@ -222,11 +222,12 @@ function updateCashBridge(current, previous, metrics, currency) {
     const loanRepayments = current.loanRepayments || 0;
     const ownerDrawings = current.ownerDrawings || 0;
     const assetPurchases = current.assetPurchases || 0;
-    const hasNonPlItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0;
+    const plannedSupplierPayments = current.plannedSupplierPayments || 0;
+    const hasNonPlItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0 || plannedSupplierPayments > 0;
 
     // Calculate actual cash movement
     // Profit - increase in receivables - increase in inventory + increase in payables - non-PL outflows
-    const cashMovement = netProfit - receivablesChange - inventoryChange + payablesChange - loanRepayments - ownerDrawings - assetPurchases;
+    const cashMovement = netProfit - receivablesChange - inventoryChange + payablesChange - loanRepayments - ownerDrawings - assetPurchases - plannedSupplierPayments;
 
     // Update the display
     document.getElementById('bridgeNetProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
@@ -260,6 +261,7 @@ function updateCashBridge(current, previous, metrics, currency) {
         const loanItem = document.getElementById('bridgeLoanItem');
         const drawingsItem = document.getElementById('bridgeDrawingsItem');
         const assetsItem = document.getElementById('bridgeAssetsItem');
+        const supplierItem = document.getElementById('bridgeSupplierItem');
 
         if (loanRepayments > 0) {
             loanItem.style.display = 'flex';
@@ -280,6 +282,13 @@ function updateCashBridge(current, previous, metrics, currency) {
             document.getElementById('bridgeAssetPurchases').textContent = `- ${currency} ${formatNumber(assetPurchases)}`;
         } else {
             assetsItem.style.display = 'none';
+        }
+
+        if (plannedSupplierPayments > 0) {
+            supplierItem.style.display = 'flex';
+            document.getElementById('bridgePlannedSupplierPayments').textContent = `- ${currency} ${formatNumber(plannedSupplierPayments)}`;
+        } else {
+            supplierItem.style.display = 'none';
         }
     } else {
         nonPlSection.style.display = 'none';
