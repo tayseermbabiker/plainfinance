@@ -1,5 +1,8 @@
 // ===== PlainFinance - Supabase Client =====
 
+// Admin emails get unlimited access
+const ADMIN_EMAILS = ['tayseermbabiker@gmail.com'];
+
 // Initialize Supabase client
 const SUPABASE_URL = 'https://yshqwuxfcxirqaolnfve.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzaHF3dXhmY3hpcnFhb2xuZnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MTI3MTMsImV4cCI6MjA4MDQ4ODcxM30.psrwfVzTtx5VTANYrTlyt7CUW87MEqccHx3HAh6vpu4';
@@ -161,6 +164,13 @@ async function canCreateReport() {
     // If Supabase is not configured, allow unlimited reports
     if (!getSupabase()) {
         return { allowed: true, remaining: -1, plan: 'free' };
+    }
+
+    const user = await getUser();
+
+    // Admin bypass - unlimited access
+    if (user && ADMIN_EMAILS.includes(user.email?.toLowerCase())) {
+        return { allowed: true, remaining: 999, plan: 'admin', limit: 999, used: 0, isAdmin: true };
     }
 
     const { data: profile } = await getUserProfile();
