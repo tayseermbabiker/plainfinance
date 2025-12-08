@@ -1,4 +1,4 @@
-// ===== PlainFinance - Analyze Form Logic =====
+// ===== PlainFinancials - Analyze Form Logic =====
 
 // State
 let currentStep = 1;

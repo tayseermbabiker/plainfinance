@@ -1,4 +1,4 @@
-// ===== PlainFinance - Supabase Client =====
+// ===== PlainFinancials - Supabase Client =====
 
 // Admin emails get unlimited access
 const ADMIN_EMAILS = ['tayseermbabiker@gmail.com'];

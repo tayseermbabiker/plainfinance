@@ -93,7 +93,7 @@ if (waitlistForm) {
                     <div style="text-align: center; padding: 20px;">
                         <div style="font-size: 48px; margin-bottom: 16px;">🎉</div>
                         <h3 style="color: white; margin-bottom: 8px;">You're on the list!</h3>
-                        <p style="color: #94a3b8;">We'll email you when PlainFinance launches. Early members get 50% off for life.</p>
+                        <p style="color: #94a3b8;">We'll email you when PlainFinancials launches. Early members get 50% off for life.</p>
                     </div>
                 `;
             } else {
@@ -160,6 +160,6 @@ document.querySelectorAll('.pricing-card').forEach(card => {
 });
 
 // ===== Console Easter Egg =====
-console.log('%c PlainFinance ', 'background: #2563eb; color: white; font-size: 24px; font-weight: bold; padding: 10px;');
+console.log('%c PlainFinancials ', 'background: #2563eb; color: white; font-size: 24px; font-weight: bold; padding: 10px;');
 console.log('%c Your numbers, finally explained. ', 'color: #64748b; font-size: 14px;');
 console.log('%c Built by Tayseer Mohammed, FCCA ', 'color: #64748b; font-size: 12px;');

@@ -1,4 +1,4 @@
-// ===== PlainFinance - Internationalization =====
+// ===== PlainFinancials - Internationalization =====
 
 const translations = {
     en: {
