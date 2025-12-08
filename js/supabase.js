@@ -1,7 +1,7 @@
 // ===== PlainFinancials - Supabase Client =====
 
 // Admin emails get unlimited access
-const ADMIN_EMAILS = ['tayseermbabiker@gmail.com'];
+const ADMIN_EMAILS = ['tayseermbabiker@gmail.com', 'zahraamohd1@yahoo.com'];
 
 // Initialize Supabase client
 const SUPABASE_URL = 'https://yshqwuxfcxirqaolnfve.supabase.co';
