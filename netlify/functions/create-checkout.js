@@ -2,6 +2,19 @@
 // Creates a Stripe checkout session for subscription
 
 exports.handler = async (event, context) => {
+    // Handle CORS preflight
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            body: ''
+        };
+    }
+
     // Only allow POST
     if (event.httpMethod !== 'POST') {
         return {
@@ -20,16 +33,29 @@ exports.handler = async (event, context) => {
         };
     }
 
+    // Price IDs from environment variables
+    const PRICE_IDS = {
+        owner_monthly: process.env.STRIPE_PRICE_OWNER_MONTHLY,
+        owner_annual: process.env.STRIPE_PRICE_OWNER_ANNUAL,
+        pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
+        pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL
+    };
+
     const stripe = require('stripe')(STRIPE_SECRET_KEY);
 
     try {
         const data = JSON.parse(event.body);
-        const { priceId, userId, userEmail, successUrl, cancelUrl } = data;
+        const { plan, billing, userId, userEmail, successUrl, cancelUrl } = data;
+
+        // Get price ID from plan and billing
+        const priceKey = `${plan}_${billing}`;
+        const priceId = PRICE_IDS[priceKey];
 
         if (!priceId) {
+            console.error('Invalid plan/billing:', priceKey);
             return {
                 statusCode: 400,
-                body: JSON.stringify({ error: 'Missing price ID' })
+                body: JSON.stringify({ error: 'Invalid plan selected' })
             };
         }
 
@@ -48,7 +74,9 @@ exports.handler = async (event, context) => {
             customer_email: userEmail,
             client_reference_id: userId,
             metadata: {
-                userId: userId
+                userId: userId,
+                plan: plan,
+                billing: billing
             }
         });
 
@@ -69,6 +97,10 @@ exports.handler = async (event, context) => {
         console.error('Stripe error:', error);
         return {
             statusCode: 500,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify({ error: error.message || 'Failed to create checkout session' })
         };
     }

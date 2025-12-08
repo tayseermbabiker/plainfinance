@@ -49,7 +49,7 @@
                 <div class="pricing-card">
                     <div class="pricing-name">Free</div>
                     <div class="pricing-price">
-                        <span class="currency">AED</span>
+                        <span class="currency">$</span>
                         <span class="amount">0</span>
                     </div>
                     <p class="pricing-desc">Try it out</p>
@@ -70,8 +70,8 @@
                     <div class="pricing-badge">Most Popular</div>
                     <div class="pricing-name">Owner</div>
                     <div class="pricing-price">
-                        <span class="currency">AED</span>
-                        <span class="amount" data-monthly="109" data-annual="96">109</span>
+                        <span class="currency">$</span>
+                        <span class="amount" data-monthly="30" data-annual="25">30</span>
                         <span class="period">/month</span>
                     </div>
                     <p class="pricing-desc">Monthly clarity for your business</p>
@@ -86,32 +86,37 @@
                         <li><span class="check">✓</span> Email support</li>
                     </ul>
                     <button class="btn btn-primary btn-block" onclick="subscribe('owner')">
-                        Subscribe Now
+                        Get Started
                     </button>
-                    <p class="pricing-note" id="ownerNote">AED 1,149/year (save 2 months)</p>
+                    <p class="pricing-note" id="ownerNote">$300/year (save 2 months)</p>
                 </div>
 
                 <!-- Pro Plan -->
                 <div class="pricing-card">
                     <div class="pricing-name">Pro</div>
                     <div class="pricing-price">
-                        <span class="currency">AED</span>
-                        <span class="amount" data-monthly="309" data-annual="258">309</span>
+                        <span class="currency">$</span>
+                        <span class="amount" data-monthly="85" data-annual="71">85</span>
                         <span class="period">/month</span>
                     </div>
                     <p class="pricing-desc">For growing businesses</p>
                     <ul class="pricing-features">
                         <li><span class="check">✓</span> 20 reports per month</li>
-                        <li><span class="check">✓</span> Everything in Owner</li>
+                        <li><span class="check">✓</span> Full AI analysis</li>
+                        <li><span class="check">✓</span> Health indicators</li>
+                        <li><span class="check">✓</span> Cash forecast</li>
+                        <li><span class="check">✓</span> Industry benchmarks</li>
+                        <li><span class="check">✓</span> PDF downloads</li>
+                        <li><span class="check">✓</span> 12-month history</li>
                         <li><span class="check">✓</span> Scenario analysis</li>
                         <li><span class="check">✓</span> Branded PDF reports</li>
                         <li><span class="check">✓</span> Team access (up to 5)</li>
                         <li><span class="check">✓</span> Priority support</li>
                     </ul>
                     <button class="btn btn-secondary btn-block" onclick="subscribe('pro')">
-                        Subscribe Now
+                        Get Started
                     </button>
-                    <p class="pricing-note" id="proNote">AED 3,099/year (save 2 months)</p>
+                    <p class="pricing-note" id="proNote">$850/year (save 2 months)</p>
                 </div>
             </div>
 
@@ -120,10 +125,10 @@
                 <div class="addon-content">
                     <div class="addon-text">
                         <h3>Need a human to walk you through it?</h3>
-                        <p>Book a 30-minute call with an FCCA-qualified advisor who speaks plain English.</p>
+                        <p>Book a 30-minute call with a chartered accountant who speaks plain English.</p>
                     </div>
                     <div class="addon-cta">
-                        <span class="addon-price">AED 209</span>
+                        <span class="addon-price">$59</span>
                         <a href="#" class="btn btn-secondary" onclick="bookConsultation()">Book a Call</a>
                     </div>
                 </div>
@@ -168,14 +173,15 @@
                         <a href="pricing.html">Pricing</a>
                     </div>
                     <div class="footer-column">
-                        <h4>Contact</h4>
-                        <a href="mailto:tayseer.babiker@hotmail.com">Email</a>
-                        <a href="https://wa.me/971565522442">WhatsApp</a>
+                        <h4>Legal</h4>
+                        <a href="privacy.html">Privacy Policy</a>
+                        <a href="terms.html">Terms of Service</a>
+                        <a href="mailto:Eterna.General@gmail.com">Contact</a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2025 PlainFinance. Built in UAE.</p>
+                <p>&copy; 2025 PlainFinance. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -183,15 +189,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script>
-        // Stripe Price IDs - Set these in Netlify environment variables
-        const STRIPE_PRICES = {
-            owner_monthly: 'STRIPE_PRICE_OWNER_MONTHLY',
-            owner_annual: 'STRIPE_PRICE_OWNER_ANNUAL',
-            pro_monthly: 'STRIPE_PRICE_PRO_MONTHLY',
-            pro_annual: 'STRIPE_PRICE_PRO_ANNUAL',
-            consultation: 'STRIPE_PRICE_CONSULTATION'
-        };
-
         let isAnnual = false;
 
         // Billing toggle
@@ -209,11 +206,11 @@
 
             // Update notes
             document.getElementById('ownerNote').textContent = isAnnual
-                ? 'Billed annually at AED 1,149'
-                : 'AED 1,149/year (save 2 months)';
+                ? 'Billed annually at $300'
+                : '$300/year (save 2 months)';
             document.getElementById('proNote').textContent = isAnnual
-                ? 'Billed annually at AED 3,099'
-                : 'AED 3,099/year (save 2 months)';
+                ? 'Billed annually at $850'
+                : '$850/year (save 2 months)';
 
             // Update toggle labels
             document.querySelectorAll('.toggle-label').forEach(label => {
@@ -227,11 +224,11 @@
 
             if (!user) {
                 // Redirect to signup with plan parameter
-                window.location.href = `signup.html?plan=${plan}`;
+                window.location.href = `signup.html?plan=${plan}&billing=${isAnnual ? 'annual' : 'monthly'}`;
                 return;
             }
 
-            const priceKey = `${plan}_${isAnnual ? 'annual' : 'monthly'}`;
+            const billing = isAnnual ? 'annual' : 'monthly';
 
             // Create checkout session
             try {
@@ -239,7 +236,8 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        priceId: STRIPE_PRICES[priceKey],
+                        plan: plan,
+                        billing: billing,
                         userId: user.id,
                         userEmail: user.email
                     })
@@ -250,7 +248,7 @@
                 if (result.success && result.url) {
                     window.location.href = result.url;
                 } else {
-                    alert('Failed to start checkout. Please try again.');
+                    alert(result.error || 'Failed to start checkout. Please try again.');
                 }
             } catch (error) {
                 console.error('Checkout error:', error);
@@ -259,8 +257,8 @@
         }
 
         function bookConsultation() {
-            // For now, redirect to WhatsApp or Calendly
-            window.open('https://wa.me/971565522442?text=Hi, I would like to book a consultation call.', '_blank');
+            // For now, redirect to email
+            window.location.href = 'mailto:Eterna.General@gmail.com?subject=Consultation Booking&body=Hi, I would like to book a consultation call.';
         }
 
         // Initialize
