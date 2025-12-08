@@ -314,25 +314,68 @@ function validateCurrentStep() {
 
     const requiredFields = currentStepEl.querySelectorAll('[required]');
     let isValid = true;
+    let firstInvalidField = null;
 
     requiredFields.forEach(field => {
-        if (!field.value) {
+        // Remove previous error state
+        field.classList.remove('error');
+
+        // Check if field is empty
+        const isEmpty = !field.value || field.value.trim() === '';
+
+        if (isEmpty) {
+            field.classList.add('error');
             field.style.borderColor = '#ef4444';
             isValid = false;
+
+            if (!firstInvalidField) {
+                firstInvalidField = field;
+            }
         } else {
             field.style.borderColor = '#e2e8f0';
         }
     });
 
-    if (!isValid) {
-        // Find first invalid field and focus
-        const firstInvalid = currentStepEl.querySelector('[required]:invalid, [required][value=""]');
-        if (firstInvalid) {
-            firstInvalid.focus();
-        }
+    if (!isValid && firstInvalidField) {
+        // Scroll to and focus the first invalid field
+        firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+            firstInvalidField.focus();
+        }, 300);
+
+        // Show error message
+        const fieldName = firstInvalidField.closest('.form-group')?.querySelector('label')?.textContent?.replace('?', '').trim() || 'This field';
+        showValidationError(`${fieldName} is required`);
     }
 
     return isValid;
+}
+
+function showValidationError(message) {
+    // Remove any existing error toast
+    const existingToast = document.querySelector('.validation-toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    // Create error toast
+    const toast = document.createElement('div');
+    toast.className = 'validation-toast';
+    toast.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(toast);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // ===== Form Submission =====
