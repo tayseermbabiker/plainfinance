@@ -582,7 +582,17 @@ function toggleFormatGuide() {
 
 // ===== Initialize =====
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check if user is logged in
+    if (typeof getUser === 'function') {
+        const user = await getUser();
+        if (!user) {
+            // Show login prompt
+            showLoginRequired();
+            return;
+        }
+    }
+
     // Set current month/year as default
     const now = new Date();
     const monthSelect = document.getElementById('reportMonth');
@@ -593,3 +603,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateProgress(1);
 });
+
+function showLoginRequired() {
+    const container = document.querySelector('.analyze-container');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="login-required">
+            <div class="login-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <h1>Sign in to continue</h1>
+            <p>Create a free account to generate your financial report. It only takes a minute.</p>
+            <div class="login-actions">
+                <a href="signup.html" class="btn btn-primary btn-lg">Create Free Account</a>
+                <a href="login.html" class="btn btn-secondary btn-lg">Log In</a>
+            </div>
+            <p class="login-note">Free accounts get 2 reports. No credit card required.</p>
+        </div>
+    `;
+}

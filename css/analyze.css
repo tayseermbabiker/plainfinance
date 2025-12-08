@@ -1178,3 +1178,56 @@
         transform: translateX(-50%) translateY(20px);
     }
 }
+
+/* ===== Login Required Screen ===== */
+
+.login-required {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.login-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-icon svg {
+    color: var(--primary);
+}
+
+.login-required h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.login-required p {
+    font-size: 16px;
+    color: #64748b;
+    max-width: 400px;
+    margin: 0 auto 32px;
+}
+
+.login-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.login-note {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 0;
+}
