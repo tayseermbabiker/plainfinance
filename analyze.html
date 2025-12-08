@@ -579,6 +579,67 @@
                         <small>Current Assets - Current Liabilities</small>
                     </div>
 
+                    <!-- Cash Movements Section (Optional - for Cash Bridge) -->
+                    <div class="cash-movements-section">
+                        <button type="button" class="section-toggle" onclick="toggleCashMovements()">
+                            <div class="toggle-header">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                                <div>
+                                    <span class="toggle-title">Cash Movements (Optional)</span>
+                                    <span class="toggle-subtitle">Add loan payments, owner drawings &amp; asset purchases for complete cash analysis</span>
+                                </div>
+                            </div>
+                            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+
+                        <div class="cash-movements-fields" id="cashMovementsFields" style="display: none;">
+                            <p class="section-hint">These items affect your cash but don't appear on the P&L. Adding them gives you a complete picture of where your money went.</p>
+
+                            <div class="form-group">
+                                <label for="loanRepayments">
+                                    Loan Repayments (This Month)
+                                    <span class="tooltip" data-tip="Principal + interest payments made to banks or lenders this month">?</span>
+                                </label>
+                                <div class="input-with-currency">
+                                    <span class="currency-prefix">AED</span>
+                                    <input type="number" id="loanRepayments" name="loanRepayments" placeholder="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ownerDrawings">
+                                    Owner Drawings / Dividends
+                                    <span class="tooltip" data-tip="Money taken out of the business by owners this month">?</span>
+                                </label>
+                                <div class="input-with-currency">
+                                    <span class="currency-prefix">AED</span>
+                                    <input type="number" id="ownerDrawings" name="ownerDrawings" placeholder="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="assetPurchases">
+                                    Equipment / Asset Purchases
+                                    <span class="tooltip" data-tip="Computers, vehicles, machinery, or other fixed assets bought this month">?</span>
+                                </label>
+                                <div class="input-with-currency">
+                                    <span class="currency-prefix">AED</span>
+                                    <input type="number" id="assetPurchases" name="assetPurchases" placeholder="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="calculated-field">
+                                <span>Total Non-P&L Cash Outflows</span>
+                                <span class="calculated-value" id="totalCashOutflows">AED 0</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary prev-step">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

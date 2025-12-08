@@ -241,6 +241,86 @@
                 </div>
             </section>
 
+            <!-- Section 5.5: Cash Bridge (Why Profit ≠ Cash) -->
+            <section class="report-section cash-bridge-section" id="cashBridgeSection">
+                <h2>Why your profit doesn't match your cash</h2>
+                <p class="section-subtitle">This explains where your money actually went</p>
+
+                <div class="cash-bridge">
+                    <div class="bridge-item bridge-start">
+                        <div class="bridge-label">Net Profit (P&L)</div>
+                        <div class="bridge-value positive" id="bridgeNetProfit">AED 55,000</div>
+                        <div class="bridge-note">What you earned on paper</div>
+                    </div>
+
+                    <div class="bridge-group bridge-trapped">
+                        <div class="bridge-group-label">Cash Trapped In:</div>
+
+                        <div class="bridge-item">
+                            <div class="bridge-label">
+                                <span>Receivables (customers owe you)</span>
+                                <span class="bridge-hint" id="bridgeDsoHint">DSO: 37 days</span>
+                            </div>
+                            <div class="bridge-value negative" id="bridgeReceivablesChange">- AED 42,000</div>
+                        </div>
+
+                        <div class="bridge-item">
+                            <div class="bridge-label">
+                                <span>Inventory (stock bought)</span>
+                                <span class="bridge-hint" id="bridgeDioHint">DIO: 19 days</span>
+                            </div>
+                            <div class="bridge-value negative" id="bridgeInventoryChange">- AED 25,000</div>
+                        </div>
+                    </div>
+
+                    <div class="bridge-group bridge-released">
+                        <div class="bridge-group-label">Cash Released By:</div>
+
+                        <div class="bridge-item">
+                            <div class="bridge-label">
+                                <span>Payables (you owe suppliers)</span>
+                                <span class="bridge-hint" id="bridgeDpoHint">DPO: 9 days</span>
+                            </div>
+                            <div class="bridge-value positive" id="bridgePayablesChange">+ AED 10,000</div>
+                        </div>
+                    </div>
+
+                    <div class="bridge-group bridge-nonpl" id="bridgeNonPlSection" style="display: none;">
+                        <div class="bridge-group-label">Cash Used For (Not on P&L):</div>
+
+                        <div class="bridge-item" id="bridgeLoanItem" style="display: none;">
+                            <div class="bridge-label">Loan repayments</div>
+                            <div class="bridge-value negative" id="bridgeLoanRepayments">- AED 0</div>
+                        </div>
+
+                        <div class="bridge-item" id="bridgeDrawingsItem" style="display: none;">
+                            <div class="bridge-label">Owner drawings / dividends</div>
+                            <div class="bridge-value negative" id="bridgeOwnerDrawings">- AED 0</div>
+                        </div>
+
+                        <div class="bridge-item" id="bridgeAssetsItem" style="display: none;">
+                            <div class="bridge-label">Equipment / asset purchases</div>
+                            <div class="bridge-value negative" id="bridgeAssetPurchases">- AED 0</div>
+                        </div>
+                    </div>
+
+                    <div class="bridge-item bridge-result">
+                        <div class="bridge-label">Actual Cash Movement</div>
+                        <div class="bridge-value" id="bridgeCashMovement">- AED 27,000</div>
+                        <div class="bridge-note" id="bridgeCashNote">Your bank balance changed by this amount</div>
+                    </div>
+                </div>
+
+                <div class="cash-bridge-summary" id="cashBridgeSummary">
+                    <p>You made <strong id="bridgeSummaryProfit">AED 55,000</strong> profit this month — that's real. But your bank balance dropped by <strong id="bridgeSummaryCash">AED 27,000</strong>. Here's why:</p>
+                    <p id="bridgeSummaryExplanation">Most of your profit is stuck in unpaid invoices. Customers owe you more than last month, and you paid suppliers faster than they paid you.</p>
+                </div>
+
+                <div class="why-matters">
+                    <strong>Why this matters:</strong> Profit is an accounting number. Cash is what pays your bills. Many profitable businesses fail because they don't understand this gap.
+                </div>
+            </section>
+
             <!-- Section 5: Your 3 Actions This Week -->
             <section class="report-section actions-section">
                 <h2>Your 3 actions this week</h2>

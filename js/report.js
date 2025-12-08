@@ -68,6 +68,9 @@ function populateReportFromAPI(reportData) {
         // Section 5: Cash Flow Story (with AI explanation)
         updateCashFlowStoryFromAPI(metrics, currency, analysis);
 
+        // Section 5.5: Cash Bridge (Why Profit ≠ Cash) - Admin only for now
+        updateCashBridge(current, previous, metrics, currency);
+
         // Section 5: Actions (from AI)
         updateActionsFromAPI(current, metrics, currency, analysis);
 
@@ -175,6 +178,155 @@ function updateCashFlowStoryFromAPI(metrics, currency, analysis) {
         <div class="cycle-number">${metrics.ccc} days</div>
         <div class="cycle-text">${message}</div>
     </div>`;
+}
+
+// Cash Bridge: Why Profit ≠ Cash
+function updateCashBridge(current, previous, metrics, currency) {
+    const section = document.getElementById('cashBridgeSection');
+    if (!section) return;
+
+    const netProfit = current.netProfit || 0;
+
+    // Calculate changes in working capital items
+    // If we have previous period data, calculate actual changes
+    // Otherwise estimate based on current balances and typical patterns
+    let receivablesChange = 0;
+    let inventoryChange = 0;
+    let payablesChange = 0;
+
+    if (previous && previous.receivables !== undefined) {
+        receivablesChange = (current.receivables || 0) - (previous.receivables || 0);
+        inventoryChange = (current.inventory || 0) - (previous.inventory || 0);
+        payablesChange = (current.payables || 0) - (previous.payables || 0);
+    } else {
+        // Estimate changes using DSO/DIO/DPO and revenue/COGS
+        // Positive receivables = cash trapped (money owed to you increased)
+        // Positive inventory = cash trapped (bought more stock)
+        // Positive payables = cash released (you owe more to suppliers = kept cash longer)
+        const dailyRevenue = (current.revenue || 0) / 30;
+        const dailyCOGS = (current.cogs || 0) / 30;
+
+        // Estimate based on whether DSO/DIO are high vs typical
+        if (metrics.dso > 30) {
+            receivablesChange = Math.round(dailyRevenue * (metrics.dso - 30) * 0.5);
+        }
+        if (metrics.dio > 30) {
+            inventoryChange = Math.round(dailyCOGS * (metrics.dio - 30) * 0.3);
+        }
+        if (metrics.dpo < 30) {
+            payablesChange = Math.round(dailyCOGS * (30 - metrics.dpo) * -0.3);
+        }
+    }
+
+    // Non-P&L items (from optional cash movements)
+    const loanRepayments = current.loanRepayments || 0;
+    const ownerDrawings = current.ownerDrawings || 0;
+    const assetPurchases = current.assetPurchases || 0;
+    const hasNonPlItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0;
+
+    // Calculate actual cash movement
+    // Profit - increase in receivables - increase in inventory + increase in payables - non-PL outflows
+    const cashMovement = netProfit - receivablesChange - inventoryChange + payablesChange - loanRepayments - ownerDrawings - assetPurchases;
+
+    // Update the display
+    document.getElementById('bridgeNetProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
+    document.getElementById('bridgeNetProfit').className = `bridge-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
+
+    // Receivables change (negative = cash trapped)
+    const receivablesDisplay = document.getElementById('bridgeReceivablesChange');
+    receivablesDisplay.textContent = receivablesChange >= 0 ? `- ${currency} ${formatNumber(receivablesChange)}` : `+ ${currency} ${formatNumber(Math.abs(receivablesChange))}`;
+    receivablesDisplay.className = `bridge-value ${receivablesChange > 0 ? 'negative' : 'positive'}`;
+
+    // Inventory change (negative = cash trapped)
+    const inventoryDisplay = document.getElementById('bridgeInventoryChange');
+    inventoryDisplay.textContent = inventoryChange >= 0 ? `- ${currency} ${formatNumber(inventoryChange)}` : `+ ${currency} ${formatNumber(Math.abs(inventoryChange))}`;
+    inventoryDisplay.className = `bridge-value ${inventoryChange > 0 ? 'negative' : 'positive'}`;
+
+    // Payables change (positive = cash released)
+    const payablesDisplay = document.getElementById('bridgePayablesChange');
+    payablesDisplay.textContent = payablesChange >= 0 ? `+ ${currency} ${formatNumber(payablesChange)}` : `- ${currency} ${formatNumber(Math.abs(payablesChange))}`;
+    payablesDisplay.className = `bridge-value ${payablesChange >= 0 ? 'positive' : 'negative'}`;
+
+    // DSO/DIO/DPO hints
+    document.getElementById('bridgeDsoHint').textContent = `DSO: ${metrics.dso} days`;
+    document.getElementById('bridgeDioHint').textContent = `DIO: ${metrics.dio} days`;
+    document.getElementById('bridgeDpoHint').textContent = `DPO: ${metrics.dpo} days`;
+
+    // Non-P&L section
+    const nonPlSection = document.getElementById('bridgeNonPlSection');
+    if (hasNonPlItems) {
+        nonPlSection.style.display = 'block';
+
+        const loanItem = document.getElementById('bridgeLoanItem');
+        const drawingsItem = document.getElementById('bridgeDrawingsItem');
+        const assetsItem = document.getElementById('bridgeAssetsItem');
+
+        if (loanRepayments > 0) {
+            loanItem.style.display = 'flex';
+            document.getElementById('bridgeLoanRepayments').textContent = `- ${currency} ${formatNumber(loanRepayments)}`;
+        } else {
+            loanItem.style.display = 'none';
+        }
+
+        if (ownerDrawings > 0) {
+            drawingsItem.style.display = 'flex';
+            document.getElementById('bridgeOwnerDrawings').textContent = `- ${currency} ${formatNumber(ownerDrawings)}`;
+        } else {
+            drawingsItem.style.display = 'none';
+        }
+
+        if (assetPurchases > 0) {
+            assetsItem.style.display = 'flex';
+            document.getElementById('bridgeAssetPurchases').textContent = `- ${currency} ${formatNumber(assetPurchases)}`;
+        } else {
+            assetsItem.style.display = 'none';
+        }
+    } else {
+        nonPlSection.style.display = 'none';
+    }
+
+    // Cash movement result
+    const cashMovementDisplay = document.getElementById('bridgeCashMovement');
+    const cashMovementItem = cashMovementDisplay.closest('.bridge-item');
+    cashMovementDisplay.textContent = cashMovement >= 0 ? `+ ${currency} ${formatNumber(cashMovement)}` : `- ${currency} ${formatNumber(Math.abs(cashMovement))}`;
+    cashMovementDisplay.className = `bridge-value ${cashMovement >= 0 ? 'positive' : 'negative'}`;
+
+    if (cashMovement >= 0) {
+        cashMovementItem.classList.add('positive-cash');
+        document.getElementById('bridgeCashNote').textContent = 'Your bank balance increased by this amount';
+    } else {
+        cashMovementItem.classList.remove('positive-cash');
+        document.getElementById('bridgeCashNote').textContent = 'Your bank balance decreased by this amount';
+    }
+
+    // Summary
+    document.getElementById('bridgeSummaryProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
+    document.getElementById('bridgeSummaryCash').textContent = `${currency} ${formatNumber(Math.abs(cashMovement))}`;
+
+    // Generate explanation
+    let explanation = '';
+    if (netProfit > 0 && cashMovement < 0) {
+        // Profitable but cash decreased
+        if (receivablesChange > 0 && receivablesChange > inventoryChange) {
+            explanation = 'Most of your profit is stuck in unpaid invoices. Customers owe you more than last month. Focus on collecting faster.';
+        } else if (inventoryChange > 0 && inventoryChange > receivablesChange) {
+            explanation = 'You bought more stock than you sold this month. That tied up cash. Make sure this inventory will turn into sales soon.';
+        } else if (payablesChange < 0) {
+            explanation = 'You paid suppliers faster than they paid you. Consider negotiating longer payment terms.';
+        } else if (hasNonPlItems) {
+            explanation = 'Loan payments, owner withdrawals, or equipment purchases used up more cash than you earned in profit.';
+        } else {
+            explanation = 'A combination of slower customer payments, inventory buildup, and faster supplier payments drained your cash.';
+        }
+    } else if (netProfit > 0 && cashMovement > 0) {
+        explanation = 'Great news! Your profit is actually turning into cash. Your collections are keeping pace with sales.';
+    } else if (netProfit <= 0 && cashMovement > 0) {
+        explanation = 'Even though you made a loss, cash increased because customers paid old invoices or you held off on paying suppliers.';
+    } else {
+        explanation = 'Both your profit and cash position need attention. Focus on both profitability and collection speed.';
+    }
+
+    document.getElementById('bridgeSummaryExplanation').textContent = explanation;
 }
 
 function updateActionsFromAPI(current, metrics, currency, analysis) {

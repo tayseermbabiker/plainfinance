@@ -194,6 +194,16 @@ function updateCalculations() {
         workingCapitalDisplay.textContent = `${currency} ${formatNumber(workingCapital)}`;
         workingCapitalDisplay.style.color = workingCapital >= 0 ? '#10b981' : '#ef4444';
     }
+
+    // Cash Movements (optional section)
+    const loanRepayments = getValue('loanRepayments');
+    const ownerDrawings = getValue('ownerDrawings');
+    const assetPurchases = getValue('assetPurchases');
+    const totalCashOutflows = loanRepayments + ownerDrawings + assetPurchases;
+    const totalCashOutflowsDisplay = document.getElementById('totalCashOutflows');
+    if (totalCashOutflowsDisplay) {
+        totalCashOutflowsDisplay.textContent = `${currency} ${formatNumber(totalCashOutflows)}`;
+    }
 }
 
 // Add listeners to all number inputs
@@ -432,7 +442,11 @@ function collectFormData() {
             shortTermLoans: parseFloat(document.getElementById('shortTermLoans')?.value) || 0,
             otherLiabilities: parseFloat(document.getElementById('otherLiabilities')?.value) || 0,
             vatCollected: parseFloat(document.getElementById('vatCollected')?.value) || 0,
-            vatPaid: parseFloat(document.getElementById('vatPaid')?.value) || 0
+            vatPaid: parseFloat(document.getElementById('vatPaid')?.value) || 0,
+            // Cash Movements (optional - for Cash Bridge analysis)
+            loanRepayments: parseFloat(document.getElementById('loanRepayments')?.value) || 0,
+            ownerDrawings: parseFloat(document.getElementById('ownerDrawings')?.value) || 0,
+            assetPurchases: parseFloat(document.getElementById('assetPurchases')?.value) || 0
         };
 
         // YTD data (Year to Date)
@@ -577,6 +591,37 @@ function toggleFormatGuide() {
     } else {
         content.style.display = 'none';
         toggle.classList.remove('open');
+    }
+}
+
+// ===== Cash Movements Toggle =====
+
+function toggleCashMovements() {
+    const content = document.getElementById('cashMovementsFields');
+    const toggle = document.querySelector('.cash-movements-section .section-toggle');
+
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.classList.add('open');
+    } else {
+        content.style.display = 'none';
+        toggle.classList.remove('open');
+    }
+}
+
+function updateCashOutflows() {
+    const getValue = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+    const currency = document.getElementById('currency')?.value || 'AED';
+
+    const loanRepayments = getValue('loanRepayments');
+    const ownerDrawings = getValue('ownerDrawings');
+    const assetPurchases = getValue('assetPurchases');
+
+    const totalCashOutflows = loanRepayments + ownerDrawings + assetPurchases;
+    const totalCashOutflowsDisplay = document.getElementById('totalCashOutflows');
+
+    if (totalCashOutflowsDisplay) {
+        totalCashOutflowsDisplay.textContent = `${currency} ${formatNumber(totalCashOutflows)}`;
     }
 }
 
