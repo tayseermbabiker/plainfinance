@@ -83,92 +83,128 @@ exports.handler = async (event, context) => {
 
 // ===== CONFIGURABLE: Fixed cost share of COGS for cash runway =====
 // Represents how much of COGS must be paid even with zero sales
-// Source: Industry analysis, adjust based on real user feedback
+// Sources: Perplexity research Dec 2024 - industry cost structure studies
+// Refs: [4][5][6] SaaS, [10][11][12] Food, [13][14] Manufacturing, [9][8][7] Services
 const RUNWAY_COGS_SHARE = {
-    product: 0,        // Product/Retail/Trading: COGS is inventory, variable
-    online: 1.0,       // SaaS/Software: COGS is hosting + support, fixed
-    services: 1.0,     // Services/IT/Consulting: COGS is staff, fixed
-    food: 0.3,         // Food & Hospitality: 30% fixed (staff), 70% variable (ingredients)
-    construction: 0,   // Construction: COGS is materials, variable per project
-    manufacturing: 0.5, // Manufacturing: 50% fixed (labor), 50% variable (materials)
-    healthcare: 1.0,   // Healthcare: COGS is mostly staff, fixed
-    other: 0.3         // Default: conservative 30%
+    product: 0.15,     // Product/Retail: 10-25% fixed (warehouse labor, logistics contracts)
+    online: 0.55,      // SaaS/Software: 40-70% fixed (hosting, support teams, platform costs)
+    services: 0.70,    // Services/Consulting: 60-80% fixed (staff salaries/benefits)
+    food: 0.30,        // Food & Hospitality: 20-40% fixed (kitchen/service labor minimums)
+    construction: 0.50,// Construction: 40-60% fixed (site overhead, some subcontractor costs)
+    manufacturing: 0.55,// Manufacturing: 40-70% fixed (depreciation, plant labor)
+    healthcare: 0.55,  // Healthcare: 40-70% fixed (clinical staff, facilities)
+    other: 0.45        // General SME: 30-60% fixed (blended payroll + variable)
 };
 
+// ===== INDUSTRY BENCHMARKS =====
+// Sources: Perplexity research Dec 2024, compiled from:
+// - Deloitte Global Powers of Retailing 2023 [1][2][3]
+// - B2B SaaS Benchmark Reports 2024 [4][5][6]
+// - PwC Law Firm Survey 2023, NetSuite Professional Services [7][8][9]
+// - Restaurant margin studies (Lightspeed, CloudKitchens, Taqtics) [10][11][12]
+// - Grant Thornton Manufacturing Benchmarks 2024 [13][14]
+// - S&P Global, Macquarie Real Estate Report 2023 [15][16]
+// - NCBI Pharmacy studies, Nahdi/Burjeel reports [17][18][19]
+// - PwC Middle East Working Capital Study 2023 [22]
+// - McGrath Nicol Working Capital Report 2023 [24]
+// - CFI, Rho, JPMorgan runway guidance [23][27][28][29]
 function getIndustryBenchmarks(industry) {
-    // UAE/GCC industry benchmarks based on typical ranges
     const benchmarks = {
         product: {
             name: 'Product/Retail',
-            grossMargin: { min: 25, max: 40, ideal: 30 },
-            netMargin: { min: 3, max: 10, ideal: 5 },
-            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
-            dso: { min: 15, max: 45, ideal: 30 },
-            dio: { min: 30, max: 90, ideal: 45 },
-            dpo: { min: 30, max: 60, ideal: 45 }
+            // Sources: Deloitte, Grant Thornton AU retail [1][2][3]
+            grossMargin: { min: 20, max: 55, ideal: 40 },
+            netMargin: { min: 2, max: 8, ideal: 5 },
+            currentRatio: { min: 1.1, max: 2.0, ideal: 1.4 },
+            quickRatio: { min: 0.5, max: 1.2, ideal: 0.9 },
+            dso: { min: 10, max: 45, ideal: 22 },
+            dio: { min: 30, max: 150, ideal: 90 },
+            dpo: { min: 20, max: 75, ideal: 50 },
+            cashRunway: { min: 6, ideal: 9 }
         },
         online: {
             name: 'Online/SaaS',
-            grossMargin: { min: 60, max: 85, ideal: 70 },
-            netMargin: { min: 10, max: 30, ideal: 20 },
-            currentRatio: { min: 1.5, max: 3.0, ideal: 2.0 },
-            dso: { min: 0, max: 30, ideal: 15 },
+            // Sources: B2B SaaS benchmarks 2024 [4][5][6]
+            grossMargin: { min: 60, max: 90, ideal: 75 },
+            netMargin: { min: -10, max: 20, ideal: 10 },
+            currentRatio: { min: 1.0, max: 3.0, ideal: 1.75 },
+            quickRatio: { min: 1.0, max: 2.5, ideal: 1.5 },
+            dso: { min: 0, max: 60, ideal: 22 },
             dio: { min: 0, max: 0, ideal: 0 },
-            dpo: { min: 15, max: 45, ideal: 30 }
+            dpo: { min: 15, max: 45, ideal: 35 },
+            cashRunway: { min: 12, ideal: 18 }
         },
         services: {
             name: 'Services/Consulting',
-            grossMargin: { min: 40, max: 70, ideal: 50 },
-            netMargin: { min: 10, max: 25, ideal: 15 },
-            currentRatio: { min: 1.2, max: 2.5, ideal: 1.5 },
-            dso: { min: 30, max: 60, ideal: 45 },
+            // Sources: PwC Law Firm Survey, NetSuite, corporate finance refs [7][8][9]
+            grossMargin: { min: 50, max: 80, ideal: 65 },
+            netMargin: { min: 10, max: 30, ideal: 20 },
+            currentRatio: { min: 1.1, max: 2.5, ideal: 1.75 },
+            quickRatio: { min: 1.0, max: 2.0, ideal: 1.4 },
+            dso: { min: 20, max: 75, ideal: 37 },
             dio: { min: 0, max: 0, ideal: 0 },
-            dpo: { min: 15, max: 30, ideal: 20 }
+            dpo: { min: 15, max: 45, ideal: 30 },
+            cashRunway: { min: 6, ideal: 9 }
         },
         food: {
             name: 'Food & Hospitality',
-            grossMargin: { min: 55, max: 75, ideal: 65 },
-            netMargin: { min: 3, max: 12, ideal: 8 },
-            currentRatio: { min: 0.8, max: 1.5, ideal: 1.0 },
-            dso: { min: 0, max: 15, ideal: 7 },
-            dio: { min: 3, max: 14, ideal: 7 },
-            dpo: { min: 15, max: 30, ideal: 20 }
+            // Sources: Lightspeed, CloudKitchens, Taqtics restaurant studies [10][11][12]
+            grossMargin: { min: 60, max: 80, ideal: 70 },
+            netMargin: { min: 0, max: 15, ideal: 6 },
+            currentRatio: { min: 0.9, max: 1.8, ideal: 1.35 },
+            quickRatio: { min: 0.4, max: 1.0, ideal: 0.7 },
+            dso: { min: 0, max: 30, ideal: 5 },
+            dio: { min: 5, max: 30, ideal: 15 },
+            dpo: { min: 10, max: 45, ideal: 27 },
+            cashRunway: { min: 3, ideal: 6 }
         },
         construction: {
             name: 'Construction/Real Estate',
-            grossMargin: { min: 15, max: 30, ideal: 20 },
-            netMargin: { min: 5, max: 15, ideal: 10 },
-            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
-            dso: { min: 45, max: 90, ideal: 60 },
-            dio: { min: 30, max: 60, ideal: 45 },
-            dpo: { min: 30, max: 60, ideal: 45 }
+            // Sources: S&P Global, Macquarie, EY IFRS survey [15][16][20][22]
+            grossMargin: { min: 20, max: 45, ideal: 30 },
+            netMargin: { min: 5, max: 25, ideal: 15 },
+            currentRatio: { min: 1.0, max: 2.5, ideal: 1.55 },
+            quickRatio: { min: 0.8, max: 1.5, ideal: 1.1 },
+            dso: { min: 30, max: 120, ideal: 60 },
+            dio: { min: 10, max: 90, ideal: 40 },
+            dpo: { min: 30, max: 90, ideal: 52 },
+            cashRunway: { min: 9, ideal: 12 }
         },
         manufacturing: {
             name: 'Manufacturing',
-            grossMargin: { min: 20, max: 40, ideal: 30 },
-            netMargin: { min: 5, max: 12, ideal: 8 },
-            currentRatio: { min: 1.5, max: 2.5, ideal: 2.0 },
-            dso: { min: 30, max: 60, ideal: 45 },
-            dio: { min: 45, max: 90, ideal: 60 },
-            dpo: { min: 30, max: 60, ideal: 45 }
+            // Sources: Grant Thornton Manufacturing 2024, Hackett Group [13][14][22][26]
+            grossMargin: { min: 20, max: 45, ideal: 30 },
+            netMargin: { min: 3, max: 15, ideal: 7 },
+            currentRatio: { min: 1.2, max: 2.5, ideal: 1.75 },
+            quickRatio: { min: 0.7, max: 1.5, ideal: 1.1 },
+            dso: { min: 20, max: 75, ideal: 40 },
+            dio: { min: 30, max: 120, ideal: 67 },
+            dpo: { min: 30, max: 75, ideal: 52 },
+            cashRunway: { min: 9, ideal: 12 }
         },
         healthcare: {
             name: 'Healthcare/Wellness',
-            grossMargin: { min: 40, max: 60, ideal: 50 },
-            netMargin: { min: 8, max: 20, ideal: 12 },
-            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
-            dso: { min: 30, max: 60, ideal: 45 },
-            dio: { min: 15, max: 45, ideal: 30 },
-            dpo: { min: 30, max: 45, ideal: 35 }
+            // Sources: NCBI Pharmacy, Nahdi, Burjeel Holdings reports [17][18][19]
+            grossMargin: { min: 20, max: 60, ideal: 35 },
+            netMargin: { min: 5, max: 20, ideal: 12 },
+            currentRatio: { min: 1.1, max: 2.5, ideal: 1.6 },
+            quickRatio: { min: 0.7, max: 1.5, ideal: 1.15 },
+            dso: { min: 10, max: 90, ideal: 45 },
+            dio: { min: 10, max: 90, ideal: 40 },
+            dpo: { min: 20, max: 60, ideal: 37 },
+            cashRunway: { min: 6, ideal: 9 }
         },
         other: {
             name: 'General Business',
-            grossMargin: { min: 25, max: 50, ideal: 35 },
+            // Sources: Blended SME/corporate finance guidance [1][3][22][23]
+            grossMargin: { min: 30, max: 60, ideal: 45 },
             netMargin: { min: 5, max: 15, ideal: 10 },
-            currentRatio: { min: 1.2, max: 2.0, ideal: 1.5 },
-            dso: { min: 30, max: 60, ideal: 45 },
-            dio: { min: 30, max: 60, ideal: 45 },
-            dpo: { min: 30, max: 45, ideal: 35 }
+            currentRatio: { min: 1.1, max: 2.5, ideal: 1.75 },
+            quickRatio: { min: 0.7, max: 1.5, ideal: 1.1 },
+            dso: { min: 15, max: 60, ideal: 37 },
+            dio: { min: 10, max: 90, ideal: 45 },
+            dpo: { min: 20, max: 60, ideal: 37 },
+            cashRunway: { min: 6, ideal: 9 }
         }
     };
 
@@ -410,6 +446,7 @@ METRICS:
 function buildPrompt(data, metrics, currency, industryType, language = 'en') {
     const current = data.current;
     const previous = data.previous || {};
+    const benchmarks = getIndustryBenchmarks(industryType);
 
     // Map industry type to readable name (Arabic or English)
     const industryNames = language === 'ar' ? {
@@ -487,23 +524,30 @@ YTD COMPARISON RULES:
     }
 
     prompt += `
-CALCULATED METRICS:
-- Gross Margin: ${metrics.grossMargin}% (typical for this business type: 25-40%)
-- Net Margin: ${metrics.netMargin}% (healthy is 10%+, below 5% is concerning)
+CALCULATED METRICS WITH INDUSTRY BENCHMARKS FOR ${benchmarks.name.toUpperCase()}:
+- Gross Margin: ${metrics.grossMargin}% (industry typical: ${benchmarks.grossMargin.min}-${benchmarks.grossMargin.max}%, ideal: ${benchmarks.grossMargin.ideal}%)
+- Net Margin: ${metrics.netMargin}% (industry typical: ${benchmarks.netMargin.min}-${benchmarks.netMargin.max}%, ideal: ${benchmarks.netMargin.ideal}%)
 - Margin Gap: ${(metrics.grossMargin - metrics.netMargin).toFixed(0)} percentage points between GM and NM
-- Current Ratio: ${metrics.currentRatio} (healthy is 1.5+, below 1 is risky)
-- Cash Runway: ${metrics.cashRunway} months (safe is 3+ months)
-- Days Sales Outstanding (DSO): ${metrics.dso} days (how long customers take to pay)
-- Days Inventory Outstanding (DIO): ${metrics.dio} days (how long stock sits before selling)
-- Days Payable Outstanding (DPO): ${metrics.dpo} days (how long you take to pay suppliers)
+- Current Ratio: ${metrics.currentRatio} (industry typical: ${benchmarks.currentRatio.min}-${benchmarks.currentRatio.max}, ideal: ${benchmarks.currentRatio.ideal})
+- Cash Runway: ${metrics.cashRunway} months (industry minimum: ${benchmarks.cashRunway.min}+ months, ideal: ${benchmarks.cashRunway.ideal}+ months)
+- Days Sales Outstanding (DSO): ${metrics.dso} days (industry typical: ${benchmarks.dso.min}-${benchmarks.dso.max} days, ideal: ${benchmarks.dso.ideal} days)
+${benchmarks.dio.ideal > 0 ? `- Days Inventory Outstanding (DIO): ${metrics.dio} days (industry typical: ${benchmarks.dio.min}-${benchmarks.dio.max} days, ideal: ${benchmarks.dio.ideal} days)` : `- Days Inventory Outstanding (DIO): ${metrics.dio} days (not typically applicable for this industry)`}
+- Days Payable Outstanding (DPO): ${metrics.dpo} days (industry typical: ${benchmarks.dpo.min}-${benchmarks.dpo.max} days, ideal: ${benchmarks.dpo.ideal} days)
 - Cash Conversion Cycle: ${metrics.ccc} days (total days cash is tied up, lower is better)
 
+METRIC EVALUATION:
+- Gross Margin is ${metrics.grossMargin >= benchmarks.grossMargin.min ? (metrics.grossMargin >= benchmarks.grossMargin.ideal ? 'GOOD - at or above industry ideal' : 'OK - within industry range') : 'LOW - below industry minimum, needs attention'}
+- Net Margin is ${metrics.netMargin >= benchmarks.netMargin.min ? (metrics.netMargin >= benchmarks.netMargin.ideal ? 'GOOD - at or above industry ideal' : 'OK - within industry range') : 'LOW - below industry minimum, needs attention'}
+- Current Ratio is ${metrics.currentRatio >= benchmarks.currentRatio.min ? (metrics.currentRatio >= benchmarks.currentRatio.ideal ? 'GOOD - healthy liquidity' : 'OK - adequate') : 'LOW - liquidity risk'}
+- Cash Runway is ${metrics.cashRunway >= benchmarks.cashRunway.ideal ? 'GOOD - comfortable buffer' : (metrics.cashRunway >= benchmarks.cashRunway.min ? 'OK - adequate but watch closely' : 'LOW - needs immediate attention')}
+- DSO is ${metrics.dso <= benchmarks.dso.ideal ? 'GOOD - collecting quickly' : (metrics.dso <= benchmarks.dso.max ? 'OK - within range' : 'HIGH - customers paying too slowly')}
+
 NET MARGIN INSIGHT:
-${metrics.grossMargin >= 20 && metrics.netMargin < 10 && (metrics.grossMargin - metrics.netMargin) >= 15
+${metrics.grossMargin >= benchmarks.grossMargin.min && metrics.netMargin < benchmarks.netMargin.min && (metrics.grossMargin - metrics.netMargin) >= 15
     ? `IMPORTANT: Gross margin is healthy (${metrics.grossMargin}%) but net margin is low (${metrics.netMargin}%). This ${(metrics.grossMargin - metrics.netMargin).toFixed(0)} point gap indicates high overheads, finance costs, or owner drawings. Mention this in your narrative with specific reference to what is likely eating the profit.`
-    : metrics.netMargin < 5
-        ? `Net margin is low at ${metrics.netMargin}%. This needs attention - mention in narrative.`
-        : `Net margin is reasonable at ${metrics.netMargin}%.`}
+    : metrics.netMargin < benchmarks.netMargin.min
+        ? `Net margin is below industry minimum (${metrics.netMargin}% vs ${benchmarks.netMargin.min}% minimum). This needs attention - mention in narrative.`
+        : `Net margin is ${metrics.netMargin >= benchmarks.netMargin.ideal ? 'healthy' : 'acceptable'} for this industry at ${metrics.netMargin}%.`}
 ${metrics.hasLoan ? `
 LOAN SITUATION:
 - Short-term Loan Balance: ${currency} ${metrics.loanBalance.toLocaleString()}
