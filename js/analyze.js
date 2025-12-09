@@ -444,7 +444,8 @@ function collectFormData() {
             otherLiabilities: parseFloat(document.getElementById('otherLiabilities')?.value) || 0,
             vatCollected: parseFloat(document.getElementById('vatCollected')?.value) || 0,
             vatPaid: parseFloat(document.getElementById('vatPaid')?.value) || 0,
-            // Cash Movements (optional - for Cash Bridge analysis)
+            // Cash Movements (for Cash Bridge and Runway analysis)
+            openingCash: parseFloat(document.getElementById('openingCash')?.value) || 0,
             loanRepayments: parseFloat(document.getElementById('loanRepayments')?.value) || 0,
             ownerDrawings: parseFloat(document.getElementById('ownerDrawings')?.value) || 0,
             assetPurchases: parseFloat(document.getElementById('assetPurchases')?.value) || 0,

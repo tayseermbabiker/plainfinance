@@ -260,27 +260,40 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
 
     const ccc = dso + dio - dpo;
 
-    // Cash Runway
-    // Best practice: Cash / Average Monthly Net Burn
-    // Net Burn = Cash outflows - Cash inflows ≈ (COGS + OPEX) - Net Profit + Loan Repayments
-    // Use YTD average when available (more stable), fall back to single month
-    // Sources: Wall Street Prep, CFI, Perplexity research [1][2][5][6][7]
-    const loanRepayments = current.loanRepayments || 0;
-    let cashRunway, runwaySource;
+    // Cash Runway - using cash-balance-based burn (preferred method)
+    // Formula: Cash Runway = Current Cash / Average Monthly Net Burn
+    // Net Burn = (Opening Cash - Closing Cash) / Months
+    // This automatically includes all cash flows: OPEX, COGS, AP payments, loan principals, etc.
+    // Sources: Wall Street Prep, CFI, Perplexity research [1][2][3][5][6][7]
+    const openingCash = current.openingCash || 0;
+    let cashRunway, avgMonthlyBurn, runwaySource;
 
-    if (ytd && ytd.revenue > 0 && ytd.monthsElapsed > 1) {
-        // YTD average burn (preferred - smooths monthly fluctuations)
-        const ytdTotalBurn = (ytd.cogs || 0) + (ytd.opex || 0) - (ytd.netProfit || 0);
-        const avgMonthlyBurn = ytdTotalBurn / ytd.monthsElapsed;
-        // Add current month's loan repayments (not in YTD P&L)
-        const adjustedBurn = avgMonthlyBurn + loanRepayments;
-        cashRunway = adjustedBurn > 0 ? cash / adjustedBurn : 0;
-        runwaySource = 'ytd';
+    if (ytd && ytd.monthsElapsed > 0 && openingCash > 0) {
+        // Cash-balance-based burn (preferred - captures ALL cash movements)
+        // Net Burn = (Cash at Start of Year - Cash Now) / Months Elapsed
+        avgMonthlyBurn = (openingCash - cash) / ytd.monthsElapsed;
+
+        if (avgMonthlyBurn > 0) {
+            // Business is burning cash
+            cashRunway = cash / avgMonthlyBurn;
+            runwaySource = 'ytd_cash';
+        } else {
+            // Business is cash-positive (generating cash)
+            cashRunway = -1; // Flag for "no burn / cash increasing"
+            runwaySource = 'cash_positive';
+        }
     } else {
-        // Single month burn (fallback - less accurate)
+        // Fallback: No opening cash provided, use P&L approximation
+        const loanRepayments = current.loanRepayments || 0;
         const monthlyBurn = cogs + opex - netProfit + loanRepayments;
-        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : 0;
-        runwaySource = 'monthly';
+
+        if (monthlyBurn > 0) {
+            cashRunway = cash / monthlyBurn;
+            runwaySource = 'monthly_pl';
+        } else {
+            cashRunway = -1; // Cash positive
+            runwaySource = 'cash_positive';
+        }
     }
 
     // VAT
@@ -322,8 +335,11 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
         ccc: Math.round(ccc),
         // Track data source for DSO/DIO/DPO (ytd = more accurate, monthly = approximate)
         workingCapitalSource: dsoSource,
-        cashRunway: Math.round(cashRunway * 10) / 10,
+        // Cash Runway metrics
+        cashRunway: cashRunway === -1 ? -1 : Math.round(cashRunway * 10) / 10,
+        avgMonthlyBurn: avgMonthlyBurn ? Math.round(avgMonthlyBurn) : 0,
         runwaySource: runwaySource,
+        openingCash: Math.round(openingCash),
         vatCollected: Math.round(vatCollected),
         vatPaid: Math.round(vatPaid),
         vatPayable: Math.round(vatPayable),
@@ -556,7 +572,21 @@ YTD COMPARISON RULES:
     }
 
     const wcSource = metrics.workingCapitalSource === 'ytd' ? 'YTD data (more accurate)' : 'this month only (approximate)';
-    const runwaySource = metrics.runwaySource === 'ytd' ? 'YTD average burn (more stable)' : 'this month burn only (approximate)';
+
+    // Runway source description
+    let runwaySourceDesc;
+    if (metrics.runwaySource === 'ytd_cash') {
+        runwaySourceDesc = 'YTD actual cash movement (most accurate)';
+    } else if (metrics.runwaySource === 'cash_positive') {
+        runwaySourceDesc = 'N/A - business is cash-positive (generating cash)';
+    } else {
+        runwaySourceDesc = 'P&L approximation (less accurate)';
+    }
+
+    // Format runway display
+    const runwayDisplay = metrics.cashRunway === -1
+        ? 'N/A (cash-positive)'
+        : `${metrics.cashRunway} months`;
 
     prompt += `
 CALCULATED METRICS WITH INDUSTRY BENCHMARKS FOR ${benchmarks.name.toUpperCase()}:
@@ -564,7 +594,8 @@ CALCULATED METRICS WITH INDUSTRY BENCHMARKS FOR ${benchmarks.name.toUpperCase()}
 - Net Margin: ${metrics.netMargin}% (industry typical: ${benchmarks.netMargin.min}-${benchmarks.netMargin.max}%, ideal: ${benchmarks.netMargin.ideal}%)
 - Margin Gap: ${(metrics.grossMargin - metrics.netMargin).toFixed(0)} percentage points between GM and NM
 - Current Ratio: ${metrics.currentRatio} (industry typical: ${benchmarks.currentRatio.min}-${benchmarks.currentRatio.max}, ideal: ${benchmarks.currentRatio.ideal})
-- Cash Runway: ${metrics.cashRunway} months based on ${runwaySource} (industry minimum: ${benchmarks.cashRunway.min}+ months, ideal: ${benchmarks.cashRunway.ideal}+ months)
+- Cash Runway: ${runwayDisplay} based on ${runwaySourceDesc} (industry minimum: ${benchmarks.cashRunway.min}+ months, ideal: ${benchmarks.cashRunway.ideal}+ months)
+${metrics.avgMonthlyBurn > 0 ? `- Average Monthly Cash Burn: ${currency} ${metrics.avgMonthlyBurn.toLocaleString()} per month` : ''}
 
 WORKING CAPITAL CYCLE (calculated using ${wcSource}):
 - Days Sales Outstanding (DSO): ${metrics.dso} days (industry typical: ${benchmarks.dso.min}-${benchmarks.dso.max} days, ideal: ${benchmarks.dso.ideal} days)
@@ -576,7 +607,7 @@ METRIC EVALUATION:
 - Gross Margin is ${metrics.grossMargin >= benchmarks.grossMargin.min ? (metrics.grossMargin >= benchmarks.grossMargin.ideal ? 'GOOD - at or above industry ideal' : 'OK - within industry range') : 'LOW - below industry minimum, needs attention'}
 - Net Margin is ${metrics.netMargin >= benchmarks.netMargin.min ? (metrics.netMargin >= benchmarks.netMargin.ideal ? 'GOOD - at or above industry ideal' : 'OK - within industry range') : 'LOW - below industry minimum, needs attention'}
 - Current Ratio is ${metrics.currentRatio >= benchmarks.currentRatio.min ? (metrics.currentRatio >= benchmarks.currentRatio.ideal ? 'GOOD - healthy liquidity' : 'OK - adequate') : 'LOW - liquidity risk'}
-- Cash Runway is ${metrics.cashRunway >= benchmarks.cashRunway.ideal ? 'GOOD - comfortable buffer' : (metrics.cashRunway >= benchmarks.cashRunway.min ? 'OK - adequate but watch closely' : 'LOW - needs immediate attention')}
+- Cash Runway is ${metrics.cashRunway === -1 ? 'EXCELLENT - cash-positive, no burn' : (metrics.cashRunway >= benchmarks.cashRunway.ideal ? 'GOOD - comfortable buffer' : (metrics.cashRunway >= benchmarks.cashRunway.min ? 'OK - adequate but watch closely' : 'LOW - needs immediate attention'))}
 - DSO is ${metrics.dso <= benchmarks.dso.ideal ? 'GOOD - collecting quickly' : (metrics.dso <= benchmarks.dso.max ? 'OK - within range' : 'HIGH - customers paying too slowly')}
 
 NET MARGIN INSIGHT:
