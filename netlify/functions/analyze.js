@@ -81,21 +81,6 @@ exports.handler = async (event, context) => {
     }
 };
 
-// ===== CONFIGURABLE: Fixed cost share of COGS for cash runway =====
-// Represents how much of COGS must be paid even with zero sales
-// Sources: Perplexity research Dec 2024 - industry cost structure studies
-// Refs: [4][5][6] SaaS, [10][11][12] Food, [13][14] Manufacturing, [9][8][7] Services
-const RUNWAY_COGS_SHARE = {
-    product: 0.15,     // Product/Retail: 10-25% fixed (warehouse labor, logistics contracts)
-    online: 0.55,      // SaaS/Software: 40-70% fixed (hosting, support teams, platform costs)
-    services: 0.70,    // Services/Consulting: 60-80% fixed (staff salaries/benefits)
-    food: 0.30,        // Food & Hospitality: 20-40% fixed (kitchen/service labor minimums)
-    construction: 0.50,// Construction: 40-60% fixed (site overhead, some subcontractor costs)
-    manufacturing: 0.55,// Manufacturing: 40-70% fixed (depreciation, plant labor)
-    healthcare: 0.55,  // Healthcare: 40-70% fixed (clinical staff, facilities)
-    other: 0.45        // General SME: 30-60% fixed (blended payroll + variable)
-};
-
 // ===== INDUSTRY BENCHMARKS =====
 // Sources: Perplexity research Dec 2024, compiled from:
 // - Deloitte Global Powers of Retailing 2023 [1][2][3]
@@ -275,12 +260,28 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
 
     const ccc = dso + dio - dpo;
 
-    // Cash runway (industry-aware)
-    // Formula: Cash / Fixed Monthly Costs
-    // Fixed costs = OPEX + (COGS × industry-specific fixed share)
-    const cogsShare = RUNWAY_COGS_SHARE[industryType] || RUNWAY_COGS_SHARE.other;
-    const fixedMonthlyCosts = opex + (cogs * cogsShare);
-    const cashRunway = fixedMonthlyCosts > 0 ? cash / fixedMonthlyCosts : 0;
+    // Cash Runway
+    // Best practice: Cash / Average Monthly Net Burn
+    // Net Burn = Cash outflows - Cash inflows ≈ (COGS + OPEX) - Net Profit + Loan Repayments
+    // Use YTD average when available (more stable), fall back to single month
+    // Sources: Wall Street Prep, CFI, Perplexity research [1][2][5][6][7]
+    const loanRepayments = current.loanRepayments || 0;
+    let cashRunway, runwaySource;
+
+    if (ytd && ytd.revenue > 0 && ytd.monthsElapsed > 1) {
+        // YTD average burn (preferred - smooths monthly fluctuations)
+        const ytdTotalBurn = (ytd.cogs || 0) + (ytd.opex || 0) - (ytd.netProfit || 0);
+        const avgMonthlyBurn = ytdTotalBurn / ytd.monthsElapsed;
+        // Add current month's loan repayments (not in YTD P&L)
+        const adjustedBurn = avgMonthlyBurn + loanRepayments;
+        cashRunway = adjustedBurn > 0 ? cash / adjustedBurn : 0;
+        runwaySource = 'ytd';
+    } else {
+        // Single month burn (fallback - less accurate)
+        const monthlyBurn = cogs + opex - netProfit + loanRepayments;
+        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : 0;
+        runwaySource = 'monthly';
+    }
 
     // VAT
     const vatPayable = vatCollected - vatPaid;
@@ -322,6 +323,7 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
         // Track data source for DSO/DIO/DPO (ytd = more accurate, monthly = approximate)
         workingCapitalSource: dsoSource,
         cashRunway: Math.round(cashRunway * 10) / 10,
+        runwaySource: runwaySource,
         vatCollected: Math.round(vatCollected),
         vatPaid: Math.round(vatPaid),
         vatPayable: Math.round(vatPayable),
@@ -554,6 +556,7 @@ YTD COMPARISON RULES:
     }
 
     const wcSource = metrics.workingCapitalSource === 'ytd' ? 'YTD data (more accurate)' : 'this month only (approximate)';
+    const runwaySource = metrics.runwaySource === 'ytd' ? 'YTD average burn (more stable)' : 'this month burn only (approximate)';
 
     prompt += `
 CALCULATED METRICS WITH INDUSTRY BENCHMARKS FOR ${benchmarks.name.toUpperCase()}:
@@ -561,7 +564,7 @@ CALCULATED METRICS WITH INDUSTRY BENCHMARKS FOR ${benchmarks.name.toUpperCase()}
 - Net Margin: ${metrics.netMargin}% (industry typical: ${benchmarks.netMargin.min}-${benchmarks.netMargin.max}%, ideal: ${benchmarks.netMargin.ideal}%)
 - Margin Gap: ${(metrics.grossMargin - metrics.netMargin).toFixed(0)} percentage points between GM and NM
 - Current Ratio: ${metrics.currentRatio} (industry typical: ${benchmarks.currentRatio.min}-${benchmarks.currentRatio.max}, ideal: ${benchmarks.currentRatio.ideal})
-- Cash Runway: ${metrics.cashRunway} months (industry minimum: ${benchmarks.cashRunway.min}+ months, ideal: ${benchmarks.cashRunway.ideal}+ months)
+- Cash Runway: ${metrics.cashRunway} months based on ${runwaySource} (industry minimum: ${benchmarks.cashRunway.min}+ months, ideal: ${benchmarks.cashRunway.ideal}+ months)
 
 WORKING CAPITAL CYCLE (calculated using ${wcSource}):
 - Days Sales Outstanding (DSO): ${metrics.dso} days (industry typical: ${benchmarks.dso.min}-${benchmarks.dso.max} days, ideal: ${benchmarks.dso.ideal} days)
