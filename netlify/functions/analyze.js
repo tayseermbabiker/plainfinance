@@ -40,7 +40,7 @@ exports.handler = async (event, context) => {
 
         // Calculate all metrics (industry needed for runway calculation)
         const industryType = data.company.industry || 'other';
-        const metrics = calculateMetrics(data.current, data.previous || {}, industryType);
+        const metrics = calculateMetrics(data.current, data.previous || {}, industryType, data.ytd || null);
 
         // Generate plain English analysis using OpenAI
         const analysis = await generateAnalysis(data, metrics);
@@ -211,9 +211,7 @@ function getIndustryBenchmarks(industry) {
     return benchmarks[industry] || benchmarks.other;
 }
 
-function calculateMetrics(current, previous, industryType = 'other') {
-    const days = 30;
-
+function calculateMetrics(current, previous, industryType = 'other', ytd = null) {
     const revenue = current.revenue || 0;
     const cogs = current.cogs || 0;
     const opex = current.opex || 0;
@@ -241,10 +239,40 @@ function calculateMetrics(current, previous, industryType = 'other') {
     const currentRatio = totalCurrentLiabilities > 0 ? totalCurrentAssets / totalCurrentLiabilities : 0;
     const quickRatio = totalCurrentLiabilities > 0 ? (cash + receivables) / totalCurrentLiabilities : 0;
 
-    // Working capital cycle
-    const dso = revenue > 0 ? (receivables / revenue) * days : 0;
-    const dio = cogs > 0 ? (inventory / cogs) * days : 0;
-    const dpo = cogs > 0 ? (payables / cogs) * days : 0;
+    // Working capital cycle (DSO/DIO/DPO)
+    // Best practice: Use YTD data when available for more accurate calculation
+    // Formula: (Balance Sheet Item / Period Revenue or COGS) × Days in Period
+    // Sources: Wall Street Prep, Corporate Finance Institute [11][12][13]
+    let dso, dio, dpo, dsoSource, dioSource, dpoSource;
+
+    if (ytd && ytd.revenue > 0 && ytd.monthsElapsed > 1) {
+        // Use YTD data - more accurate, smooths monthly fluctuations
+        const ytdDays = ytd.monthsElapsed * 30; // Approximate days elapsed
+        dso = (receivables / ytd.revenue) * ytdDays;
+        dsoSource = 'ytd';
+
+        if (ytd.cogs > 0) {
+            dio = (inventory / ytd.cogs) * ytdDays;
+            dpo = (payables / ytd.cogs) * ytdDays;
+            dioSource = 'ytd';
+            dpoSource = 'ytd';
+        } else {
+            dio = cogs > 0 ? (inventory / cogs) * 30 : 0;
+            dpo = cogs > 0 ? (payables / cogs) * 30 : 0;
+            dioSource = 'monthly';
+            dpoSource = 'monthly';
+        }
+    } else {
+        // Use monthly data - less accurate but only option
+        const days = 30;
+        dso = revenue > 0 ? (receivables / revenue) * days : 0;
+        dio = cogs > 0 ? (inventory / cogs) * days : 0;
+        dpo = cogs > 0 ? (payables / cogs) * days : 0;
+        dsoSource = 'monthly';
+        dioSource = 'monthly';
+        dpoSource = 'monthly';
+    }
+
     const ccc = dso + dio - dpo;
 
     // Cash runway (industry-aware)
@@ -291,6 +319,8 @@ function calculateMetrics(current, previous, industryType = 'other') {
         dio: Math.round(dio),
         dpo: Math.round(dpo),
         ccc: Math.round(ccc),
+        // Track data source for DSO/DIO/DPO (ytd = more accurate, monthly = approximate)
+        workingCapitalSource: dsoSource,
         cashRunway: Math.round(cashRunway * 10) / 10,
         vatCollected: Math.round(vatCollected),
         vatPaid: Math.round(vatPaid),
@@ -523,6 +553,8 @@ YTD COMPARISON RULES:
 `;
     }
 
+    const wcSource = metrics.workingCapitalSource === 'ytd' ? 'YTD data (more accurate)' : 'this month only (approximate)';
+
     prompt += `
 CALCULATED METRICS WITH INDUSTRY BENCHMARKS FOR ${benchmarks.name.toUpperCase()}:
 - Gross Margin: ${metrics.grossMargin}% (industry typical: ${benchmarks.grossMargin.min}-${benchmarks.grossMargin.max}%, ideal: ${benchmarks.grossMargin.ideal}%)
@@ -530,6 +562,8 @@ CALCULATED METRICS WITH INDUSTRY BENCHMARKS FOR ${benchmarks.name.toUpperCase()}
 - Margin Gap: ${(metrics.grossMargin - metrics.netMargin).toFixed(0)} percentage points between GM and NM
 - Current Ratio: ${metrics.currentRatio} (industry typical: ${benchmarks.currentRatio.min}-${benchmarks.currentRatio.max}, ideal: ${benchmarks.currentRatio.ideal})
 - Cash Runway: ${metrics.cashRunway} months (industry minimum: ${benchmarks.cashRunway.min}+ months, ideal: ${benchmarks.cashRunway.ideal}+ months)
+
+WORKING CAPITAL CYCLE (calculated using ${wcSource}):
 - Days Sales Outstanding (DSO): ${metrics.dso} days (industry typical: ${benchmarks.dso.min}-${benchmarks.dso.max} days, ideal: ${benchmarks.dso.ideal} days)
 ${benchmarks.dio.ideal > 0 ? `- Days Inventory Outstanding (DIO): ${metrics.dio} days (industry typical: ${benchmarks.dio.min}-${benchmarks.dio.max} days, ideal: ${benchmarks.dio.ideal} days)` : `- Days Inventory Outstanding (DIO): ${metrics.dio} days (not typically applicable for this industry)`}
 - Days Payable Outstanding (DPO): ${metrics.dpo} days (industry typical: ${benchmarks.dpo.min}-${benchmarks.dpo.max} days, ideal: ${benchmarks.dpo.ideal} days)
