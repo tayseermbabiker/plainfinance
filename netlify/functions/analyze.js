@@ -490,12 +490,20 @@ YTD COMPARISON RULES:
 CALCULATED METRICS:
 - Gross Margin: ${metrics.grossMargin}% (typical for this business type: 25-40%)
 - Net Margin: ${metrics.netMargin}% (healthy is 10%+, below 5% is concerning)
+- Margin Gap: ${(metrics.grossMargin - metrics.netMargin).toFixed(0)} percentage points between GM and NM
 - Current Ratio: ${metrics.currentRatio} (healthy is 1.5+, below 1 is risky)
 - Cash Runway: ${metrics.cashRunway} months (safe is 3+ months)
 - Days Sales Outstanding (DSO): ${metrics.dso} days (how long customers take to pay)
 - Days Inventory Outstanding (DIO): ${metrics.dio} days (how long stock sits before selling)
 - Days Payable Outstanding (DPO): ${metrics.dpo} days (how long you take to pay suppliers)
 - Cash Conversion Cycle: ${metrics.ccc} days (total days cash is tied up, lower is better)
+
+NET MARGIN INSIGHT:
+${metrics.grossMargin >= 20 && metrics.netMargin < 10 && (metrics.grossMargin - metrics.netMargin) >= 15
+    ? `IMPORTANT: Gross margin is healthy (${metrics.grossMargin}%) but net margin is low (${metrics.netMargin}%). This ${(metrics.grossMargin - metrics.netMargin).toFixed(0)} point gap indicates high overheads, finance costs, or owner drawings. Mention this in your narrative with specific reference to what is likely eating the profit.`
+    : metrics.netMargin < 5
+        ? `Net margin is low at ${metrics.netMargin}%. This needs attention - mention in narrative.`
+        : `Net margin is reasonable at ${metrics.netMargin}%.`}
 ${metrics.hasLoan ? `
 LOAN SITUATION:
 - Short-term Loan Balance: ${currency} ${metrics.loanBalance.toLocaleString()}

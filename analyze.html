@@ -204,7 +204,7 @@
                         </div>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="ytdRevenue" name="ytdRevenue" placeholder="0" min="0">
+                            <input type="number" id="ytdRevenue" name="ytdRevenue" placeholder="0" min="0" required>
                         </div>
                     </div>
 
@@ -216,11 +216,11 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="cogs" name="cogs" placeholder="0" min="0">
+                            <input type="number" id="cogs" name="cogs" placeholder="0" min="0" required>
                         </div>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="ytdCogs" name="ytdCogs" placeholder="0" min="0">
+                            <input type="number" id="ytdCogs" name="ytdCogs" placeholder="0" min="0" required>
                         </div>
                     </div>
 
@@ -243,7 +243,7 @@
                         </div>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="ytdOpex" name="ytdOpex" placeholder="0" min="0">
+                            <input type="number" id="ytdOpex" name="ytdOpex" placeholder="0" min="0" required>
                         </div>
                     </div>
 
@@ -255,11 +255,11 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="netProfit" name="netProfit" placeholder="0">
+                            <input type="number" id="netProfit" name="netProfit" placeholder="0" required>
                         </div>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="ytdNetProfit" name="ytdNetProfit" placeholder="0">
+                            <input type="number" id="ytdNetProfit" name="ytdNetProfit" placeholder="0" required>
                         </div>
                     </div>
 
@@ -477,9 +477,9 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="inventory" name="inventory" placeholder="0" min="0">
+                            <input type="number" id="inventory" name="inventory" placeholder="0" min="0" required>
                         </div>
-                        <small class="field-hint">Leave as 0 if you're a service business</small>
+                        <small class="field-hint">Enter 0 if you're a service business</small>
                     </div>
 
                     <div class="calculated-field">
@@ -531,7 +531,7 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="shortTermLoans" name="shortTermLoans" placeholder="0" min="0">
+                            <input type="number" id="shortTermLoans" name="shortTermLoans" placeholder="0" min="0" required>
                         </div>
                     </div>
 
@@ -542,13 +542,13 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="otherLiabilities" name="otherLiabilities" placeholder="0" min="0">
+                            <input type="number" id="otherLiabilities" name="otherLiabilities" placeholder="0" min="0" required>
                         </div>
                     </div>
 
                     <div class="vat-section">
-                        <h3>VAT Summary (Optional)</h3>
-                        <p class="section-hint">UAE VAT is 5%. Add these if you want VAT analysis in your report.</p>
+                        <h3>VAT Summary</h3>
+                        <p class="section-hint">UAE VAT is 5%. Enter 0 if not applicable.</p>
 
                         <div class="form-row">
                             <div class="form-group">
@@ -558,7 +558,7 @@
                                 </label>
                                 <div class="input-with-currency">
                                     <span class="currency-prefix">AED</span>
-                                    <input type="number" id="vatCollected" name="vatCollected" placeholder="0" min="0">
+                                    <input type="number" id="vatCollected" name="vatCollected" placeholder="0" min="0" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -568,7 +568,7 @@
                                 </label>
                                 <div class="input-with-currency">
                                     <span class="currency-prefix">AED</span>
-                                    <input type="number" id="vatPaid" name="vatPaid" placeholder="0" min="0">
+                                    <input type="number" id="vatPaid" name="vatPaid" placeholder="0" min="0" required>
                                 </div>
                             </div>
                         </div>
@@ -604,7 +604,7 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="loanRepayments" name="loanRepayments" placeholder="0" min="0">
+                            <input type="number" id="loanRepayments" name="loanRepayments" placeholder="0" min="0" required>
                         </div>
                     </div>
 
@@ -615,7 +615,7 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="ownerDrawings" name="ownerDrawings" placeholder="0" min="0">
+                            <input type="number" id="ownerDrawings" name="ownerDrawings" placeholder="0" min="0" required>
                         </div>
                     </div>
 
@@ -626,7 +626,7 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="assetPurchases" name="assetPurchases" placeholder="0" min="0">
+                            <input type="number" id="assetPurchases" name="assetPurchases" placeholder="0" min="0" required>
                         </div>
                     </div>
 
@@ -637,7 +637,7 @@
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="plannedSupplierPayments" name="plannedSupplierPayments" placeholder="0" min="0">
+                            <input type="number" id="plannedSupplierPayments" name="plannedSupplierPayments" placeholder="0" min="0" required>
                         </div>
                     </div>
 

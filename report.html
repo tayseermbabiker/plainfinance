@@ -127,9 +127,9 @@
                 </div>
             </section>
 
-            <!-- Section 2: 4 Key Numbers -->
+            <!-- Section 2: 5 Key Numbers -->
             <section class="report-section">
-                <h2>Your 4 key numbers</h2>
+                <h2>Your 5 key numbers</h2>
                 <p class="section-subtitle">These tell you if your business is healthy</p>
 
                 <div class="key-metrics">
@@ -178,6 +178,29 @@
                         <div class="metric-why">How long your cash covers fixed costs if sales stop</div>
                     </div>
 
+                    <!-- Metric 5: Net Profit Margin -->
+                    <div class="key-metric" id="netMarginMetric">
+                        <div class="metric-header">
+                            <span class="metric-status good"></span>
+                            <span class="metric-title">Net Profit Margin</span>
+                        </div>
+                        <div class="metric-value"><span id="netMarginValue">11%</span></div>
+                        <div class="metric-change neutral" id="netMarginChange">Industry average: 5-15%</div>
+                        <div class="metric-why">What you keep after all costs, including interest</div>
+                    </div>
+
+                </div>
+
+                <!-- GM vs NM Gap Alert (shown when significant gap exists) -->
+                <div class="margin-gap-alert" id="marginGapAlert" style="display: none;">
+                    <div class="alert-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <p id="marginGapText">Your gross margin is healthy but net margin is low. This usually means overheads, finance costs, or owner drawings are eating into your profit.</p>
                 </div>
             </section>
 

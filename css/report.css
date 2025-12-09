@@ -408,8 +408,32 @@
 
 .key-metrics {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
+}
+
+/* Margin Gap Alert */
+.margin-gap-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 10px;
+}
+
+.margin-gap-alert .alert-icon {
+    flex-shrink: 0;
+    color: #b45309;
+}
+
+.margin-gap-alert p {
+    font-size: 14px;
+    color: #92400e;
+    line-height: 1.5;
+    margin: 0;
 }
 
 .key-metric {
@@ -1204,7 +1228,7 @@
 
 @media (max-width: 960px) {
     .key-metrics {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -1216,6 +1240,11 @@
 
     .key-metrics {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* 5th metric spans full width on mobile */
+    .key-metrics .key-metric:nth-child(5) {
+        grid-column: 1 / -1;
     }
 
     .metric-title {

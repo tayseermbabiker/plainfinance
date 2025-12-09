@@ -570,11 +570,59 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
     document.getElementById('runwayValue').textContent = `${metrics.cashRunway.toFixed(1)} months`;
     updateMetricStatus('runwayMetric', cashStatus);
 
-    // Receivables
-    document.getElementById('arValue').textContent = `${currency} ${formatNumber(current.receivables)}`;
-    document.getElementById('arChange').textContent = `They pay in ~${Math.round(metrics.dso)} days`;
-    const arStatus = metrics.dso <= 30 ? 'good' : metrics.dso <= 45 ? 'warning' : 'danger';
-    updateMetricStatus('arMetric', arStatus);
+    // Net Profit Margin (5th KPI)
+    const netMarginEl = document.getElementById('netMarginValue');
+    const netMarginChangeEl = document.getElementById('netMarginChange');
+    if (netMarginEl) {
+        if (ytdMetrics) {
+            netMarginEl.textContent = `${metrics.netMargin.toFixed(0)}% / ${ytdMetrics.netMargin.toFixed(0)}%`;
+            netMarginChangeEl.textContent = `This month / YTD`;
+        } else {
+            netMarginEl.textContent = `${metrics.netMargin.toFixed(0)}%`;
+            // Show industry benchmark range
+            netMarginChangeEl.textContent = `Industry: 5-15% typical`;
+        }
+
+        // Status logic: Green if healthy for industry, Amber if low but positive, Red if near zero/negative
+        let netMarginStatus = 'good';
+        if (metrics.netMargin < 3) {
+            netMarginStatus = 'danger';
+        } else if (metrics.netMargin < 8) {
+            netMarginStatus = 'warning';
+        }
+        updateMetricStatus('netMarginMetric', netMarginStatus);
+
+        // Check for GM vs NM gap - if gross margin is healthy but net margin is much lower
+        updateMarginGapAlert(metrics);
+    }
+}
+
+function updateMarginGapAlert(metrics) {
+    const alertEl = document.getElementById('marginGapAlert');
+    const alertTextEl = document.getElementById('marginGapText');
+    if (!alertEl || !alertTextEl) return;
+
+    // Show alert if:
+    // 1. Gross margin is healthy (>=20%)
+    // 2. Net margin is significantly lower (GM - NM gap >= 15 percentage points)
+    // 3. Net margin is below 10%
+    const marginGap = metrics.grossMargin - metrics.netMargin;
+    const gmHealthy = metrics.grossMargin >= 20;
+    const nmLow = metrics.netMargin < 10;
+    const significantGap = marginGap >= 15;
+
+    if (gmHealthy && nmLow && significantGap) {
+        alertEl.style.display = 'flex';
+
+        // Customize message based on situation
+        if (metrics.netMargin < 3) {
+            alertTextEl.textContent = `Your gross margin is ${metrics.grossMargin}% which is healthy, but your net margin is only ${metrics.netMargin}%. This ${marginGap.toFixed(0)} percentage point gap means overheads, finance costs, or owner drawings are consuming most of your profit.`;
+        } else {
+            alertTextEl.textContent = `Your gross margin is healthy at ${metrics.grossMargin}%, but net margin is ${metrics.netMargin}%. The ${marginGap.toFixed(0)} point gap suggests high operating costs or finance charges are eating into your profit. Review your overheads and loan interest.`;
+        }
+    } else {
+        alertEl.style.display = 'none';
+    }
 }
 
 function updateMetricStatus(metricId, status) {
