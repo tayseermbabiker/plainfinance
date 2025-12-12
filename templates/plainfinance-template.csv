@@ -4,10 +4,15 @@ Cost of Goods Sold (COGS),325000,1600000,Direct costs of products/services sold
 Operating Expenses (OPEX),120000,650000,Salaries + rent + utilities + marketing etc
 Net Profit,55000,250000,Bottom line after all expenses
 Cash in Bank,45000,,Current bank balance (end of month)
+Opening Cash (Start of Year),150000,,Cash balance on January 1st
 Accounts Receivable (AR),187000,,Money customers owe you
 Inventory,210000,,Value of stock on hand (0 if services)
 Accounts Payable (AP),98000,,Money you owe suppliers
 Short-term Loans,50000,,Loans due within 12 months
 Other Liabilities,0,,Credit cards + accrued expenses etc
+Loan Repayments,5000,,Principal paid this month (not interest)
+Owner Drawings,10000,,Money taken out for personal use
+Asset Purchases,0,,Equipment or assets bought this month
+Planned Supplier Payments,25000,,Upcoming payments in next 30 days
 VAT Collected,25000,,Output VAT charged to customers
 VAT Paid,16250,,Input VAT paid on purchases

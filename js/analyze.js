@@ -367,7 +367,9 @@ function parseCSVTemplate(file) {
                     'owner drawings': 'ownerDrawings',
                     'drawings': 'ownerDrawings',
                     'asset purchases': 'assetPurchases',
-                    'equipment purchases': 'assetPurchases'
+                    'equipment purchases': 'assetPurchases',
+                    'planned supplier payments': 'plannedSupplierPayments',
+                    'upcoming supplier payments': 'plannedSupplierPayments'
                 };
 
                 // YTD field mapping
