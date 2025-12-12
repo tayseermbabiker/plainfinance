@@ -253,12 +253,12 @@ if (uploadZone) {
 
 function handleFiles(files) {
     Array.from(files).forEach(file => {
-        // Check file type
-        const validTypes = ['.xlsx', '.xls', '.csv', '.pdf'];
+        // Check file type - only CSV supported for now
+        const validTypes = ['.csv'];
         const extension = '.' + file.name.split('.').pop().toLowerCase();
 
         if (!validTypes.includes(extension)) {
-            alert(`Invalid file type: ${file.name}. Please upload Excel, CSV, or PDF files.`);
+            alert(`Invalid file type: ${file.name}. Please upload a CSV file using our template.`);
             return;
         }
 

@@ -291,8 +291,8 @@
                 <!-- Step 2: File Upload -->
                 <div class="form-step" data-step="2" data-method="upload">
                     <div class="step-header">
-                        <h1>Upload your financial reports</h1>
-                        <p>We'll extract the numbers automatically</p>
+                        <h1>Upload your financial data</h1>
+                        <p>Use our CSV template to import your numbers</p>
                     </div>
 
                     <!-- Template Download Section -->
@@ -332,11 +332,9 @@
                         </div>
                         <h3>Drag & drop your files here</h3>
                         <p>or click to browse</p>
-                        <input type="file" id="fileUpload" name="files" multiple accept=".xlsx,.xls,.csv,.pdf" hidden>
+                        <input type="file" id="fileUpload" name="files" accept=".csv" hidden>
                         <div class="accepted-formats">
-                            <span>Excel (.xlsx, .xls)</span>
                             <span>CSV (.csv)</span>
-                            <span>PDF (.pdf)</span>
                         </div>
                     </div>
 
@@ -413,15 +411,6 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="upload-tips">
-                        <h4>Or upload your accountant's reports:</h4>
-                        <ul>
-                            <li><strong>Profit & Loss Statement</strong> (Income Statement)</li>
-                            <li><strong>Balance Sheet</strong> for working capital analysis</li>
-                        </ul>
-                        <p class="tip-note">We'll extract the numbers automatically from standard accounting reports</p>
                     </div>
 
                     <div class="form-actions">
