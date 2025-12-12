@@ -171,11 +171,11 @@
                         <div class="metric-header">
                             <span class="metric-status danger"></span>
                             <span class="metric-title">Cash Runway</span>
-                            <span class="tooltip" title="Cash divided by fixed monthly costs (salaries, rent, bills that continue even if sales slow down). Based on your industry type.">?</span>
+                            <span class="tooltip" title="How many months until you run out of cash? Based on your actual cash movement over the year — captures all cash flows, not just P&L items.">?</span>
                         </div>
                         <div class="metric-value"><span id="runwayValue">1.0 months</span></div>
-                        <div class="metric-change negative">Needs 3+ months to be safe</div>
-                        <div class="metric-why">How long your cash covers fixed costs if sales stop</div>
+                        <div class="metric-change negative" id="runwayChange">Based on YTD average burn</div>
+                        <div class="metric-why">Your survival metric: months until cash runs out</div>
                     </div>
 
                     <!-- Metric 5: Net Profit Margin -->
@@ -223,7 +223,7 @@
                 </div>
 
                 <div class="why-matters">
-                    <strong>Note:</strong> Benchmarks are typical ranges for your industry. Your specific situation may differ based on business model, stage, and strategy.
+                    <strong>Note:</strong> These are typical SME target ranges based on recent industry studies — not strict standards. Your specific situation may differ based on business model, geography, and company stage.
                 </div>
             </section>
 
@@ -267,7 +267,7 @@
             <!-- Section 5.5: Cash Bridge (Why Profit ≠ Cash) -->
             <section class="report-section cash-bridge-section" id="cashBridgeSection">
                 <h2>Cash Bridge: This Month</h2>
-                <p class="section-subtitle">Why your profit doesn't equal your cash movement</p>
+                <p class="section-subtitle">A breakdown of where your cash went this month — shows exactly why profit on paper doesn't match your bank balance</p>
 
                 <div class="cash-bridge">
                     <div class="bridge-item bridge-start">
@@ -345,7 +345,9 @@
                 </div>
 
                 <div class="why-matters">
-                    <strong>How this connects to Cash Runway:</strong> Your runway is based on your average monthly cash burn over the year to date. This bridge shows you the specific items affecting this month's cash movement.
+                    <strong>Cash Runway vs Cash Bridge:</strong><br>
+                    <strong>Cash Runway</strong> = "How many months until we run out of cash?" — Your headline metric based on YTD average burn.<br>
+                    <strong>Cash Bridge</strong> = "Why did our cash change this month?" — The specific drivers (AR, AP, inventory, loans) that explain your monthly cash movement.
                 </div>
             </section>
 

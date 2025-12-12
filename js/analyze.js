@@ -317,6 +317,202 @@ function formatFileSize(bytes) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
+// ===== CSV Template Parser =====
+
+function parseCSVTemplate(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            try {
+                const text = e.target.result;
+                const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+
+                // Field mapping: CSV field name → form field ID
+                const fieldMap = {
+                    'revenue': 'revenue',
+                    'sales': 'revenue',
+                    'revenue / sales': 'revenue',
+                    'cost of goods sold': 'cogs',
+                    'cost of goods sold (cogs)': 'cogs',
+                    'cogs': 'cogs',
+                    'operating expenses': 'opex',
+                    'operating expenses (opex)': 'opex',
+                    'opex': 'opex',
+                    'net profit': 'netProfit',
+                    'net income': 'netProfit',
+                    'cash in bank': 'cash',
+                    'cash': 'cash',
+                    'accounts receivable': 'receivables',
+                    'accounts receivable (ar)': 'receivables',
+                    'receivables': 'receivables',
+                    'ar': 'receivables',
+                    'inventory': 'inventory',
+                    'stock': 'inventory',
+                    'accounts payable': 'payables',
+                    'accounts payable (ap)': 'payables',
+                    'payables': 'payables',
+                    'ap': 'payables',
+                    'short-term loans': 'shortTermLoans',
+                    'short term loans': 'shortTermLoans',
+                    'loans': 'shortTermLoans',
+                    'other liabilities': 'otherLiabilities',
+                    'vat collected': 'vatCollected',
+                    'output vat': 'vatCollected',
+                    'vat paid': 'vatPaid',
+                    'input vat': 'vatPaid',
+                    'opening cash': 'openingCash',
+                    'opening cash (start of year)': 'openingCash',
+                    'loan repayments': 'loanRepayments',
+                    'owner drawings': 'ownerDrawings',
+                    'drawings': 'ownerDrawings',
+                    'asset purchases': 'assetPurchases',
+                    'equipment purchases': 'assetPurchases'
+                };
+
+                // YTD field mapping
+                const ytdFieldMap = {
+                    'revenue': 'ytdRevenue',
+                    'sales': 'ytdRevenue',
+                    'revenue / sales': 'ytdRevenue',
+                    'cost of goods sold': 'ytdCogs',
+                    'cost of goods sold (cogs)': 'ytdCogs',
+                    'cogs': 'ytdCogs',
+                    'operating expenses': 'ytdOpex',
+                    'operating expenses (opex)': 'ytdOpex',
+                    'opex': 'ytdOpex',
+                    'net profit': 'ytdNetProfit',
+                    'net income': 'ytdNetProfit'
+                };
+
+                const data = { current: {}, ytd: {} };
+
+                // Skip header row, parse data rows
+                for (let i = 1; i < lines.length; i++) {
+                    // Handle CSV parsing (account for commas in values)
+                    const row = parseCSVRow(lines[i]);
+                    if (row.length < 2) continue;
+
+                    const fieldName = row[0].toLowerCase().trim();
+                    const thisMonthValue = parseNumber(row[1]);
+                    const ytdValue = row.length > 2 ? parseNumber(row[2]) : null;
+
+                    // Map to current month fields
+                    if (fieldMap[fieldName]) {
+                        data.current[fieldMap[fieldName]] = thisMonthValue;
+                    }
+
+                    // Map to YTD fields
+                    if (ytdFieldMap[fieldName] && ytdValue !== null) {
+                        data.ytd[ytdFieldMap[fieldName]] = ytdValue;
+                    }
+                }
+
+                resolve(data);
+            } catch (error) {
+                reject(new Error('Failed to parse CSV: ' + error.message));
+            }
+        };
+
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsText(file);
+    });
+}
+
+function parseCSVRow(row) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+
+    return result;
+}
+
+function parseNumber(value) {
+    if (!value) return 0;
+    // Remove currency symbols, commas, spaces
+    const cleaned = value.toString().replace(/[^0-9.-]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+}
+
+function populateFormFromCSV(data) {
+    // Populate current month fields
+    Object.keys(data.current).forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && data.current[fieldId]) {
+            field.value = data.current[fieldId];
+        }
+    });
+
+    // Populate YTD fields if present
+    if (data.ytd && Object.keys(data.ytd).length > 0) {
+        Object.keys(data.ytd).forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field && data.ytd[fieldId]) {
+                field.value = data.ytd[fieldId];
+            }
+        });
+
+        // Check the YTD toggle if we have YTD data
+        const ytdToggle = document.getElementById('includeYtd');
+        if (ytdToggle) {
+            ytdToggle.checked = true;
+            const ytdSection = document.getElementById('ytdSection');
+            if (ytdSection) ytdSection.style.display = 'block';
+        }
+    }
+}
+
+async function processUploadedFile() {
+    if (uploadedFiles.length === 0) {
+        alert('Please upload a file first.');
+        return false;
+    }
+
+    const file = uploadedFiles[0];
+    const extension = '.' + file.name.split('.').pop().toLowerCase();
+
+    if (extension === '.csv') {
+        try {
+            const data = await parseCSVTemplate(file);
+            populateFormFromCSV(data);
+
+            // Switch to form mode so user can review
+            inputMethod = 'form';
+
+            // Show success message
+            alert('File imported successfully! Please review the numbers and fill in any missing fields.');
+
+            // Move to step 3 (Current Month data) to review
+            showStep(3);
+            return true;
+        } catch (error) {
+            alert('Error reading file: ' + error.message);
+            return false;
+        }
+    } else if (extension === '.xlsx' || extension === '.xls') {
+        alert('Excel files (.xlsx/.xls) require additional processing. Please save as CSV and re-upload, or use Quick Entry.');
+        return false;
+    } else {
+        alert('Unsupported file format. Please upload a CSV file using our template.');
+        return false;
+    }
+}
+
 // ===== Form Validation =====
 
 function validateCurrentStep() {
@@ -527,15 +723,11 @@ async function sendToAnalyze(formData) {
             }
         }
 
-        // For file uploads, we would need a different approach
-        // For now, only form data is fully supported
+        // For file uploads, parse CSV and populate form
         if (inputMethod === 'upload' && uploadedFiles.length > 0) {
-            // File upload processing would require additional setup
-            // For MVP, redirect to form entry with a message
-            alert('File upload processing is coming soon. Please use Quick Entry for now.');
             loadingState.style.display = 'none';
             form.style.display = 'block';
-            showStep(1);
+            await processUploadedFile();
             return;
         }
 

@@ -82,17 +82,19 @@ exports.handler = async (event, context) => {
 };
 
 // ===== INDUSTRY BENCHMARKS =====
+// Typical SME target ranges based on recent industry studies (not strict standards)
 // Sources: Perplexity research Dec 2024, compiled from:
-// - Deloitte Global Powers of Retailing 2023 [1][2][3]
-// - B2B SaaS Benchmark Reports 2024 [4][5][6]
-// - PwC Law Firm Survey 2023, NetSuite Professional Services [7][8][9]
-// - Restaurant margin studies (Lightspeed, CloudKitchens, Taqtics) [10][11][12]
-// - Grant Thornton Manufacturing Benchmarks 2024 [13][14]
-// - S&P Global, Macquarie Real Estate Report 2023 [15][16]
-// - NCBI Pharmacy studies, Nahdi/Burjeel reports [17][18][19]
-// - PwC Middle East Working Capital Study 2023 [22]
-// - McGrath Nicol Working Capital Report 2023 [24]
-// - CFI, Rho, JPMorgan runway guidance [23][27][28][29]
+// - Deloitte Global Powers of Retailing 2023
+// - B2B SaaS Benchmark Reports 2024
+// - PwC Law Firm Survey 2023, NetSuite Professional Services
+// - Restaurant margin studies (Lightspeed, CloudKitchens, Taqtics)
+// - Grant Thornton Manufacturing Benchmarks 2024
+// - S&P Global, Macquarie Real Estate Report 2023
+// - NCBI Pharmacy studies, Nahdi/Burjeel reports
+// - PwC Middle East Working Capital Study 2023
+// - McGrath Nicol Working Capital Report 2023
+// - CFI, Rho, JPMorgan runway guidance
+// Note: Actual ranges vary by business model, geography, and company stage
 function getIndustryBenchmarks(industry) {
     const benchmarks = {
         product: {

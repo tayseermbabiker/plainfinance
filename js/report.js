@@ -567,8 +567,24 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
     updateMetricStatus('cashMetric', cashStatus);
 
     // Cash Runway
-    document.getElementById('runwayValue').textContent = `${metrics.cashRunway.toFixed(1)} months`;
-    updateMetricStatus('runwayMetric', cashStatus);
+    const runwayValueEl = document.getElementById('runwayValue');
+    const runwayChangeEl = document.getElementById('runwayChange');
+
+    if (metrics.cashRunway === -1) {
+        // Cash positive - no burn
+        runwayValueEl.textContent = 'Cash positive';
+        runwayChangeEl.textContent = 'Your cash is growing, not burning';
+        updateMetricStatus('runwayMetric', 'good');
+    } else {
+        runwayValueEl.textContent = `${metrics.cashRunway.toFixed(1)} months`;
+        // Show burn rate if available
+        if (metrics.avgMonthlyBurn > 0) {
+            runwayChangeEl.textContent = `Burning ${currency} ${formatNumber(metrics.avgMonthlyBurn)}/month`;
+        } else {
+            runwayChangeEl.textContent = `Based on YTD average burn`;
+        }
+        updateMetricStatus('runwayMetric', cashStatus);
+    }
 
     // Net Profit Margin (5th KPI)
     const netMarginEl = document.getElementById('netMarginValue');
