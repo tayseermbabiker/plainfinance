@@ -445,10 +445,24 @@ function parseCSVRow(row) {
 
 function parseNumber(value) {
     if (!value) return 0;
+    let str = value.toString().trim();
+
+    // Handle accounting format: (123) means -123
+    const isNegative = str.startsWith('(') && str.endsWith(')');
+    if (isNegative) {
+        str = str.slice(1, -1); // Remove parentheses
+    }
+
     // Remove currency symbols, commas, spaces
-    const cleaned = value.toString().replace(/[^0-9.-]/g, '');
-    const num = parseFloat(cleaned);
-    return isNaN(num) ? 0 : num;
+    const cleaned = str.replace(/[^0-9.-]/g, '');
+    let num = parseFloat(cleaned);
+
+    if (isNaN(num)) return 0;
+
+    // Apply negative if was in parentheses
+    if (isNegative) num = -num;
+
+    return num;
 }
 
 function populateFormFromCSV(data) {

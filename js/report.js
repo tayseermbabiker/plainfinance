@@ -546,12 +546,13 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
         updateMetricStatus('revenueMetric', metrics.revenueChange >= 0 ? 'good' : 'warning');
     }
 
-    // Gross Margin - show MTD / YTD
+    // Gross Margin - show current month, compare to YTD below
+    document.getElementById('grossMarginValue').textContent = `${metrics.grossMargin.toFixed(0)}%`;
+    const marginChangeEl = document.getElementById('marginChange');
     if (ytdMetrics) {
-        document.getElementById('grossMarginValue').textContent = `${metrics.grossMargin.toFixed(0)}% / ${ytdMetrics.grossMargin.toFixed(0)}%`;
-        document.getElementById('marginChange').textContent = `This month / YTD`;
-    } else {
-        document.getElementById('grossMarginValue').textContent = `${metrics.grossMargin.toFixed(0)}%`;
+        const gmDiff = (metrics.grossMargin - ytdMetrics.grossMargin).toFixed(0);
+        marginChangeEl.textContent = `${gmDiff >= 0 ? '▲' : '▼'} ${Math.abs(gmDiff)}% vs YTD (${ytdMetrics.grossMargin.toFixed(0)}%)`;
+        marginChangeEl.className = `metric-change ${gmDiff >= 0 ? 'positive' : 'negative'}`;
     }
     const marginStatus = metrics.grossMargin >= 25 ? 'good' : metrics.grossMargin >= 15 ? 'warning' : 'danger';
     updateMetricStatus('marginMetric', marginStatus);
@@ -590,11 +591,12 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
     const netMarginEl = document.getElementById('netMarginValue');
     const netMarginChangeEl = document.getElementById('netMarginChange');
     if (netMarginEl) {
+        netMarginEl.textContent = `${metrics.netMargin.toFixed(0)}%`;
         if (ytdMetrics) {
-            netMarginEl.textContent = `${metrics.netMargin.toFixed(0)}% / ${ytdMetrics.netMargin.toFixed(0)}%`;
-            netMarginChangeEl.textContent = `This month / YTD`;
+            const nmDiff = (metrics.netMargin - ytdMetrics.netMargin).toFixed(0);
+            netMarginChangeEl.textContent = `${nmDiff >= 0 ? '▲' : '▼'} ${Math.abs(nmDiff)}% vs YTD (${ytdMetrics.netMargin.toFixed(0)}%)`;
+            netMarginChangeEl.className = `metric-change ${nmDiff >= 0 ? 'positive' : 'negative'}`;
         } else {
-            netMarginEl.textContent = `${metrics.netMargin.toFixed(0)}%`;
             // Show industry benchmark range
             netMarginChangeEl.textContent = `Industry: 5-15% typical`;
         }
@@ -1410,7 +1412,7 @@ https://plainfinance.co`;
 
 // ===== PDF Download =====
 
-// Check if user can download PDF (Owner or Pro plan only)
+// Check if user can download PDF (Owner, Pro, or Admin)
 async function canDownloadPDF() {
     // Check if Supabase is available
     if (typeof getUserProfile !== 'function') {
@@ -1418,6 +1420,14 @@ async function canDownloadPDF() {
     }
 
     try {
+        // Check admin status first
+        if (typeof canCreateReport === 'function') {
+            const reportCheck = await canCreateReport();
+            if (reportCheck.isAdmin) {
+                return true; // Admins can always download
+            }
+        }
+
         const { data: profile } = await getUserProfile();
         const plan = profile?.subscription_plan || 'free';
         return plan === 'owner' || plan === 'pro';
