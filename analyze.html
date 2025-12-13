@@ -63,10 +63,6 @@
                         <div class="step-number">4</div>
                         <span>Payables</span>
                     </div>
-                    <div class="step" data-step="5">
-                        <div class="step-number">5</div>
-                        <span>Compare</span>
-                    </div>
                 </div>
                 <div class="progress-line">
                     <div class="progress-fill" style="width: 20%"></div>
@@ -647,103 +643,6 @@
                     <div class="calculated-field">
                         <span>Total Non-P&L Cash Outflows</span>
                         <span class="calculated-value" id="totalCashOutflows">AED 0</span>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary prev-step">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="19" y1="12" x2="5" y2="12"></line>
-                                <polyline points="12 19 5 12 12 5"></polyline>
-                            </svg>
-                            Back
-                        </button>
-                        <button type="button" class="btn btn-primary next-step">
-                            Continue
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 5: Comparison Period -->
-                <div class="form-step" data-step="5" data-method="form">
-                    <div class="step-header">
-                        <h1>Want to compare with last period?</h1>
-                        <p>This helps us show trends and changes</p>
-                    </div>
-
-                    <div class="comparison-choice">
-                        <button type="button" class="choice-btn" data-compare="yes">
-                            <div class="choice-icon">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                                </svg>
-                            </div>
-                            <h3>Yes, add comparison</h3>
-                            <p>Show me trends and changes vs last month</p>
-                        </button>
-                        <button type="button" class="choice-btn" data-compare="no">
-                            <div class="choice-icon">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                </svg>
-                            </div>
-                            <h3>No, just this period</h3>
-                            <p>Analyze current numbers only</p>
-                        </button>
-                    </div>
-
-                    <!-- Comparison Fields (hidden by default) -->
-                    <div class="comparison-fields" id="comparisonFields" style="display: none;">
-                        <h3>Previous Period Numbers</h3>
-
-                        <div class="comparison-grid">
-                            <div class="form-group">
-                                <label for="prevRevenue">Revenue</label>
-                                <div class="input-with-currency">
-                                    <span class="currency-prefix">AED</span>
-                                    <input type="number" id="prevRevenue" name="prevRevenue" placeholder="0" min="0">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="prevNetProfit">Net Profit</label>
-                                <div class="input-with-currency">
-                                    <span class="currency-prefix">AED</span>
-                                    <input type="number" id="prevNetProfit" name="prevNetProfit" placeholder="0">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="prevCash">Cash</label>
-                                <div class="input-with-currency">
-                                    <span class="currency-prefix">AED</span>
-                                    <input type="number" id="prevCash" name="prevCash" placeholder="0" min="0">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="prevReceivables">Receivables (AR)</label>
-                                <div class="input-with-currency">
-                                    <span class="currency-prefix">AED</span>
-                                    <input type="number" id="prevReceivables" name="prevReceivables" placeholder="0" min="0">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="prevInventory">Inventory</label>
-                                <div class="input-with-currency">
-                                    <span class="currency-prefix">AED</span>
-                                    <input type="number" id="prevInventory" name="prevInventory" placeholder="0" min="0">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="prevPayables">Payables (AP)</label>
-                                <div class="input-with-currency">
-                                    <span class="currency-prefix">AED</span>
-                                    <input type="number" id="prevPayables" name="prevPayables" placeholder="0" min="0">
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="form-actions">

@@ -25,7 +25,7 @@ function showStep(stepNumber) {
     if (stepNumber === 2) {
         targetStep = document.querySelector(`.form-step[data-step="2"][data-method="${inputMethod}"]`);
     } else if (stepNumber >= 3 && inputMethod === 'upload') {
-        // Skip steps 3-5 for upload method, go straight to submit
+        // Skip steps 3-4 for upload method, go straight to submit
         submitForm();
         return;
     } else {
@@ -43,7 +43,7 @@ function showStep(stepNumber) {
 }
 
 function updateProgress(stepNumber) {
-    const totalSteps = 5;
+    const totalSteps = 4;
     const percentage = (stepNumber / totalSteps) * 100;
     progressFill.style.width = `${percentage}%`;
 
