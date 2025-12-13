@@ -86,7 +86,7 @@ function populateReportFromAPI(reportData) {
         }
 
         // Section 9: Meeting Summary (from AI)
-        updateMeetingSummaryFromAPI(analysis);
+        updateMeetingSummaryFromAPI(analysis, metrics, current, currency);
 
         // Section 10: YTD Summary (if YTD data available)
         if (ytdMetrics) {
@@ -367,12 +367,55 @@ function updateActionsFromAPI(current, metrics, currency, analysis) {
     }
 }
 
-function updateMeetingSummaryFromAPI(analysis) {
+function updateMeetingSummaryFromAPI(analysis, metrics, current, currency) {
     const summary = document.getElementById('meetingSummary');
 
     if (analysis && analysis.meetingSummary) {
         summary.innerHTML = `<blockquote>"${analysis.meetingSummary}"</blockquote>`;
     }
+
+    // Update strength and risk talking points
+    updateTalkingPoints(metrics, current, currency);
+}
+
+function updateTalkingPoints(metrics, current, currency) {
+    const strengthEl = document.getElementById('summaryStrength');
+    const riskEl = document.getElementById('summaryRisk');
+
+    if (!strengthEl || !riskEl || !metrics) return;
+
+    // Determine strength
+    let strength = '';
+    if (metrics.grossMargin >= 25) {
+        strength = `Gross margin is healthy at ${metrics.grossMargin.toFixed(0)}%`;
+    } else if (metrics.currentRatio >= 1.5) {
+        strength = `Current ratio is strong at ${metrics.currentRatio.toFixed(2)}`;
+    } else if (metrics.dso <= 30) {
+        strength = `Collecting from customers quickly (${Math.round(metrics.dso)} days)`;
+    } else if (current.netProfit > 0) {
+        strength = `Profitable this month (${currency} ${formatNumber(current.netProfit)})`;
+    } else {
+        strength = 'Business fundamentals are stable';
+    }
+
+    // Determine risk
+    let risk = '';
+    if (metrics.cashRunway >= 0 && metrics.cashRunway < 3) {
+        risk = `Cash runway is only ${metrics.cashRunway.toFixed(1)} months`;
+    } else if (metrics.dio > 60) {
+        risk = `Cash tied up in inventory for ${Math.round(metrics.dio)} days`;
+    } else if (metrics.dso > 45) {
+        risk = `Customers taking ${Math.round(metrics.dso)} days to pay`;
+    } else if (metrics.netMargin < 5) {
+        risk = `Net margin is tight at ${metrics.netMargin.toFixed(1)}%`;
+    } else if (metrics.dpo < 15) {
+        risk = `Paying suppliers too fast (${Math.round(metrics.dpo)} days)`;
+    } else {
+        risk = 'No major concerns this month';
+    }
+
+    strengthEl.textContent = strength;
+    riskEl.textContent = risk;
 }
 
 function populateReportWithSampleData() {
@@ -581,12 +624,12 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
         updateMetricStatus('runwayMetric', 'good');
     } else {
         runwayValueEl.textContent = `${metrics.cashRunway.toFixed(1)} months`;
-        // Show burn rate if available
-        if (metrics.avgMonthlyBurn > 0) {
-            runwayChangeEl.textContent = `Burning ${currency} ${formatNumber(metrics.avgMonthlyBurn)}/month`;
-        } else {
-            runwayChangeEl.textContent = `Based on YTD average burn`;
-        }
+        // Calculate and show cash-out date
+        const cashOutDate = new Date();
+        cashOutDate.setMonth(cashOutDate.getMonth() + Math.floor(metrics.cashRunway));
+        cashOutDate.setDate(cashOutDate.getDate() + Math.round((metrics.cashRunway % 1) * 30));
+        const dateStr = cashOutDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        runwayChangeEl.textContent = `Cash out by ~${dateStr}`;
         updateMetricStatus('runwayMetric', cashStatus);
     }
 
@@ -975,35 +1018,39 @@ function updateHealthStrip(current, metrics) {
     if (!strip) return;
 
     const cashRunway = metrics.cashRunway || 0;
-    const netMargin = metrics.netProfitMargin || 0;
+    const netMargin = metrics.netProfitMargin || metrics.netMargin || 0;
     const netProfit = current.netProfit || 0;
 
-    // Update metric values
-    runwayEl.textContent = `${cashRunway.toFixed(1)} weeks`;
+    // Update metric values (cashRunway is in months)
+    if (cashRunway === -1) {
+        runwayEl.textContent = 'Positive';
+    } else {
+        runwayEl.textContent = `${cashRunway.toFixed(1)} mo`;
+    }
     marginEl.textContent = `${netMargin.toFixed(1)}%`;
 
     // Determine health status
     let status, statusText, reason;
 
-    // Danger: Loss OR very low runway
-    if (netProfit < 0 || cashRunway < 4) {
+    // Danger: Loss OR very low runway (less than 1 month)
+    if (netProfit < 0 || (cashRunway >= 0 && cashRunway < 1)) {
         status = 'danger';
-        if (netProfit < 0 && cashRunway < 4) {
+        if (netProfit < 0 && cashRunway >= 0 && cashRunway < 1) {
             statusText = 'Danger';
-            reason = 'Making a loss with low cash runway';
+            reason = 'Making a loss with critically low cash';
         } else if (netProfit < 0) {
             statusText = 'At Risk';
             reason = 'Making a loss this period';
         } else {
             statusText = 'Danger';
-            reason = 'Cash runway below 4 weeks';
+            reason = 'Cash runway below 1 month';
         }
         icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
     }
-    // Tight: Low margin OR moderate runway concerns
-    else if (netMargin < 5 || cashRunway < 8) {
+    // Tight: Low margin OR moderate runway concerns (1-3 months)
+    else if (netMargin < 5 || (cashRunway >= 0 && cashRunway < 3)) {
         status = 'tight';
-        if (netMargin < 5 && cashRunway < 8) {
+        if (netMargin < 5 && cashRunway >= 0 && cashRunway < 3) {
             statusText = 'Tight';
             reason = 'Low margin with limited cash buffer';
         } else if (netMargin < 5) {
@@ -1011,15 +1058,19 @@ function updateHealthStrip(current, metrics) {
             reason = 'Profit margin below 5%';
         } else {
             statusText = 'Tight';
-            reason = 'Cash runway below 8 weeks';
+            reason = 'Cash runway below 3 months';
         }
         icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
     }
-    // Safe: Good profit and runway
+    // Safe: Good profit and runway (3+ months or cash positive)
     else {
         status = 'safe';
         statusText = 'Safe';
-        reason = 'Profitable with healthy cash runway';
+        if (cashRunway === -1) {
+            reason = 'Profitable with growing cash';
+        } else {
+            reason = 'Profitable with healthy cash runway';
+        }
         icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
     }
 
@@ -1046,6 +1097,25 @@ function updateHealthStrip(current, metrics) {
     } else if (loanPressureTag) {
         loanPressureTag.style.display = 'none';
     }
+
+    // Sleep Test badge - can you sleep at night?
+    const sleepTest = document.getElementById('sleepTest');
+    const sleepTestValue = document.getElementById('sleepTestValue');
+    if (sleepTest && sleepTestValue) {
+        if (status === 'safe') {
+            sleepTestValue.textContent = 'Pass';
+            sleepTestValue.title = 'Sleep well - business is healthy';
+            sleepTest.className = 'health-metric sleep-test sleep-good';
+        } else if (status === 'tight') {
+            sleepTestValue.textContent = 'Watch';
+            sleepTestValue.title = 'Light sleep - keep an eye on things';
+            sleepTest.className = 'health-metric sleep-test sleep-tight';
+        } else {
+            sleepTestValue.textContent = 'Fail';
+            sleepTestValue.title = 'Wide awake - needs immediate attention';
+            sleepTest.className = 'health-metric sleep-test sleep-danger';
+        }
+    }
 }
 
 function updateActions(current, metrics, currency) {
@@ -1059,70 +1129,103 @@ function updateActions(current, metrics, currency) {
             priority: 1,
             title: `Collect ${currency} ${formatNumber(collectTarget)} from customers`,
             description: `You have ${currency} ${formatNumber(current.receivables)} waiting to be collected. Call or WhatsApp your top 3 customers who owe you money and agree on payment dates this week.`,
-            result: `This adds ${currency} ${formatNumber(collectTarget)} to your bank account`
+            result: `This adds ${currency} ${formatNumber(collectTarget)} to your bank account`,
+            cashImpact: collectTarget
         });
     } else if (metrics.dso > 30) {
+        const dsoImprovement = Math.round(current.receivables * 0.15); // Faster collection frees ~15%
         actions.push({
             priority: 1,
             title: 'Speed up customer payments',
             description: `Customers take ${Math.round(metrics.dso)} days to pay you. Send reminders earlier (at day 15, not day 30) and offer a small discount for early payment.`,
-            result: 'Gets cash into your account faster'
+            result: 'Gets cash into your account faster',
+            cashImpact: dsoImprovement
         });
     }
 
     // Priority 2: DPO issues
     if (metrics.dpo < 20) {
+        const dpoSavings = Math.round((current.payables || 0) * 0.1); // Delayed payment keeps ~10%
         actions.push({
             priority: actions.length + 1,
             title: 'Ask suppliers for 30-day payment terms',
             description: `You are paying suppliers in ${Math.round(metrics.dpo)} days, which is very fast. Call your main suppliers and ask if you can pay in 30 days instead.`,
-            result: `Keeps cash in your account ${30 - Math.round(metrics.dpo)} days longer`
+            result: `Keeps cash in your account ${30 - Math.round(metrics.dpo)} days longer`,
+            cashImpact: dpoSavings
         });
     }
 
     // Priority 3: Expense/Margin issues
     if (metrics.grossMargin < 25) {
+        const marginGain = Math.round((current.revenue || 0) * 0.05); // 5% price increase impact
         actions.push({
             priority: actions.length + 1,
             title: 'Improve your gross margin',
             description: `Your gross margin is only ${metrics.grossMargin.toFixed(0)}%. Raise prices by 5-10% or negotiate better rates with suppliers.`,
-            result: 'More profit from each sale'
+            result: 'More profit from each sale',
+            cashImpact: marginGain
         });
     }
 
     // Default: Cash protection
     if (metrics.cashRunway < 3 && actions.length < 3) {
+        const burnReduction = Math.round((current.opex || 0) * 0.1); // 10% spend reduction
         actions.push({
             priority: actions.length + 1,
             title: 'Pause non-essential spending',
             description: `With only ${metrics.cashRunway.toFixed(1)} months of cash safety, hold off on anything that is not critical: extra marketing, office upgrades, new equipment.`,
-            result: 'Protects your cash buffer'
+            result: 'Protects your cash buffer',
+            cashImpact: burnReduction
         });
     }
 
     // Fill remaining slots
     if (actions.length < 3 && metrics.dio > 30) {
+        const inventoryRelease = Math.round(current.inventory * 0.2);
         actions.push({
             priority: actions.length + 1,
             title: 'Reduce inventory levels',
             description: `Stock sits for ${Math.round(metrics.dio)} days before selling. Order smaller quantities more often instead of big bulk orders.`,
-            result: `Frees up ${currency} ${formatNumber(current.inventory * 0.2)} tied up in stock`
+            result: `Frees up ${currency} ${formatNumber(inventoryRelease)} tied up in stock`,
+            cashImpact: inventoryRelease
         });
     }
 
-    // Render actions
-    actionList.innerHTML = actions.slice(0, 3).map((action, i) => `
-        <div class="action-item priority-${i + 1}">
+    // Render actions with cash impact badges
+    actionList.innerHTML = actions.slice(0, 3).map((action, i) => {
+        const impactBadge = action.cashImpact && action.cashImpact > 0
+            ? `<span class="cash-impact-badge">Cash impact: +${currency} ${formatNumber(action.cashImpact)}</span>`
+            : '';
+        const isMain = i === 0;
+
+        return `
+        <div class="action-item priority-${i + 1}${isMain ? ' main-action' : ''}">
             <div class="action-number">${i + 1}</div>
             <div class="action-content">
-                <h3>${action.title}</h3>
+                <h3>${action.title}${isMain ? impactBadge : ''}</h3>
                 <p>${action.description}</p>
                 <div class="action-result">
                     <span>Result: ${action.result}</span>
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
+
+    // Update inaction warning if runway is concerning
+    const inactionWarning = document.getElementById('inactionWarning');
+    const inactionText = document.getElementById('inactionText');
+    if (inactionWarning && inactionText && metrics.cashRunway >= 0 && metrics.cashRunway < 6) {
+        const cashOutDate = new Date();
+        cashOutDate.setMonth(cashOutDate.getMonth() + Math.floor(metrics.cashRunway));
+        cashOutDate.setDate(cashOutDate.getDate() + Math.round((metrics.cashRunway % 1) * 30));
+        const dateStr = cashOutDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
+        inactionText.textContent = `If you do nothing: your cash could run out by ${dateStr}`;
+        inactionWarning.style.display = 'flex';
+    } else if (inactionWarning) {
+        inactionWarning.style.display = 'none';
+    }
 }
 
 function updateCashForecast(current, metrics, currency, period) {
@@ -1360,6 +1463,9 @@ function updateMeetingSummary(current, previous, metrics, currency) {
     summary.innerHTML = `<blockquote>
         "${revenueStatement}${profitStatement}. ${focusStatement} Current ratio is ${metrics.currentRatio >= 1.5 ? 'healthy' : 'adequate'} at ${metrics.currentRatio.toFixed(2)}."
     </blockquote>`;
+
+    // Update strength and risk talking points
+    updateTalkingPoints(metrics, current, currency);
 }
 
 function formatNumber(num) {
@@ -1753,15 +1859,15 @@ function checkAlerts() {
 
     const alerts = [];
 
-    // Check cash runway
+    // Check cash runway (in months)
     if (settings.runway.enabled && metrics.cashRunway !== undefined) {
-        const runwayWeeks = metrics.cashRunway;
-        if (runwayWeeks < settings.runway.value) {
+        const runwayMonths = metrics.cashRunway;
+        if (runwayMonths < settings.runway.value) {
             alerts.push({
-                type: runwayWeeks < 2 ? 'danger' : 'warning',
+                type: runwayMonths < 1 ? 'danger' : 'warning',
                 title: 'Low Cash Runway',
-                message: `Your cash runway is ${runwayWeeks.toFixed(1)} weeks. This is below your threshold of ${settings.runway.value} weeks.`,
-                whatsappMsg: `ALERT: ${company?.name || 'Company'} - Cash runway is only ${runwayWeeks.toFixed(1)} weeks. Immediate attention needed.`
+                message: `Your cash runway is ${runwayMonths.toFixed(1)} months. This is below your threshold of ${settings.runway.value} months.`,
+                whatsappMsg: `ALERT: ${company?.name || 'Company'} - Cash runway is only ${runwayMonths.toFixed(1)} months. Immediate attention needed.`
             });
         }
     }
@@ -2080,6 +2186,14 @@ function updateOwnerSummary(current, metrics, currency, analysis) {
     const cashIcon = document.getElementById('summaryCashIcon');
     const cashText = document.getElementById('summaryCash');
 
+    // Calculate cash-out date
+    const getCashOutDate = (months) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() + Math.floor(months));
+        date.setDate(date.getDate() + Math.round((months % 1) * 30));
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    };
+
     if (cashRunway === -1) {
         // Cash positive
         cashIcon.textContent = '✓';
@@ -2092,11 +2206,11 @@ function updateOwnerSummary(current, metrics, currency, analysis) {
     } else if (cashRunway >= 1) {
         cashIcon.textContent = '⚠';
         cashIcon.className = 'summary-icon warning';
-        cashText.textContent = `Cash runway: ${cashRunway.toFixed(1)} months — getting tight`;
+        cashText.textContent = `Cash out by ~${getCashOutDate(cashRunway)} — getting tight`;
     } else {
         cashIcon.textContent = '!';
         cashIcon.className = 'summary-icon danger';
-        cashText.textContent = `Cash runway: ${cashRunway.toFixed(1)} months — action needed`;
+        cashText.textContent = `Cash out by ~${getCashOutDate(cashRunway)} — action needed`;
     }
 
     // Priority action line
@@ -2152,3 +2266,80 @@ Generated by PlainFinancials.com`;
         alert('Failed to copy. Please select and copy manually.');
     });
 }
+
+// ===== Blur Strategy for Non-Signup Users =====
+
+async function applyBlurStrategy() {
+    // Check if user is logged in
+    const isLoggedIn = await checkIfUserLoggedIn();
+
+    if (isLoggedIn) {
+        // Remove any blur overlays
+        removeBlurOverlays();
+        return;
+    }
+
+    // Apply blur to specific sections for non-logged-in users
+    applyBlurToSections();
+}
+
+async function checkIfUserLoggedIn() {
+    // Check if Supabase is available
+    if (typeof supabase === 'undefined' || !supabase) {
+        return true; // Allow if Supabase not loaded (testing mode)
+    }
+
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        return !!user;
+    } catch (e) {
+        console.error('Error checking auth:', e);
+        return true; // Allow on error
+    }
+}
+
+function applyBlurToSections() {
+    // Sections to blur for non-logged-in users (to create intrigue)
+    const sectionsToBlur = [
+        { selector: '#actionList', label: 'Your 3 Actions' },
+        { selector: '.cash-forecast', label: 'Cash Forecast' },
+        { selector: '#meetingSummary', label: 'Bank Summary' }
+    ];
+
+    sectionsToBlur.forEach(({ selector, label }) => {
+        const section = document.querySelector(selector);
+        if (section && !section.classList.contains('blurred-section')) {
+            section.classList.add('blurred-section');
+
+            // Add signup overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'blur-signup-overlay';
+            overlay.innerHTML = `
+                <div class="blur-overlay-content">
+                    <h4>Sign up free to unlock</h4>
+                    <p>${label}</p>
+                    <a href="signup.html" class="btn-signup">Create Free Account</a>
+                </div>
+            `;
+            section.style.position = 'relative';
+            section.appendChild(overlay);
+        }
+    });
+}
+
+function removeBlurOverlays() {
+    // Remove all blur classes and overlays
+    document.querySelectorAll('.blurred-section').forEach(el => {
+        el.classList.remove('blurred-section');
+    });
+
+    document.querySelectorAll('.blur-signup-overlay').forEach(el => {
+        el.remove();
+    });
+}
+
+// Apply blur strategy on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Delay slightly to ensure Supabase is loaded
+    setTimeout(applyBlurStrategy, 500);
+});

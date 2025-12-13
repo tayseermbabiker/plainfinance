@@ -820,6 +820,90 @@
     color: white;
 }
 
+/* Main action highlight */
+.action-item.main-action {
+    border-width: 2px;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
+/* Cash impact badge */
+.cash-impact-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Inaction warning */
+.inaction-warning {
+    margin-top: 20px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid #fecaca;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.inaction-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.inaction-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #991b1b;
+}
+
+/* Book a Call CTA */
+.book-call-cta {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cta-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+}
+
+.cta-button {
+    background: white;
+    color: #1e3a5f;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.cta-button:hover {
+    background: #f0f4f8;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .book-call-cta {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
 .action-content h3 {
     font-size: 16px;
     font-weight: 600;
@@ -1245,6 +1329,53 @@
     color: var(--report-gray-300);
     margin: 0;
     font-style: italic;
+}
+
+/* Summary Talking Points */
+.summary-talking-points {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.talking-point {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.talking-point.strength {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.talking-point.risk {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.point-label {
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.talking-point.strength .point-label {
+    color: #10b981;
+}
+
+.talking-point.risk .point-label {
+    color: #ef4444;
+}
+
+.point-text {
+    color: var(--report-gray-300);
+}
+
+@media (max-width: 768px) {
+    .summary-talking-points {
+        flex-direction: column;
+    }
 }
 
 /* ===== Report Footer ===== */
@@ -1757,6 +1888,24 @@
 }
 
 .loan-pressure-tag.pressure-high .health-metric-value {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+/* Sleep Test badge */
+.sleep-test .health-metric-value {
+    font-weight: 600;
+}
+
+.sleep-test.sleep-good .health-metric-value {
+    color: #10b981;
+}
+
+.sleep-test.sleep-tight .health-metric-value {
+    color: #f59e0b;
+}
+
+.sleep-test.sleep-danger .health-metric-value {
     color: #ef4444;
     font-weight: 700;
 }
@@ -2454,4 +2603,67 @@
 .section-lock-overlay .btn-signup:hover {
     background: var(--report-secondary);
     transform: translateY(-1px);
+}
+
+/* ===== Blur Strategy for Non-Signup Users ===== */
+
+.blurred-section {
+    position: relative;
+    min-height: 150px;
+}
+
+.blurred-section > *:not(.blur-signup-overlay) {
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.blur-signup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.blur-overlay-content {
+    background: white;
+    padding: 24px 36px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.blur-overlay-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--report-gray-900);
+}
+
+.blur-overlay-content p {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: var(--report-gray-500);
+}
+
+.blur-overlay-content .btn-signup {
+    display: inline-block;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.blur-overlay-content .btn-signup:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
 }

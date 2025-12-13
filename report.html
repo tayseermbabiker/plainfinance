@@ -104,6 +104,10 @@
                         <span class="health-metric-label">Loan Pressure</span>
                         <span class="health-metric-value" id="loanPressureValue">None</span>
                     </div>
+                    <div class="health-metric sleep-test" id="sleepTest">
+                        <span class="health-metric-label">Sleep Test</span>
+                        <span class="health-metric-value" id="sleepTestValue">Pass</span>
+                    </div>
                 </div>
             </div>
 
@@ -420,6 +424,18 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- If you do nothing warning -->
+                <div class="inaction-warning" id="inactionWarning" style="display: none;">
+                    <span class="inaction-icon">!</span>
+                    <span class="inaction-text" id="inactionText">If you do nothing: your cash could run out by March 15</span>
+                </div>
+
+                <!-- Book a Call CTA -->
+                <div class="book-call-cta">
+                    <span class="cta-text">Want help implementing these actions?</span>
+                    <a href="https://calendly.com/plainfinancials/30min" target="_blank" class="cta-button">Book a Free 30-Min Review</a>
+                </div>
             </section>
 
             <!-- Section 6: Can You Pay Your Bills? -->
@@ -504,6 +520,17 @@
                         but paying suppliers too quickly. We are working on extending payment terms and have AED 187,000
                         in receivables to collect. Current ratio is healthy at 2.99."
                     </blockquote>
+
+                    <div class="summary-talking-points">
+                        <div class="talking-point strength">
+                            <span class="point-label">Strength:</span>
+                            <span class="point-text" id="summaryStrength">Gross margin within industry range</span>
+                        </div>
+                        <div class="talking-point risk">
+                            <span class="point-label">Risk:</span>
+                            <span class="point-text" id="summaryRisk">Cash locked in stock for too long</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 
