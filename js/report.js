@@ -213,16 +213,16 @@ function updateCashBridge(current, previous, metrics, currency) {
         }
     }
 
-    // Non-P&L items (from optional cash movements)
+    // Non-P&L items (from optional cash movements) - only PAST items, not future
     const loanRepayments = current.loanRepayments || 0;
     const ownerDrawings = current.ownerDrawings || 0;
     const assetPurchases = current.assetPurchases || 0;
-    const plannedSupplierPayments = current.plannedSupplierPayments || 0;
-    const hasNonPlItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0 || plannedSupplierPayments > 0;
+    // Note: plannedSupplierPayments removed - it's future, belongs in Cash Forecast not Cash Bridge
+    const hasNonPlItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0;
 
-    // Calculate actual cash movement
+    // Calculate actual cash movement (only past items)
     // Profit - increase in receivables - increase in inventory + increase in payables - non-PL outflows
-    const cashMovement = netProfit - receivablesChange - inventoryChange + payablesChange - loanRepayments - ownerDrawings - assetPurchases - plannedSupplierPayments;
+    const cashMovement = netProfit - receivablesChange - inventoryChange + payablesChange - loanRepayments - ownerDrawings - assetPurchases;
 
     // Update the display
     document.getElementById('bridgeNetProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
@@ -253,7 +253,6 @@ function updateCashBridge(current, previous, metrics, currency) {
         const loanItem = document.getElementById('bridgeLoanItem');
         const drawingsItem = document.getElementById('bridgeDrawingsItem');
         const assetsItem = document.getElementById('bridgeAssetsItem');
-        const supplierItem = document.getElementById('bridgeSupplierItem');
 
         if (loanRepayments > 0) {
             loanItem.style.display = 'flex';
@@ -274,13 +273,6 @@ function updateCashBridge(current, previous, metrics, currency) {
             document.getElementById('bridgeAssetPurchases').textContent = `- ${currency} ${formatNumber(assetPurchases)}`;
         } else {
             assetsItem.style.display = 'none';
-        }
-
-        if (plannedSupplierPayments > 0) {
-            supplierItem.style.display = 'flex';
-            document.getElementById('bridgePlannedSupplierPayments').textContent = `- ${currency} ${formatNumber(plannedSupplierPayments)}`;
-        } else {
-            supplierItem.style.display = 'none';
         }
     } else {
         nonPlSection.style.display = 'none';
@@ -304,27 +296,48 @@ function updateCashBridge(current, previous, metrics, currency) {
     document.getElementById('bridgeSummaryProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
     document.getElementById('bridgeSummaryCash').textContent = `${currency} ${formatNumber(Math.abs(cashMovement))}`;
 
-    // Generate explanation
+    // Generate explanation - purely mechanical, no advice (advice belongs in Actions section)
+    // Build list of drivers sorted by size
+    const drivers = [];
+    if (receivablesChange > 0) drivers.push({ name: 'customers who haven\'t paid yet', amount: receivablesChange, type: 'out' });
+    if (receivablesChange < 0) drivers.push({ name: 'customers paying old invoices', amount: Math.abs(receivablesChange), type: 'in' });
+    if (inventoryChange > 0) drivers.push({ name: 'buying more stock', amount: inventoryChange, type: 'out' });
+    if (inventoryChange < 0) drivers.push({ name: 'selling down stock', amount: Math.abs(inventoryChange), type: 'in' });
+    if (payablesChange < 0) drivers.push({ name: 'paying suppliers faster', amount: Math.abs(payablesChange), type: 'out' });
+    if (payablesChange > 0) drivers.push({ name: 'delaying supplier payments', amount: payablesChange, type: 'in' });
+    if (loanRepayments > 0) drivers.push({ name: 'loan repayments', amount: loanRepayments, type: 'out' });
+    if (ownerDrawings > 0) drivers.push({ name: 'owner withdrawals', amount: ownerDrawings, type: 'out' });
+    if (assetPurchases > 0) drivers.push({ name: 'equipment purchases', amount: assetPurchases, type: 'out' });
+
+    // Sort by amount (biggest first)
+    drivers.sort((a, b) => b.amount - a.amount);
+
+    // Build explanation
     let explanation = '';
-    if (netProfit > 0 && cashMovement < 0) {
-        // Profitable but cash decreased
-        if (receivablesChange > 0 && receivablesChange > inventoryChange) {
-            explanation = 'Most of your profit is stuck in unpaid invoices. Customers owe you more than last month. Focus on collecting faster.';
-        } else if (inventoryChange > 0 && inventoryChange > receivablesChange) {
-            explanation = 'You bought more stock than you sold this month. That tied up cash. Make sure this inventory will turn into sales soon.';
-        } else if (payablesChange < 0) {
-            explanation = 'You paid suppliers faster than they paid you. Consider negotiating longer payment terms.';
-        } else if (hasNonPlItems) {
-            explanation = 'Loan payments, owner withdrawals, or equipment purchases used up more cash than you earned in profit.';
-        } else {
-            explanation = 'A combination of slower customer payments, inventory buildup, and faster supplier payments drained your cash.';
+    const cashOutDrivers = drivers.filter(d => d.type === 'out');
+    const cashInDrivers = drivers.filter(d => d.type === 'in');
+
+    if (cashMovement < 0 && cashOutDrivers.length > 0) {
+        // Cash decreased - explain what pulled it out
+        const biggest = cashOutDrivers[0];
+        const others = cashOutDrivers.slice(1, 3).map(d => d.name);
+
+        explanation = `The biggest reason: ${biggest.name}.`;
+        if (others.length > 0) {
+            explanation += ` Also: ${others.join(' and ')}.`;
         }
-    } else if (netProfit > 0 && cashMovement > 0) {
-        explanation = 'Great news! Your profit is actually turning into cash. Your collections are keeping pace with sales.';
-    } else if (netProfit <= 0 && cashMovement > 0) {
-        explanation = 'Even though you made a loss, cash increased because customers paid old invoices or you held off on paying suppliers.';
+    } else if (cashMovement > 0 && cashInDrivers.length > 0) {
+        // Cash increased - explain what brought it in
+        const biggest = cashInDrivers[0];
+        explanation = `Most of that came from ${biggest.name}.`;
+    } else if (cashMovement >= 0 && netProfit > 0) {
+        explanation = 'Your profit turned into actual cash this month.';
+    } else if (drivers.length === 0) {
+        explanation = 'Cash movement matched your profit closely.';
     } else {
-        explanation = 'Both your profit and cash position need attention. Focus on both profitability and collection speed.';
+        // Mixed drivers
+        const topDrivers = drivers.slice(0, 2).map(d => d.name);
+        explanation = `Main factors: ${topDrivers.join(' and ')}.`;
     }
 
     document.getElementById('bridgeSummaryExplanation').textContent = explanation;
