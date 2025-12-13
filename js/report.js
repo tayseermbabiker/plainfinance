@@ -183,8 +183,6 @@ function updateCashBridge(current, previous, metrics, currency) {
     const netProfit = current.netProfit || 0;
 
     // Calculate changes in working capital items
-    // If we have previous period data, calculate actual changes
-    // Otherwise estimate based on current balances and typical patterns
     let receivablesChange = 0;
     let inventoryChange = 0;
     let payablesChange = 0;
@@ -195,13 +193,9 @@ function updateCashBridge(current, previous, metrics, currency) {
         payablesChange = (current.payables || 0) - (previous.payables || 0);
     } else {
         // Estimate changes using DSO/DIO/DPO and revenue/COGS
-        // Positive receivables = cash trapped (money owed to you increased)
-        // Positive inventory = cash trapped (bought more stock)
-        // Positive payables = cash released (you owe more to suppliers = kept cash longer)
         const dailyRevenue = (current.revenue || 0) / 30;
         const dailyCOGS = (current.cogs || 0) / 30;
 
-        // Estimate based on whether DSO/DIO are high vs typical
         if (metrics.dso > 30) {
             receivablesChange = Math.round(dailyRevenue * (metrics.dso - 30) * 0.5);
         }
@@ -213,42 +207,73 @@ function updateCashBridge(current, previous, metrics, currency) {
         }
     }
 
-    // Non-P&L items (from optional cash movements) - only PAST items, not future
+    // Financing & Other items (Section 3)
     const loanRepayments = current.loanRepayments || 0;
     const ownerDrawings = current.ownerDrawings || 0;
     const assetPurchases = current.assetPurchases || 0;
-    // Note: plannedSupplierPayments removed - it's future, belongs in Cash Forecast not Cash Bridge
-    const hasNonPlItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0;
+    const hasFinancingItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0;
 
-    // Calculate actual cash movement (only past items)
-    // Profit - increase in receivables - increase in inventory + increase in payables - non-PL outflows
-    const cashMovement = netProfit - receivablesChange - inventoryChange + payablesChange - loanRepayments - ownerDrawings - assetPurchases;
+    // Calculate totals for each section
+    // Working Capital Effect = -ΔAR - ΔInventory + ΔAP
+    const workingCapitalEffect = -receivablesChange - inventoryChange + payablesChange;
 
-    // Update the display
+    // Financing Effect = -(loans + drawings + assets)
+    const financingEffect = -(loanRepayments + ownerDrawings + assetPurchases);
+
+    // Total cash movement
+    const cashMovement = netProfit + workingCapitalEffect + financingEffect;
+
+    // === SECTION 1: Operating Result ===
     document.getElementById('bridgeNetProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
     document.getElementById('bridgeNetProfit').className = `bridge-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
 
-    // Receivables change (negative = cash trapped)
+    // === SECTION 2: Working Capital Changes ===
+    // Receivables
     const receivablesDisplay = document.getElementById('bridgeReceivablesChange');
-    receivablesDisplay.textContent = receivablesChange >= 0 ? `- ${currency} ${formatNumber(receivablesChange)}` : `+ ${currency} ${formatNumber(Math.abs(receivablesChange))}`;
-    receivablesDisplay.className = `bridge-value ${receivablesChange > 0 ? 'negative' : 'positive'}`;
+    const receivablesItem = document.getElementById('bridgeReceivablesItem');
+    if (receivablesChange !== 0) {
+        receivablesItem.style.display = 'flex';
+        receivablesDisplay.textContent = receivablesChange > 0 ? `- ${currency} ${formatNumber(receivablesChange)}` : `+ ${currency} ${formatNumber(Math.abs(receivablesChange))}`;
+        receivablesDisplay.className = `bridge-value ${receivablesChange > 0 ? 'negative' : 'positive'}`;
+        // Update label based on direction
+        receivablesItem.querySelector('.bridge-label').textContent = receivablesChange > 0 ? 'Customers haven\'t paid yet' : 'Customers paid old invoices';
+    } else {
+        receivablesItem.style.display = 'none';
+    }
 
-    // Inventory change (negative = cash trapped)
+    // Inventory
     const inventoryDisplay = document.getElementById('bridgeInventoryChange');
-    inventoryDisplay.textContent = inventoryChange >= 0 ? `- ${currency} ${formatNumber(inventoryChange)}` : `+ ${currency} ${formatNumber(Math.abs(inventoryChange))}`;
-    inventoryDisplay.className = `bridge-value ${inventoryChange > 0 ? 'negative' : 'positive'}`;
+    const inventoryItem = document.getElementById('bridgeInventoryItem');
+    if (inventoryChange !== 0) {
+        inventoryItem.style.display = 'flex';
+        inventoryDisplay.textContent = inventoryChange > 0 ? `- ${currency} ${formatNumber(inventoryChange)}` : `+ ${currency} ${formatNumber(Math.abs(inventoryChange))}`;
+        inventoryDisplay.className = `bridge-value ${inventoryChange > 0 ? 'negative' : 'positive'}`;
+        inventoryItem.querySelector('.bridge-label').textContent = inventoryChange > 0 ? 'Bought more stock' : 'Sold down stock';
+    } else {
+        inventoryItem.style.display = 'none';
+    }
 
-    // Payables change (positive = cash released)
+    // Payables
     const payablesDisplay = document.getElementById('bridgePayablesChange');
-    payablesDisplay.textContent = payablesChange >= 0 ? `+ ${currency} ${formatNumber(payablesChange)}` : `- ${currency} ${formatNumber(Math.abs(payablesChange))}`;
-    payablesDisplay.className = `bridge-value ${payablesChange >= 0 ? 'positive' : 'negative'}`;
+    const payablesItem = document.getElementById('bridgePayablesItem');
+    if (payablesChange !== 0) {
+        payablesItem.style.display = 'flex';
+        payablesDisplay.textContent = payablesChange >= 0 ? `+ ${currency} ${formatNumber(payablesChange)}` : `- ${currency} ${formatNumber(Math.abs(payablesChange))}`;
+        payablesDisplay.className = `bridge-value ${payablesChange >= 0 ? 'positive' : 'negative'}`;
+        payablesItem.querySelector('.bridge-label').textContent = payablesChange >= 0 ? 'Delayed paying suppliers' : 'Paid suppliers faster';
+    } else {
+        payablesItem.style.display = 'none';
+    }
 
-    // DSO/DIO/DPO hints removed - shown in separate "How fast does cash move" section
+    // Working Capital subtotal
+    const wcEffectDisplay = document.getElementById('bridgeWCEffect');
+    wcEffectDisplay.textContent = workingCapitalEffect >= 0 ? `+ ${currency} ${formatNumber(workingCapitalEffect)}` : `- ${currency} ${formatNumber(Math.abs(workingCapitalEffect))}`;
+    wcEffectDisplay.className = `bridge-value ${workingCapitalEffect >= 0 ? 'positive' : 'negative'}`;
 
-    // Non-P&L section
-    const nonPlSection = document.getElementById('bridgeNonPlSection');
-    if (hasNonPlItems) {
-        nonPlSection.style.display = 'block';
+    // === SECTION 3: Financing & Other ===
+    const financingSection = document.getElementById('bridgeFinancingSection');
+    if (hasFinancingItems) {
+        financingSection.style.display = 'block';
 
         const loanItem = document.getElementById('bridgeLoanItem');
         const drawingsItem = document.getElementById('bridgeDrawingsItem');
@@ -274,11 +299,16 @@ function updateCashBridge(current, previous, metrics, currency) {
         } else {
             assetsItem.style.display = 'none';
         }
+
+        // Financing subtotal
+        const financingEffectDisplay = document.getElementById('bridgeFinancingEffect');
+        financingEffectDisplay.textContent = `- ${currency} ${formatNumber(Math.abs(financingEffect))}`;
+        financingEffectDisplay.className = 'bridge-value negative';
     } else {
-        nonPlSection.style.display = 'none';
+        financingSection.style.display = 'none';
     }
 
-    // Cash movement result
+    // === RESULT: Cash Movement ===
     const cashMovementDisplay = document.getElementById('bridgeCashMovement');
     const cashMovementItem = cashMovementDisplay.closest('.bridge-item');
     cashMovementDisplay.textContent = cashMovement >= 0 ? `+ ${currency} ${formatNumber(cashMovement)}` : `- ${currency} ${formatNumber(Math.abs(cashMovement))}`;
@@ -292,52 +322,38 @@ function updateCashBridge(current, previous, metrics, currency) {
         document.getElementById('bridgeCashNote').textContent = 'Your bank balance decreased by this amount';
     }
 
-    // Summary
+    // === SUMMARY ===
     document.getElementById('bridgeSummaryProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
     document.getElementById('bridgeSummaryCash').textContent = `${currency} ${formatNumber(Math.abs(cashMovement))}`;
 
-    // Generate explanation - purely mechanical, no advice (advice belongs in Actions section)
-    // Build list of drivers sorted by size
-    const drivers = [];
-    if (receivablesChange > 0) drivers.push({ name: 'customers who haven\'t paid yet', amount: receivablesChange, type: 'out' });
-    if (receivablesChange < 0) drivers.push({ name: 'customers paying old invoices', amount: Math.abs(receivablesChange), type: 'in' });
-    if (inventoryChange > 0) drivers.push({ name: 'buying more stock', amount: inventoryChange, type: 'out' });
-    if (inventoryChange < 0) drivers.push({ name: 'selling down stock', amount: Math.abs(inventoryChange), type: 'in' });
-    if (payablesChange < 0) drivers.push({ name: 'paying suppliers faster', amount: Math.abs(payablesChange), type: 'out' });
-    if (payablesChange > 0) drivers.push({ name: 'delaying supplier payments', amount: payablesChange, type: 'in' });
-    if (loanRepayments > 0) drivers.push({ name: 'loan repayments', amount: loanRepayments, type: 'out' });
-    if (ownerDrawings > 0) drivers.push({ name: 'owner withdrawals', amount: ownerDrawings, type: 'out' });
-    if (assetPurchases > 0) drivers.push({ name: 'equipment purchases', amount: assetPurchases, type: 'out' });
-
-    // Sort by amount (biggest first)
-    drivers.sort((a, b) => b.amount - a.amount);
-
-    // Build explanation
+    // Generate explanation - purely mechanical
     let explanation = '';
-    const cashOutDrivers = drivers.filter(d => d.type === 'out');
-    const cashInDrivers = drivers.filter(d => d.type === 'in');
 
-    if (cashMovement < 0 && cashOutDrivers.length > 0) {
-        // Cash decreased - explain what pulled it out
-        const biggest = cashOutDrivers[0];
-        const others = cashOutDrivers.slice(1, 3).map(d => d.name);
-
-        explanation = `The biggest reason: ${biggest.name}.`;
-        if (others.length > 0) {
-            explanation += ` Also: ${others.join(' and ')}.`;
+    if (cashMovement < 0) {
+        // Cash decreased
+        const reasons = [];
+        if (workingCapitalEffect < 0) {
+            reasons.push(`working capital used ${currency} ${formatNumber(Math.abs(workingCapitalEffect))}`);
         }
-    } else if (cashMovement > 0 && cashInDrivers.length > 0) {
-        // Cash increased - explain what brought it in
-        const biggest = cashInDrivers[0];
-        explanation = `Most of that came from ${biggest.name}.`;
-    } else if (cashMovement >= 0 && netProfit > 0) {
-        explanation = 'Your profit turned into actual cash this month.';
-    } else if (drivers.length === 0) {
-        explanation = 'Cash movement matched your profit closely.';
+        if (financingEffect < 0 && hasFinancingItems) {
+            reasons.push(`financing & other used ${currency} ${formatNumber(Math.abs(financingEffect))}`);
+        }
+        if (reasons.length > 0) {
+            explanation = reasons.join(', and ') + '.';
+        } else {
+            explanation = 'Your operating loss reduced your cash.';
+        }
+    } else if (cashMovement > 0) {
+        // Cash increased
+        if (netProfit > 0 && workingCapitalEffect >= 0) {
+            explanation = 'Your profit turned into actual cash this month.';
+        } else if (workingCapitalEffect > 0) {
+            explanation = `Working capital released ${currency} ${formatNumber(workingCapitalEffect)} back to you.`;
+        } else {
+            explanation = 'Cash movement matched your profit closely.';
+        }
     } else {
-        // Mixed drivers
-        const topDrivers = drivers.slice(0, 2).map(d => d.name);
-        explanation = `Main factors: ${topDrivers.join(' and ')}.`;
+        explanation = 'Cash movement matched your profit closely.';
     }
 
     document.getElementById('bridgeSummaryExplanation').textContent = explanation;
@@ -530,9 +546,27 @@ function calculateMetrics(current, previous, days) {
     const dpo = cogs > 0 ? (payables / cogs) * days : 0;
     const ccc = dso + dio - dpo;
 
-    // Cash runway
-    const monthlyBurn = opex;
-    const cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : 0;
+    // Cash runway - based on actual cash movement (Perplexity formula)
+    // Net Burn = (Cash at Start - Cash at End) / Months
+    // If we have previous month cash, use actual burn; otherwise fallback to OPEX
+    let monthlyBurn = 0;
+    let cashRunway = 0;
+
+    if (previous && previous.cash !== undefined && previous.cash > 0) {
+        // Actual burn based on cash movement
+        monthlyBurn = previous.cash - cash; // Positive = burning, Negative = growing
+        if (monthlyBurn > 0) {
+            // Burning cash - calculate runway
+            cashRunway = cash / monthlyBurn;
+        } else {
+            // Cash is growing or stable - no burn
+            cashRunway = -1; // Special value: cash positive
+        }
+    } else {
+        // Fallback to OPEX-based estimate when no previous data
+        monthlyBurn = opex;
+        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : 0;
+    }
 
     // Changes
     const revenueChange = previous.revenue ? ((revenue - previous.revenue) / previous.revenue) * 100 : null;

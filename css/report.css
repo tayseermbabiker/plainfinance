@@ -2478,31 +2478,47 @@
     margin-bottom: 0;
 }
 
-.bridge-trapped {
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px dashed #fca5a5;
+/* Section 1: Operating */
+.bridge-operating {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid #93c5fd;
 }
 
-.bridge-trapped .bridge-group-label {
-    color: #dc2626;
+.bridge-operating .bridge-group-label {
+    color: #2563eb;
 }
 
-.bridge-released {
-    background: rgba(16, 185, 129, 0.08);
-    border: 1px dashed #6ee7b7;
+/* Section 2: Working Capital */
+.bridge-working-capital {
+    background: rgba(249, 115, 22, 0.08);
+    border: 1px solid #fdba74;
 }
 
-.bridge-released .bridge-group-label {
-    color: #059669;
+.bridge-working-capital .bridge-group-label {
+    color: #ea580c;
 }
 
-.bridge-nonpl {
+/* Section 3: Financing & Other */
+.bridge-financing {
     background: rgba(100, 116, 139, 0.08);
-    border: 1px dashed #94a3b8;
+    border: 1px solid #94a3b8;
 }
 
-.bridge-nonpl .bridge-group-label {
+.bridge-financing .bridge-group-label {
     color: #475569;
+}
+
+/* Subtotal rows */
+.bridge-subtotal {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.15);
+    font-weight: 600;
+}
+
+.bridge-subtotal .bridge-label {
+    font-weight: 600;
+    font-size: 13px;
 }
 
 .cash-bridge-summary {
