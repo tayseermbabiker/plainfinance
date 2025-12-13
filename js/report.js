@@ -584,31 +584,24 @@ function updateHeroSection(current, metrics, currency) {
 }
 
 function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = null) {
-    // Revenue
+    // Revenue - always show vs last month (YTD has its own section)
     document.getElementById('revenueValue').textContent = `${currency} ${formatNumber(current.revenue)}`;
     const revenueChangeEl = document.getElementById('revenueChange');
-    if (ytdMetrics) {
-        // Show YTD comparison
-        const vsYtdAvg = ytdMetrics.avgMonthlyRevenue > 0
-            ? ((current.revenue - ytdMetrics.avgMonthlyRevenue) / ytdMetrics.avgMonthlyRevenue * 100).toFixed(0)
-            : 0;
-        revenueChangeEl.textContent = `${vsYtdAvg >= 0 ? '▲' : '▼'} ${Math.abs(vsYtdAvg)}% vs YTD avg`;
-        revenueChangeEl.className = `metric-change ${vsYtdAvg >= 0 ? 'positive' : 'negative'}`;
-        updateMetricStatus('revenueMetric', vsYtdAvg >= -10 ? 'good' : 'warning');
-    } else if (metrics.revenueChange !== null) {
+    if (metrics.revenueChange !== null && metrics.revenueChange !== undefined) {
         revenueChangeEl.textContent = `${metrics.revenueChange >= 0 ? '▲' : '▼'} ${Math.abs(metrics.revenueChange).toFixed(1)}% vs last month`;
         revenueChangeEl.className = `metric-change ${metrics.revenueChange >= 0 ? 'positive' : 'negative'}`;
-        updateMetricStatus('revenueMetric', metrics.revenueChange >= 0 ? 'good' : 'warning');
+        updateMetricStatus('revenueMetric', metrics.revenueChange >= -10 ? 'good' : 'warning');
+    } else {
+        revenueChangeEl.textContent = 'No prior month data';
+        revenueChangeEl.className = 'metric-change neutral';
+        updateMetricStatus('revenueMetric', 'good');
     }
 
-    // Gross Margin - show current month, compare to YTD below
+    // Gross Margin - show current month with industry benchmark
     document.getElementById('grossMarginValue').textContent = `${metrics.grossMargin.toFixed(0)}%`;
     const marginChangeEl = document.getElementById('marginChange');
-    if (ytdMetrics) {
-        const gmDiff = (metrics.grossMargin - ytdMetrics.grossMargin).toFixed(0);
-        marginChangeEl.textContent = `${gmDiff >= 0 ? '▲' : '▼'} ${Math.abs(gmDiff)}% vs YTD (${ytdMetrics.grossMargin.toFixed(0)}%)`;
-        marginChangeEl.className = `metric-change ${gmDiff >= 0 ? 'positive' : 'negative'}`;
-    }
+    marginChangeEl.textContent = `Industry: 25-35% typical`;
+    marginChangeEl.className = 'metric-change neutral';
     const marginStatus = metrics.grossMargin >= 25 ? 'good' : metrics.grossMargin >= 15 ? 'warning' : 'danger';
     updateMetricStatus('marginMetric', marginStatus);
 
@@ -642,19 +635,14 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
         updateMetricStatus('runwayMetric', cashStatus);
     }
 
-    // Net Profit Margin (5th KPI)
+    // Net Profit Margin (5th KPI) - show industry benchmark (YTD has its own section)
     const netMarginEl = document.getElementById('netMarginValue');
     const netMarginChangeEl = document.getElementById('netMarginChange');
     if (netMarginEl) {
         netMarginEl.textContent = `${metrics.netMargin.toFixed(0)}%`;
-        if (ytdMetrics) {
-            const nmDiff = (metrics.netMargin - ytdMetrics.netMargin).toFixed(0);
-            netMarginChangeEl.textContent = `${nmDiff >= 0 ? '▲' : '▼'} ${Math.abs(nmDiff)}% vs YTD (${ytdMetrics.netMargin.toFixed(0)}%)`;
-            netMarginChangeEl.className = `metric-change ${nmDiff >= 0 ? 'positive' : 'negative'}`;
-        } else {
-            // Show industry benchmark range
-            netMarginChangeEl.textContent = `Industry: 5-15% typical`;
-        }
+        // Always show industry benchmark - YTD comparison is in separate YTD section
+        netMarginChangeEl.textContent = `Industry: 5-15% typical`;
+        netMarginChangeEl.className = 'metric-change neutral';
 
         // Status logic: Green if healthy for industry, Amber if low but positive, Red if near zero/negative
         let netMarginStatus = 'good';
@@ -863,7 +851,9 @@ function getDefaultBenchmarks(industry) {
 }
 
 function renderComparisonChart(current, previous, currency) {
-    const ctx = document.getElementById('comparisonChart').getContext('2d');
+    const chartEl = document.getElementById('comparisonChart');
+    if (!chartEl) return; // Skip if comparison chart section was removed
+    const ctx = chartEl.getContext('2d');
 
     new Chart(ctx, {
         type: 'bar',

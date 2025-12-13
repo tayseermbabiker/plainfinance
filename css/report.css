@@ -459,13 +459,42 @@
     margin-bottom: 24px;
 }
 
-/* ===== Hero Section (Did You Make Money?) ===== */
+/* ===== Hero Section (Did You Make a Profit?) ===== */
 
 .hero-section {
     background: linear-gradient(135deg, var(--report-primary) 0%, var(--report-secondary) 100%);
     color: var(--report-white);
     text-align: center;
     padding: 40px 28px;
+}
+
+/* Compact hero for tighter layout */
+.hero-section.hero-compact {
+    padding: 24px 28px;
+}
+
+.hero-section.hero-compact h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.hero-section.hero-compact .hero-amount .amount {
+    font-size: 36px;
+}
+
+.hero-section.hero-compact .hero-amount .currency {
+    font-size: 18px;
+}
+
+.hero-section.hero-compact .hero-explanation {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.hero-section.hero-compact .why-matters {
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-size: 13px;
 }
 
 .hero-section h2 {
