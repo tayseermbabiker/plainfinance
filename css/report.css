@@ -1582,6 +1582,11 @@
         max-width: 100%;
     }
 
+    /* Hide story-of-month in print */
+    .story-of-month {
+        display: none !important;
+    }
+
     .report-section {
         box-shadow: none;
         break-inside: avoid;
@@ -1591,6 +1596,35 @@
     .hero-section {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+        padding: 16px 20px !important;
+    }
+
+    .hero-section h2 {
+        font-size: 16px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .hero-section .hero-answer {
+        margin-bottom: 10px !important;
+    }
+
+    .hero-section .hero-status {
+        padding: 5px 12px !important;
+        font-size: 12px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .hero-section .hero-amount .amount {
+        font-size: 28px !important;
+    }
+
+    .hero-section .hero-amount .currency {
+        font-size: 14px !important;
+    }
+
+    .hero-section .hero-explanation {
+        font-size: 12px !important;
+        margin-bottom: 0 !important;
     }
 
     .action-list {
