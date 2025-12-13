@@ -260,10 +260,7 @@ function updateCashBridge(current, previous, metrics, currency) {
     payablesDisplay.textContent = payablesChange >= 0 ? `+ ${currency} ${formatNumber(payablesChange)}` : `- ${currency} ${formatNumber(Math.abs(payablesChange))}`;
     payablesDisplay.className = `bridge-value ${payablesChange >= 0 ? 'positive' : 'negative'}`;
 
-    // DSO/DIO/DPO hints
-    document.getElementById('bridgeDsoHint').textContent = `DSO: ${metrics.dso} days`;
-    document.getElementById('bridgeDioHint').textContent = `DIO: ${metrics.dio} days`;
-    document.getElementById('bridgeDpoHint').textContent = `DPO: ${metrics.dpo} days`;
+    // DSO/DIO/DPO hints removed - shown in separate "How fast does cash move" section
 
     // Non-P&L section
     const nonPlSection = document.getElementById('bridgeNonPlSection');

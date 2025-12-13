@@ -297,52 +297,49 @@
                 </div>
             </section>
 
-            <!-- Section 5.5: Cash Bridge (Why Profit ≠ Cash) -->
+            <!-- Section 5.5: Why Your Bank Balance Changed -->
             <section class="report-section cash-bridge-section" id="cashBridgeSection">
-                <h2>Cash Bridge: This Month</h2>
-                <p class="section-subtitle">A breakdown of where your cash went this month — shows exactly why profit on paper doesn't match your bank balance</p>
+                <h2>Why your bank balance changed</h2>
+                <p class="section-subtitle">Profit on paper doesn't always mean cash in your account. Here's where it went.</p>
 
                 <div class="cash-bridge">
                     <div class="bridge-item bridge-start">
-                        <div class="bridge-label">Net Profit (P&L)</div>
+                        <div class="bridge-label">Profit you made</div>
                         <div class="bridge-value positive" id="bridgeNetProfit">AED 55,000</div>
                         <div class="bridge-note">What you earned on paper</div>
                     </div>
 
                     <div class="bridge-group bridge-trapped">
-                        <div class="bridge-group-label">Cash Trapped In:</div>
+                        <div class="bridge-group-label">Cash stuck waiting:</div>
 
                         <div class="bridge-item">
                             <div class="bridge-label">
-                                <span>Receivables (customers owe you)</span>
-                                <span class="bridge-hint" id="bridgeDsoHint">DSO: 37 days</span>
+                                <span>Customers haven't paid yet</span>
                             </div>
                             <div class="bridge-value negative" id="bridgeReceivablesChange">- AED 42,000</div>
                         </div>
 
                         <div class="bridge-item">
                             <div class="bridge-label">
-                                <span>Inventory (stock bought)</span>
-                                <span class="bridge-hint" id="bridgeDioHint">DIO: 19 days</span>
+                                <span>Bought more stock</span>
                             </div>
                             <div class="bridge-value negative" id="bridgeInventoryChange">- AED 25,000</div>
                         </div>
                     </div>
 
                     <div class="bridge-group bridge-released">
-                        <div class="bridge-group-label">Cash Released By:</div>
+                        <div class="bridge-group-label">Cash you kept longer:</div>
 
                         <div class="bridge-item">
                             <div class="bridge-label">
-                                <span>Payables (you owe suppliers)</span>
-                                <span class="bridge-hint" id="bridgeDpoHint">DPO: 9 days</span>
+                                <span>Delayed paying suppliers</span>
                             </div>
                             <div class="bridge-value positive" id="bridgePayablesChange">+ AED 10,000</div>
                         </div>
                     </div>
 
                     <div class="bridge-group bridge-nonpl" id="bridgeNonPlSection" style="display: none;">
-                        <div class="bridge-group-label">Cash Used For (Not on P&L):</div>
+                        <div class="bridge-group-label">Other cash out:</div>
 
                         <div class="bridge-item" id="bridgeLoanItem" style="display: none;">
                             <div class="bridge-label">Loan repayments</div>
@@ -350,25 +347,25 @@
                         </div>
 
                         <div class="bridge-item" id="bridgeDrawingsItem" style="display: none;">
-                            <div class="bridge-label">Owner drawings / dividends</div>
+                            <div class="bridge-label">Owner withdrawals</div>
                             <div class="bridge-value negative" id="bridgeOwnerDrawings">- AED 0</div>
                         </div>
 
                         <div class="bridge-item" id="bridgeAssetsItem" style="display: none;">
-                            <div class="bridge-label">Equipment / asset purchases</div>
+                            <div class="bridge-label">Equipment purchases</div>
                             <div class="bridge-value negative" id="bridgeAssetPurchases">- AED 0</div>
                         </div>
 
                         <div class="bridge-item" id="bridgeSupplierItem" style="display: none;">
-                            <div class="bridge-label">Planned supplier payments (next 30 days)</div>
+                            <div class="bridge-label">Upcoming supplier payments</div>
                             <div class="bridge-value negative" id="bridgePlannedSupplierPayments">- AED 0</div>
                         </div>
                     </div>
 
                     <div class="bridge-item bridge-result">
-                        <div class="bridge-label">Actual Cash Movement</div>
+                        <div class="bridge-label">Your bank balance moved</div>
                         <div class="bridge-value" id="bridgeCashMovement">- AED 27,000</div>
-                        <div class="bridge-note" id="bridgeCashNote">Your bank balance changed by this amount</div>
+                        <div class="bridge-note" id="bridgeCashNote">This is the actual change in your account</div>
                     </div>
                 </div>
 
@@ -378,9 +375,7 @@
                 </div>
 
                 <div class="why-matters">
-                    <strong>Cash Runway vs Cash Bridge:</strong><br>
-                    <strong>Cash Runway</strong> = "How many months until we run out of cash?" — Your headline metric based on YTD average burn.<br>
-                    <strong>Cash Bridge</strong> = "Why did our cash change this month?" — The specific drivers (AR, AP, inventory, loans) that explain your monthly cash movement.
+                    <strong>Why this matters:</strong> Profitable businesses can still run out of cash. If customers pay slow or you stock up on inventory, your profit stays on paper while your bank account shrinks.
                 </div>
             </section>
 
