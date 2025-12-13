@@ -192,93 +192,74 @@ function updateCashBridge(current, previous, metrics, currency) {
         inventoryChange = (current.inventory || 0) - (previous.inventory || 0);
         payablesChange = (current.payables || 0) - (previous.payables || 0);
     } else {
-        // Estimate changes using DSO/DIO/DPO and revenue/COGS
         const dailyRevenue = (current.revenue || 0) / 30;
         const dailyCOGS = (current.cogs || 0) / 30;
-
-        if (metrics.dso > 30) {
-            receivablesChange = Math.round(dailyRevenue * (metrics.dso - 30) * 0.5);
-        }
-        if (metrics.dio > 30) {
-            inventoryChange = Math.round(dailyCOGS * (metrics.dio - 30) * 0.3);
-        }
-        if (metrics.dpo < 30) {
-            payablesChange = Math.round(dailyCOGS * (30 - metrics.dpo) * -0.3);
-        }
+        if (metrics.dso > 30) receivablesChange = Math.round(dailyRevenue * (metrics.dso - 30) * 0.5);
+        if (metrics.dio > 30) inventoryChange = Math.round(dailyCOGS * (metrics.dio - 30) * 0.3);
+        if (metrics.dpo < 30) payablesChange = Math.round(dailyCOGS * (30 - metrics.dpo) * -0.3);
     }
 
-    // Financing & Other items (Section 3)
+    // Big cash movements (loans, drawings, assets)
     const loanRepayments = current.loanRepayments || 0;
     const ownerDrawings = current.ownerDrawings || 0;
     const assetPurchases = current.assetPurchases || 0;
-    const hasFinancingItems = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0;
+    const hasBigMoves = loanRepayments > 0 || ownerDrawings > 0 || assetPurchases > 0;
 
-    // Calculate totals for each section
-    // Working Capital Effect = -ΔAR - ΔInventory + ΔAP
-    const workingCapitalEffect = -receivablesChange - inventoryChange + payablesChange;
+    // Calculate totals
+    const tiedUpTotal = receivablesChange + inventoryChange - payablesChange; // Positive = cash tied up
+    const bigMovesTotal = loanRepayments + ownerDrawings + assetPurchases;
+    const cashMovement = netProfit - tiedUpTotal - bigMovesTotal;
 
-    // Financing Effect = -(loans + drawings + assets)
-    const financingEffect = -(loanRepayments + ownerDrawings + assetPurchases);
+    // === STEP 1: Profit ===
+    const profitEl = document.getElementById('bridgeNetProfit');
+    profitEl.textContent = netProfit >= 0 ? `+ ${currency} ${formatNumber(netProfit)}` : `- ${currency} ${formatNumber(Math.abs(netProfit))}`;
+    profitEl.className = netProfit >= 0 ? 'positive' : 'negative';
 
-    // Total cash movement
-    const cashMovement = netProfit + workingCapitalEffect + financingEffect;
-
-    // === SECTION 1: Operating Result ===
-    document.getElementById('bridgeNetProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
-    document.getElementById('bridgeNetProfit').className = `bridge-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
-
-    // === SECTION 2: Working Capital Changes ===
-    // Receivables
-    const receivablesDisplay = document.getElementById('bridgeReceivablesChange');
+    // === STEP 2: Cash tied up in customers and stock ===
     const receivablesItem = document.getElementById('bridgeReceivablesItem');
+    const receivablesEl = document.getElementById('bridgeReceivablesChange');
     if (receivablesChange !== 0) {
         receivablesItem.style.display = 'flex';
-        receivablesDisplay.textContent = receivablesChange > 0 ? `- ${currency} ${formatNumber(receivablesChange)}` : `+ ${currency} ${formatNumber(Math.abs(receivablesChange))}`;
-        receivablesDisplay.className = `bridge-value ${receivablesChange > 0 ? 'negative' : 'positive'}`;
-        // Update label based on direction
-        receivablesItem.querySelector('.bridge-label').textContent = receivablesChange > 0 ? 'Customers haven\'t paid yet' : 'Customers paid old invoices';
+        receivablesItem.querySelector('span').textContent = receivablesChange > 0 ? 'Customers haven\'t paid you yet:' : 'Customers paid old invoices:';
+        receivablesEl.textContent = receivablesChange > 0 ? `- ${currency} ${formatNumber(receivablesChange)}` : `+ ${currency} ${formatNumber(Math.abs(receivablesChange))}`;
+        receivablesEl.className = receivablesChange > 0 ? 'negative' : 'positive';
     } else {
         receivablesItem.style.display = 'none';
     }
 
-    // Inventory
-    const inventoryDisplay = document.getElementById('bridgeInventoryChange');
     const inventoryItem = document.getElementById('bridgeInventoryItem');
+    const inventoryEl = document.getElementById('bridgeInventoryChange');
     if (inventoryChange !== 0) {
         inventoryItem.style.display = 'flex';
-        inventoryDisplay.textContent = inventoryChange > 0 ? `- ${currency} ${formatNumber(inventoryChange)}` : `+ ${currency} ${formatNumber(Math.abs(inventoryChange))}`;
-        inventoryDisplay.className = `bridge-value ${inventoryChange > 0 ? 'negative' : 'positive'}`;
-        inventoryItem.querySelector('.bridge-label').textContent = inventoryChange > 0 ? 'Bought more stock' : 'Sold down stock';
+        inventoryItem.querySelector('span').textContent = inventoryChange > 0 ? 'You bought more stock:' : 'You sold down stock:';
+        inventoryEl.textContent = inventoryChange > 0 ? `- ${currency} ${formatNumber(inventoryChange)}` : `+ ${currency} ${formatNumber(Math.abs(inventoryChange))}`;
+        inventoryEl.className = inventoryChange > 0 ? 'negative' : 'positive';
     } else {
         inventoryItem.style.display = 'none';
     }
 
-    // Payables
-    const payablesDisplay = document.getElementById('bridgePayablesChange');
     const payablesItem = document.getElementById('bridgePayablesItem');
+    const payablesEl = document.getElementById('bridgePayablesChange');
     if (payablesChange !== 0) {
         payablesItem.style.display = 'flex';
-        payablesDisplay.textContent = payablesChange >= 0 ? `+ ${currency} ${formatNumber(payablesChange)}` : `- ${currency} ${formatNumber(Math.abs(payablesChange))}`;
-        payablesDisplay.className = `bridge-value ${payablesChange >= 0 ? 'positive' : 'negative'}`;
-        payablesItem.querySelector('.bridge-label').textContent = payablesChange >= 0 ? 'Delayed paying suppliers' : 'Paid suppliers faster';
+        document.getElementById('bridgePayablesLabel').textContent = payablesChange > 0 ? 'Delayed paying suppliers:' : 'Paid suppliers faster:';
+        payablesEl.textContent = payablesChange > 0 ? `+ ${currency} ${formatNumber(payablesChange)}` : `- ${currency} ${formatNumber(Math.abs(payablesChange))}`;
+        payablesEl.className = payablesChange > 0 ? 'positive' : 'negative';
     } else {
         payablesItem.style.display = 'none';
     }
 
-    // Working Capital subtotal
-    const wcEffectDisplay = document.getElementById('bridgeWCEffect');
-    wcEffectDisplay.textContent = workingCapitalEffect >= 0 ? `+ ${currency} ${formatNumber(workingCapitalEffect)}` : `- ${currency} ${formatNumber(Math.abs(workingCapitalEffect))}`;
-    wcEffectDisplay.className = `bridge-value ${workingCapitalEffect >= 0 ? 'positive' : 'negative'}`;
+    // Tied up total
+    const tiedUpEl = document.getElementById('bridgeTiedUpTotal');
+    tiedUpEl.textContent = tiedUpTotal >= 0 ? `- ${currency} ${formatNumber(tiedUpTotal)}` : `+ ${currency} ${formatNumber(Math.abs(tiedUpTotal))}`;
+    tiedUpEl.className = tiedUpTotal >= 0 ? 'negative' : 'positive';
 
-    // === SECTION 3: Financing & Other ===
-    const financingSection = document.getElementById('bridgeFinancingSection');
-    if (hasFinancingItems) {
-        financingSection.style.display = 'block';
+    // === STEP 3: Big cash movements ===
+    const bigMovesSection = document.getElementById('bridgeBigMovesSection');
+    if (hasBigMoves) {
+        bigMovesSection.style.display = 'block';
 
         const loanItem = document.getElementById('bridgeLoanItem');
-        const drawingsItem = document.getElementById('bridgeDrawingsItem');
-        const assetsItem = document.getElementById('bridgeAssetsItem');
-
         if (loanRepayments > 0) {
             loanItem.style.display = 'flex';
             document.getElementById('bridgeLoanRepayments').textContent = `- ${currency} ${formatNumber(loanRepayments)}`;
@@ -286,6 +267,7 @@ function updateCashBridge(current, previous, metrics, currency) {
             loanItem.style.display = 'none';
         }
 
+        const drawingsItem = document.getElementById('bridgeDrawingsItem');
         if (ownerDrawings > 0) {
             drawingsItem.style.display = 'flex';
             document.getElementById('bridgeOwnerDrawings').textContent = `- ${currency} ${formatNumber(ownerDrawings)}`;
@@ -293,6 +275,7 @@ function updateCashBridge(current, previous, metrics, currency) {
             drawingsItem.style.display = 'none';
         }
 
+        const assetsItem = document.getElementById('bridgeAssetsItem');
         if (assetPurchases > 0) {
             assetsItem.style.display = 'flex';
             document.getElementById('bridgeAssetPurchases').textContent = `- ${currency} ${formatNumber(assetPurchases)}`;
@@ -300,63 +283,103 @@ function updateCashBridge(current, previous, metrics, currency) {
             assetsItem.style.display = 'none';
         }
 
-        // Financing subtotal
-        const financingEffectDisplay = document.getElementById('bridgeFinancingEffect');
-        financingEffectDisplay.textContent = `- ${currency} ${formatNumber(Math.abs(financingEffect))}`;
-        financingEffectDisplay.className = 'bridge-value negative';
+        document.getElementById('bridgeBigMovesTotal').textContent = `- ${currency} ${formatNumber(bigMovesTotal)}`;
     } else {
-        financingSection.style.display = 'none';
+        bigMovesSection.style.display = 'none';
     }
 
-    // === RESULT: Cash Movement ===
-    const cashMovementDisplay = document.getElementById('bridgeCashMovement');
-    const cashMovementItem = cashMovementDisplay.closest('.bridge-item');
-    cashMovementDisplay.textContent = cashMovement >= 0 ? `+ ${currency} ${formatNumber(cashMovement)}` : `- ${currency} ${formatNumber(Math.abs(cashMovement))}`;
-    cashMovementDisplay.className = `bridge-value ${cashMovement >= 0 ? 'positive' : 'negative'}`;
+    // === STEP 4: Final reconciliation ===
+    const finalProfitEl = document.getElementById('bridgeFinalProfit');
+    finalProfitEl.textContent = netProfit >= 0 ? `+ ${currency} ${formatNumber(netProfit)}` : `- ${currency} ${formatNumber(Math.abs(netProfit))}`;
+    finalProfitEl.className = netProfit >= 0 ? 'positive' : 'negative';
 
-    if (cashMovement >= 0) {
-        cashMovementItem.classList.add('positive-cash');
-        document.getElementById('bridgeCashNote').textContent = 'Your bank balance increased by this amount';
+    const finalTiedUpEl = document.getElementById('bridgeFinalTiedUp');
+    finalTiedUpEl.textContent = tiedUpTotal >= 0 ? `- ${currency} ${formatNumber(tiedUpTotal)}` : `+ ${currency} ${formatNumber(Math.abs(tiedUpTotal))}`;
+    finalTiedUpEl.className = tiedUpTotal >= 0 ? 'negative' : 'positive';
+
+    const finalBigMovesLine = document.getElementById('bridgeFinalBigMovesLine');
+    const finalBigMovesEl = document.getElementById('bridgeFinalBigMoves');
+    if (hasBigMoves) {
+        finalBigMovesLine.style.display = 'flex';
+        finalBigMovesEl.textContent = `- ${currency} ${formatNumber(bigMovesTotal)}`;
     } else {
-        cashMovementItem.classList.remove('positive-cash');
-        document.getElementById('bridgeCashNote').textContent = 'Your bank balance decreased by this amount';
+        finalBigMovesLine.style.display = 'none';
     }
 
-    // === SUMMARY ===
-    document.getElementById('bridgeSummaryProfit').textContent = `${currency} ${formatNumber(netProfit)}`;
-    document.getElementById('bridgeSummaryCash').textContent = `${currency} ${formatNumber(Math.abs(cashMovement))}`;
+    // Final total
+    const cashMovementEl = document.getElementById('bridgeCashMovement');
+    cashMovementEl.textContent = cashMovement >= 0 ? `+ ${currency} ${formatNumber(cashMovement)}` : `- ${currency} ${formatNumber(Math.abs(cashMovement))}`;
+    cashMovementEl.className = cashMovement >= 0 ? 'positive' : 'negative';
 
-    // Generate explanation - purely mechanical
-    let explanation = '';
+    // Update title based on cash direction
+    const titleEl = document.getElementById('bridgeTitle');
+    const subtitleEl = document.getElementById('bridgeSubtitle');
+    const finalHeaderEl = document.getElementById('bridgeFinalHeader');
 
     if (cashMovement < 0) {
-        // Cash decreased
-        const reasons = [];
-        if (workingCapitalEffect < 0) {
-            reasons.push(`working capital used ${currency} ${formatNumber(Math.abs(workingCapitalEffect))}`);
-        }
-        if (financingEffect < 0 && hasFinancingItems) {
-            reasons.push(`financing & other used ${currency} ${formatNumber(Math.abs(financingEffect))}`);
-        }
+        titleEl.textContent = 'Why your cash dropped this month';
+        subtitleEl.textContent = `Your bank balance fell by ${currency} ${formatNumber(Math.abs(cashMovement))}. Here's where the cash went.`;
+        finalHeaderEl.textContent = 'How your bank balance changed';
+    } else {
+        titleEl.textContent = 'Where did your cash go this month?';
+        subtitleEl.textContent = 'Start from your profit, then see how customers, stock, loans and big purchases changed your bank balance.';
+        finalHeaderEl.textContent = 'How your bank balance changed';
+    }
+
+    // === EXPLANATION ===
+    let explanation = '';
+    const reasons = [];
+
+    if (netProfit < 0) reasons.push('you made a loss');
+    else if (netProfit > 0) reasons.push('you made a profit');
+
+    if (tiedUpTotal > 0) reasons.push('cash got tied up in customers and stock');
+    if (hasBigMoves) reasons.push('large loan and equipment payments went out');
+
+    if (cashMovement < 0) {
         if (reasons.length > 0) {
-            explanation = reasons.join(', and ') + '.';
+            explanation = `Cash dropped because ${reasons.join(', ')}.`;
         } else {
-            explanation = 'Your operating loss reduced your cash.';
+            explanation = 'Cash dropped this month.';
         }
     } else if (cashMovement > 0) {
-        // Cash increased
-        if (netProfit > 0 && workingCapitalEffect >= 0) {
-            explanation = 'Your profit turned into actual cash this month.';
-        } else if (workingCapitalEffect > 0) {
-            explanation = `Working capital released ${currency} ${formatNumber(workingCapitalEffect)} back to you.`;
-        } else {
-            explanation = 'Cash movement matched your profit closely.';
-        }
+        explanation = 'Your profit turned into actual cash this month.';
     } else {
-        explanation = 'Cash movement matched your profit closely.';
+        explanation = 'Cash stayed roughly the same.';
     }
 
     document.getElementById('bridgeSummaryExplanation').textContent = explanation;
+
+    // === CASH WARNING (for severe drops) ===
+    const warningEl = document.getElementById('bridgeWarning');
+    const warningTitleEl = document.getElementById('bridgeWarningTitle');
+    const warningTextEl = document.getElementById('bridgeWarningText');
+    const endingCash = current.cash || 0;
+
+    // Show warning if cash dropped significantly (more than 50% of ending cash, or if ending cash is very low)
+    const severeDropThreshold = endingCash * 0.5;
+    const isSevereDrop = cashMovement < 0 && Math.abs(cashMovement) > severeDropThreshold;
+    const isLowCash = endingCash < (current.opex || 0); // Less than 1 month of expenses
+
+    if (isSevereDrop || isLowCash) {
+        warningEl.style.display = 'flex';
+
+        if (endingCash <= 0) {
+            warningTitleEl.textContent = 'URGENT: Cash is exhausted';
+            warningTextEl.textContent = 'Your ending cash is effectively zero or negative. You need immediate action (cut payments, raise cash, or both) to avoid bounced payments.';
+            warningEl.className = 'bridge-warning bridge-warning-critical';
+        } else if (isLowCash) {
+            warningTitleEl.textContent = 'Cash warning - running very low';
+            warningTextEl.textContent = `You have less than 1 month of expenses in the bank. This is a high-risk situation that needs urgent attention.`;
+            warningEl.className = 'bridge-warning bridge-warning-severe';
+        } else {
+            warningTitleEl.textContent = 'Cash warning - your bank balance plunged';
+            warningTextEl.textContent = 'This is a severe cash outflow. If this continues, you risk running out of cash soon.';
+            warningEl.className = 'bridge-warning bridge-warning-severe';
+        }
+    } else {
+        warningEl.style.display = 'none';
+    }
 }
 
 function updateActionsFromAPI(current, metrics, currency, analysis) {

@@ -2455,93 +2455,208 @@
     color: var(--report-gray-500);
 }
 
-.bridge-group {
-    margin: 8px 0;
-    padding: 16px;
-    border-radius: 10px;
+/* Cash Bridge Story Layout */
+.cash-bridge-story {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.bridge-group-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.bridge-step {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--report-gray-200);
+}
+
+.bridge-step-header {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--report-dark);
     margin-bottom: 12px;
-    padding-left: 20px;
 }
 
-.bridge-group .bridge-item {
-    margin-bottom: 6px;
+.bridge-step-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.bridge-group .bridge-item:last-child {
-    margin-bottom: 0;
+.bridge-step-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--report-gray-700);
 }
 
-/* Section 1: Operating */
-.bridge-operating {
-    background: rgba(59, 130, 246, 0.08);
-    border: 1px solid #93c5fd;
+.bridge-step-line span {
+    flex: 1;
 }
 
-.bridge-operating .bridge-group-label {
+.bridge-step-line strong {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.bridge-step-line strong.positive {
+    color: var(--report-good);
+}
+
+.bridge-step-line strong.negative {
+    color: var(--report-danger);
+}
+
+.bridge-step-subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--report-gray-300);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--report-dark);
+}
+
+.bridge-step-subtotal strong {
+    font-size: 16px;
+}
+
+.bridge-step-note {
+    font-size: 12px;
+    color: var(--report-gray-500);
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* Step 1: Profit */
+.bridge-step-profit {
+    background: rgba(59, 130, 246, 0.06);
+    border-color: #93c5fd;
+}
+
+.bridge-step-profit .bridge-step-header {
     color: #2563eb;
 }
 
-/* Section 2: Working Capital */
-.bridge-working-capital {
-    background: rgba(249, 115, 22, 0.08);
-    border: 1px solid #fdba74;
+/* Step 2: Cash tied up */
+.bridge-step-tiedup {
+    background: rgba(249, 115, 22, 0.06);
+    border-color: #fdba74;
 }
 
-.bridge-working-capital .bridge-group-label {
+.bridge-step-tiedup .bridge-step-header {
     color: #ea580c;
 }
 
-/* Section 3: Financing & Other */
-.bridge-financing {
-    background: rgba(100, 116, 139, 0.08);
-    border: 1px solid #94a3b8;
+/* Step 3: Big cash movements */
+.bridge-step-bigmoves {
+    background: rgba(100, 116, 139, 0.06);
+    border-color: #94a3b8;
 }
 
-.bridge-financing .bridge-group-label {
+.bridge-step-bigmoves .bridge-step-header {
     color: #475569;
 }
 
-/* Subtotal rows */
-.bridge-subtotal {
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px dashed rgba(0, 0, 0, 0.15);
-    font-weight: 600;
+/* Step 4: Final reconciliation */
+.bridge-step-final {
+    background: var(--report-gray-50);
+    border: 2px solid var(--report-dark);
 }
 
-.bridge-subtotal .bridge-label {
-    font-weight: 600;
-    font-size: 13px;
+.bridge-step-final .bridge-step-header {
+    font-size: 16px;
 }
 
-.cash-bridge-summary {
+.bridge-final-content {
     background: white;
-    border-radius: 10px;
-    padding: 20px;
-    border-left: 4px solid #f59e0b;
-    margin-bottom: 20px;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
 }
 
-.cash-bridge-summary p {
+.bridge-final-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 2px solid var(--report-dark);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--report-dark);
+}
+
+.bridge-final-total strong {
+    font-size: 20px;
+}
+
+.bridge-step-explanation {
     font-size: 14px;
     color: var(--report-gray-700);
     line-height: 1.6;
-    margin: 0 0 8px 0;
 }
 
-.cash-bridge-summary p:last-child {
-    margin-bottom: 0;
+/* Cash Warning */
+.bridge-warning {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 16px;
 }
 
-.cash-bridge-summary strong {
-    color: var(--report-dark);
+.bridge-warning-severe {
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid #ef4444;
+}
+
+.bridge-warning-critical {
+    background: rgba(220, 38, 38, 0.15);
+    border: 3px solid #dc2626;
+}
+
+.bridge-warning-icon {
+    width: 40px;
+    height: 40px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.bridge-warning-critical .bridge-warning-icon {
+    background: #dc2626;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.bridge-warning-content {
+    flex: 1;
+}
+
+.bridge-warning-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #dc2626;
+    margin-bottom: 6px;
+}
+
+.bridge-warning-text {
+    font-size: 14px;
+    color: var(--report-gray-700);
+    line-height: 1.5;
 }
 
 @media (max-width: 640px) {
