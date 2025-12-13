@@ -364,6 +364,67 @@
     flex: 1;
 }
 
+/* Story of the Month */
+.story-of-month {
+    background: var(--report-gray-900);
+    border-left: 4px solid var(--report-accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.story-of-month p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--report-gray-300);
+    font-style: italic;
+}
+
+/* Wins Celebration */
+.wins-celebration {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #a7f3d0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.wins-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #047857;
+    margin-bottom: 10px;
+}
+
+.wins-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.win-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1px solid #a7f3d0;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #065f46;
+}
+
+.win-badge::before {
+    content: "\\2713";
+    font-weight: 700;
+    color: #10b981;
+}
+
 @media (max-width: 640px) {
     .owner-summary {
         padding: 16px 20px;
@@ -1362,6 +1423,44 @@
 
 .talking-point.strength .point-label {
     color: #10b981;
+}
+
+/* Go Deeper Box */
+.go-deeper-box {
+    background: var(--report-gray-900);
+    border: 1px solid var(--report-gray-300);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.go-deeper-box h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--report-gray-100);
+}
+
+.go-deeper-box > p {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: var(--report-gray-400);
+}
+
+.go-deeper-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.go-deeper-box li {
+    font-size: 14px;
+    color: var(--report-gray-300);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.go-deeper-box li:last-child {
+    margin-bottom: 0;
 }
 
 .talking-point.risk .point-label {
