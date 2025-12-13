@@ -475,31 +475,44 @@
 
 /* Compact hero for tighter layout */
 .hero-section.hero-compact {
-    padding: 24px 28px;
+    padding: 16px 20px;
 }
 
 .hero-section.hero-compact h2 {
-    font-size: 18px;
-    margin-bottom: 12px;
-}
-
-.hero-section.hero-compact .hero-amount .amount {
-    font-size: 36px;
-}
-
-.hero-section.hero-compact .hero-amount .currency {
-    font-size: 18px;
-}
-
-.hero-section.hero-compact .hero-explanation {
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 8px;
 }
 
-.hero-section.hero-compact .why-matters {
-    padding: 12px 16px;
-    margin-top: 16px;
+.hero-section.hero-compact .hero-answer {
+    margin-bottom: 12px;
+}
+
+.hero-section.hero-compact .hero-status {
+    padding: 6px 14px;
     font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.hero-section.hero-compact .hero-amount {
+    margin-bottom: 8px;
+}
+
+.hero-section.hero-compact .hero-amount .amount {
+    font-size: 32px;
+}
+
+.hero-section.hero-compact .hero-amount .currency {
+    font-size: 16px;
+}
+
+.hero-section.hero-compact .hero-explanation {
+    font-size: 13px;
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+.hero-section.hero-compact .why-matters {
+    display: none; /* Hide the why-matters box in compact mode */
 }
 
 .hero-section h2 {
