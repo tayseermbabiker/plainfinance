@@ -1394,13 +1394,17 @@ function updateCashForecast(current, metrics, currency, period) {
         const heightPct = ((f.cash - minCash) / range) * 100;
         const isNegative = f.cash < 0;
         const statusClass = f.cash > monthlyBurn * 3 ? 'good' : f.cash > monthlyBurn ? 'warning' : 'danger';
+        // Show negative sign for negative values
+        const displayValue = isNegative
+            ? `- ${currency} ${formatNumber(f.cash)}`
+            : `${currency} ${formatNumber(f.cash)}`;
 
         return `
             <div class="forecast-month ${f.isNow ? 'current' : ''} ${statusClass}">
                 <div class="forecast-bar-container">
                     <div class="forecast-bar ${isNegative ? 'negative' : ''}" style="height: ${Math.max(heightPct, 10)}%"></div>
                 </div>
-                <div class="forecast-value ${isNegative ? 'negative' : ''}">${currency} ${formatNumber(f.cash)}</div>
+                <div class="forecast-value ${isNegative ? 'negative' : ''}">${displayValue}</div>
                 <div class="forecast-label">${f.label}</div>
             </div>
         `;
