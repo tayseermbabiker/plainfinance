@@ -277,6 +277,103 @@
     }
 }
 
+/* ===== Owner Summary Box (WhatsApp-ready) ===== */
+
+.owner-summary {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.summary-title {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+.copy-summary-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-summary-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.copy-summary-btn svg {
+    stroke: white;
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.summary-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.summary-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.summary-icon.good {
+    color: #4ade80;
+}
+
+.summary-icon.warning {
+    color: #fbbf24;
+}
+
+.summary-icon.danger {
+    color: #f87171;
+}
+
+.summary-text {
+    flex: 1;
+}
+
+@media (max-width: 640px) {
+    .owner-summary {
+        padding: 16px 20px;
+    }
+
+    .summary-line {
+        font-size: 14px;
+    }
+}
+
 /* ===== Report Sections ===== */
 
 .report-section {
@@ -2122,4 +2219,239 @@
     .bridge-item.bridge-start .bridge-value {
         align-self: center;
     }
+}
+
+/* ===== Blur/Lock Overlay for Non-Signed-Up Users ===== */
+
+.locked-content {
+    position: relative;
+}
+
+.locked-content .blur-content {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.locked-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(2px);
+    border-radius: 12px;
+    z-index: 10;
+    text-align: center;
+    padding: 24px;
+}
+
+.locked-overlay .lock-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--report-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.locked-overlay .lock-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: white;
+}
+
+.locked-overlay h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--report-dark);
+    margin: 0 0 8px 0;
+}
+
+.locked-overlay p {
+    font-size: 14px;
+    color: var(--report-gray-500);
+    margin: 0 0 16px 0;
+    max-width: 280px;
+}
+
+.locked-overlay .btn-signup {
+    background: var(--report-primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.locked-overlay .btn-signup:hover {
+    background: var(--report-secondary);
+}
+
+/* Blur specific metrics */
+.key-metric.locked {
+    position: relative;
+}
+
+.key-metric.locked .metric-value,
+.key-metric.locked .metric-change,
+.key-metric.locked .metric-why {
+    filter: blur(8px);
+    user-select: none;
+}
+
+.key-metric.locked .metric-lock-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30, 58, 95, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 5;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.key-metric.locked .metric-lock-overlay:hover {
+    background: var(--report-secondary);
+}
+
+/* Blur action items */
+.action-item.locked {
+    position: relative;
+}
+
+.action-item.locked .action-content {
+    filter: blur(8px);
+    user-select: none;
+}
+
+.action-item.locked .action-lock-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30, 58, 95, 0.95);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 5;
+    text-align: center;
+}
+
+.action-item.locked .action-lock-overlay a {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+/* Blur benchmark items */
+.benchmark-item.locked {
+    position: relative;
+}
+
+.benchmark-item.locked > *:not(.benchmark-lock-overlay) {
+    filter: blur(6px);
+    user-select: none;
+}
+
+.benchmark-item.locked .benchmark-lock-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30, 58, 95, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 5;
+}
+
+/* Section-level blur for forecast */
+.section-locked {
+    position: relative;
+    min-height: 200px;
+}
+
+.section-locked > *:not(.section-lock-overlay) {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.section-lock-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 32px 48px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    z-index: 10;
+}
+
+.section-lock-overlay .lock-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--report-primary), var(--report-secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.section-lock-overlay .lock-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: white;
+}
+
+.section-lock-overlay h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--report-dark);
+    margin: 0 0 8px 0;
+}
+
+.section-lock-overlay p {
+    font-size: 14px;
+    color: var(--report-gray-500);
+    margin: 0 0 20px 0;
+}
+
+.section-lock-overlay .btn-signup {
+    display: inline-block;
+    background: var(--report-primary);
+    color: white;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.section-lock-overlay .btn-signup:hover {
+    background: var(--report-secondary);
+    transform: translateY(-1px);
 }
