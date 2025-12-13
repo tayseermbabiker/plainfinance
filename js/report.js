@@ -99,8 +99,7 @@ function populateReportFromAPI(reportData) {
         // Owner Summary Box (WhatsApp-ready)
         updateOwnerSummary(current, metrics, currency, analysis);
 
-        // Story of the Month
-        updateStoryOfMonth(current, previous, metrics, currency);
+        // Story of the Month - removed (redundant with hero + metrics)
 
         // Wins Celebration
         updateWinsCelebration(current, previous, metrics);
@@ -140,23 +139,7 @@ function updateHeroSectionFromAPI(current, metrics, currency, analysis, ytdMetri
         `;
     }
 
-    // Add YTD context if available
-    if (ytdMetrics && ytdMetrics.avgMonthlyProfit) {
-        const vsYtdAvg = ((netProfit - ytdMetrics.avgMonthlyProfit) / Math.abs(ytdMetrics.avgMonthlyProfit || 1) * 100).toFixed(0);
-        const direction = vsYtdAvg >= 0 ? 'above' : 'below';
-        const directionIcon = vsYtdAvg >= 0 ? '▲' : '▼';
-
-        // Add YTD comparison badge
-        let ytdBadge = document.getElementById('heroYtdBadge');
-        if (!ytdBadge) {
-            ytdBadge = document.createElement('div');
-            ytdBadge.id = 'heroYtdBadge';
-            ytdBadge.className = 'hero-ytd-badge';
-            heroAnswer.appendChild(ytdBadge);
-        }
-        ytdBadge.className = `hero-ytd-badge ${vsYtdAvg >= 0 ? 'positive' : 'negative'}`;
-        ytdBadge.innerHTML = `${directionIcon} ${Math.abs(vsYtdAvg)}% ${direction} YTD monthly average`;
-    }
+    // YTD badge removed - YTD has its own section lower in the report
 }
 
 function updateCashFlowStoryFromAPI(metrics, currency, analysis) {
