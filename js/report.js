@@ -1047,18 +1047,42 @@ function updateYtdSummary(current, metrics, currency, ytdMetrics) {
     document.getElementById('ytdNetMargin').textContent = `${ytdMetrics.netMargin.toFixed(1)}%`;
     document.getElementById('ytdMonths').textContent = `${ytdMetrics.monthsElapsed} month${ytdMetrics.monthsElapsed > 1 ? 's' : ''}`;
 
-    // Populate MTD vs YTD comparison
+    // Populate MTD vs YTD comparison - plain English
     const revenueCompEl = document.getElementById('ytdRevenueComp');
-    revenueCompEl.textContent = `${revenueVsAvg >= 0 ? '▲' : '▼'} ${Math.abs(revenueVsAvg)}% vs avg`;
-    revenueCompEl.className = `ytd-comp ${revenueVsAvg >= 0 ? 'positive' : 'negative'}`;
+    if (revenueVsAvg > 15) {
+        revenueCompEl.textContent = 'Better than usual';
+        revenueCompEl.className = 'ytd-comp positive';
+    } else if (revenueVsAvg < -15) {
+        revenueCompEl.textContent = 'Below your usual';
+        revenueCompEl.className = 'ytd-comp negative';
+    } else {
+        revenueCompEl.textContent = 'About normal';
+        revenueCompEl.className = 'ytd-comp neutral';
+    }
 
     const profitCompEl = document.getElementById('ytdProfitComp');
-    profitCompEl.textContent = `${profitVsAvg >= 0 ? '▲' : '▼'} ${Math.abs(profitVsAvg)}% vs avg`;
-    profitCompEl.className = `ytd-comp ${profitVsAvg >= 0 ? 'positive' : 'negative'}`;
+    if (profitVsAvg > 15) {
+        profitCompEl.textContent = 'Better than usual';
+        profitCompEl.className = 'ytd-comp positive';
+    } else if (profitVsAvg < -15) {
+        profitCompEl.textContent = 'Below your usual';
+        profitCompEl.className = 'ytd-comp negative';
+    } else {
+        profitCompEl.textContent = 'About normal';
+        profitCompEl.className = 'ytd-comp neutral';
+    }
 
     const marginCompEl = document.getElementById('ytdMarginComp');
-    marginCompEl.textContent = `${marginDiff >= 0 ? '+' : ''}${marginDiff}% this month`;
-    marginCompEl.className = `ytd-comp ${marginDiff >= 0 ? 'positive' : 'negative'}`;
+    if (marginDiff > 2) {
+        marginCompEl.textContent = 'Better margins this month';
+        marginCompEl.className = 'ytd-comp positive';
+    } else if (marginDiff < -2) {
+        marginCompEl.textContent = 'Margins slipped this month';
+        marginCompEl.className = 'ytd-comp negative';
+    } else {
+        marginCompEl.textContent = 'Margins holding steady';
+        marginCompEl.className = 'ytd-comp neutral';
+    }
 
     // Generate insight
     const insightEl = document.getElementById('ytdInsight');

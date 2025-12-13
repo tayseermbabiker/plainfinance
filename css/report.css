@@ -2172,6 +2172,11 @@
     color: #dc2626;
 }
 
+.ytd-comp.neutral {
+    background: var(--report-gray-100);
+    color: var(--report-gray-600);
+}
+
 .ytd-insight {
     background: white;
     border-radius: 10px;
