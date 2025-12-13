@@ -1417,7 +1417,15 @@ function updateCashForecast(current, metrics, currency, period) {
     timeline.innerHTML = forecast.map((f, idx) => {
         const heightPct = ((f.cash - minCash) / range) * 100;
         const isNegative = f.cash < 0;
-        const statusClass = f.cash > monthlyBurn * 3 ? 'good' : f.cash > monthlyBurn ? 'warning' : 'danger';
+        // Color logic: Red only for negative, orange for low positive, green for healthy
+        let statusClass;
+        if (isNegative) {
+            statusClass = 'danger'; // Red only for negative cash
+        } else if (f.cash > monthlyBurn * 3) {
+            statusClass = 'good'; // Green: > 3 months runway
+        } else {
+            statusClass = 'warning'; // Orange: positive but < 3 months runway
+        }
         // Show negative sign for negative values
         const displayValue = isNegative
             ? `- ${currency} ${formatNumber(f.cash)}`
