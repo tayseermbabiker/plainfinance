@@ -362,7 +362,10 @@ function parseCSVTemplate(file) {
                     'vat paid': 'vatPaid',
                     'input vat': 'vatPaid',
                     'opening cash': 'openingCash',
-                    'opening cash (start of year)': 'openingCash',
+                    'opening cash (start of month)': 'openingCash',
+                    'cash at start of year': 'ytdStartingCash',
+                    'ytd starting cash': 'ytdStartingCash',
+                    'starting cash (ytd)': 'ytdStartingCash',
                     'loan repayments': 'loanRepayments',
                     'owner drawings': 'ownerDrawings',
                     'drawings': 'ownerDrawings',
@@ -401,7 +404,13 @@ function parseCSVTemplate(file) {
 
                     // Map to current month fields
                     if (fieldMap[fieldName]) {
-                        data.current[fieldMap[fieldName]] = thisMonthValue;
+                        const targetField = fieldMap[fieldName];
+                        // ytdStartingCash goes to ytd object, not current
+                        if (targetField === 'ytdStartingCash') {
+                            data.ytd.startingCash = thisMonthValue;
+                        } else {
+                            data.current[targetField] = thisMonthValue;
+                        }
                     }
 
                     // Map to YTD fields
@@ -666,12 +675,14 @@ function collectFormData() {
 
         // YTD data (Year to Date)
         const ytdRevenue = parseFloat(document.getElementById('ytdRevenue')?.value) || 0;
-        if (ytdRevenue > 0) {
+        const ytdStartingCash = parseFloat(document.getElementById('ytdStartingCash')?.value) || 0;
+        if (ytdRevenue > 0 || ytdStartingCash > 0) {
             data.ytd = {
                 revenue: ytdRevenue,
                 cogs: parseFloat(document.getElementById('ytdCogs')?.value) || 0,
                 opex: parseFloat(document.getElementById('ytdOpex')?.value) || 0,
-                netProfit: parseFloat(document.getElementById('ytdNetProfit')?.value) || 0
+                netProfit: parseFloat(document.getElementById('ytdNetProfit')?.value) || 0,
+                startingCash: ytdStartingCash
             };
             // Calculate months elapsed (current month number)
             const currentMonth = parseInt(document.getElementById('reportMonth')?.value) || 1;

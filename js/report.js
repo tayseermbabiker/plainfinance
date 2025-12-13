@@ -487,7 +487,8 @@ function populateReport(data) {
 
     if (current) {
         // Calculate all metrics
-        const metrics = calculateMetrics(current, previous, daysInMonth);
+        const ytd = data.ytd || {};
+        const metrics = calculateMetrics(current, previous, daysInMonth, ytd);
 
         // Section 1: Did You Make Money?
         updateHeroSection(current, metrics, currency);
@@ -514,7 +515,7 @@ function populateReport(data) {
     }
 }
 
-function calculateMetrics(current, previous, days) {
+function calculateMetrics(current, previous, days, ytd = {}) {
     const revenue = current.revenue || 0;
     const cogs = current.cogs || 0;
     const opex = current.opex || 0;
@@ -547,24 +548,40 @@ function calculateMetrics(current, previous, days) {
     const ccc = dso + dio - dpo;
 
     // Cash runway - based on actual cash movement (Perplexity formula)
-    // Net Burn = (Cash at Start - Cash at End) / Months
-    // If we have previous month cash, use actual burn; otherwise fallback to OPEX
+    // Priority: 1) YTD average burn, 2) Previous month burn, 3) OPEX fallback
     let monthlyBurn = 0;
     let cashRunway = 0;
+    let runwayMethod = 'opex'; // Track which method was used
 
-    if (previous && previous.cash !== undefined && previous.cash > 0) {
-        // Actual burn based on cash movement
-        monthlyBurn = previous.cash - cash; // Positive = burning, Negative = growing
+    // Priority 1: Use YTD average burn if we have starting cash and months elapsed
+    if (ytd && ytd.startingCash > 0 && ytd.monthsElapsed > 0) {
+        // Average Monthly Burn = (YTD Starting Cash - Current Cash) / Months Elapsed
+        const ytdBurn = ytd.startingCash - cash;
+        monthlyBurn = ytdBurn / ytd.monthsElapsed;
+        runwayMethod = 'ytd';
+
         if (monthlyBurn > 0) {
-            // Burning cash - calculate runway
             cashRunway = cash / monthlyBurn;
         } else {
-            // Cash is growing or stable - no burn
+            // Cash is growing over YTD period - no burn
             cashRunway = -1; // Special value: cash positive
         }
-    } else {
-        // Fallback to OPEX-based estimate when no previous data
+    }
+    // Priority 2: Use previous month burn if available
+    else if (previous && previous.cash !== undefined && previous.cash > 0) {
+        monthlyBurn = previous.cash - cash; // Positive = burning, Negative = growing
+        runwayMethod = 'monthly';
+
+        if (monthlyBurn > 0) {
+            cashRunway = cash / monthlyBurn;
+        } else {
+            cashRunway = -1; // Cash positive
+        }
+    }
+    // Priority 3: Fallback to OPEX-based estimate
+    else {
         monthlyBurn = opex;
+        runwayMethod = 'opex';
         cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : 0;
     }
 
@@ -578,7 +595,7 @@ function calculateMetrics(current, previous, days) {
         totalCurrentAssets, totalCurrentLiabilities, workingCapital,
         currentRatio, quickRatio,
         dso, dio, dpo, ccc,
-        cashRunway,
+        cashRunway, runwayMethod,
         revenueChange, profitChange, cashChange
     };
 }
@@ -646,6 +663,13 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
     const runwayValueEl = document.getElementById('runwayValue');
     const runwayChangeEl = document.getElementById('runwayChange');
 
+    // Determine method label for display
+    const methodLabel = {
+        'ytd': 'Based on YTD average burn',
+        'monthly': 'Based on last month burn',
+        'opex': 'Based on monthly expenses'
+    }[metrics.runwayMethod] || 'Based on monthly expenses';
+
     if (metrics.cashRunway === -1) {
         // Cash positive - no burn
         runwayValueEl.textContent = 'Cash positive';
@@ -653,12 +677,12 @@ function updateKeyMetrics(current, previous, metrics, currency, ytdMetrics = nul
         updateMetricStatus('runwayMetric', 'good');
     } else {
         runwayValueEl.textContent = `${metrics.cashRunway.toFixed(1)} months`;
-        // Calculate and show cash-out date
+        // Show method used and cash-out date
         const cashOutDate = new Date();
         cashOutDate.setMonth(cashOutDate.getMonth() + Math.floor(metrics.cashRunway));
         cashOutDate.setDate(cashOutDate.getDate() + Math.round((metrics.cashRunway % 1) * 30));
-        const dateStr = cashOutDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        runwayChangeEl.textContent = `Cash out by ~${dateStr}`;
+        const dateStr = cashOutDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        runwayChangeEl.textContent = `${methodLabel}`;
         updateMetricStatus('runwayMetric', cashStatus);
     }
 
