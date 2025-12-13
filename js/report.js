@@ -1034,7 +1034,15 @@ function updateYtdSummary(current, metrics, currency, ytdMetrics) {
 
     // Populate YTD values
     document.getElementById('ytdRevenue').textContent = `${currency} ${formatNumber(ytdMetrics.revenue)}`;
-    document.getElementById('ytdProfit').textContent = `${currency} ${formatNumber(ytdMetrics.netProfit)}`;
+    // Handle negative YTD profit properly
+    const ytdProfitEl = document.getElementById('ytdProfit');
+    if (ytdMetrics.netProfit < 0) {
+        ytdProfitEl.textContent = `- ${currency} ${formatNumber(ytdMetrics.netProfit)}`;
+        ytdProfitEl.classList.add('negative-value');
+    } else {
+        ytdProfitEl.textContent = `${currency} ${formatNumber(ytdMetrics.netProfit)}`;
+        ytdProfitEl.classList.remove('negative-value');
+    }
     document.getElementById('ytdGrossMargin').textContent = `${ytdMetrics.grossMargin.toFixed(1)}%`;
     document.getElementById('ytdNetMargin').textContent = `${ytdMetrics.netMargin.toFixed(1)}%`;
     document.getElementById('ytdMonths').textContent = `${ytdMetrics.monthsElapsed} month${ytdMetrics.monthsElapsed > 1 ? 's' : ''}`;

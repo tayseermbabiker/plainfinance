@@ -2150,6 +2150,10 @@
     margin-bottom: 8px;
 }
 
+.ytd-value.negative-value {
+    color: var(--report-danger);
+}
+
 .ytd-comp {
     font-size: 12px;
     font-weight: 500;
