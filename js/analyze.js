@@ -218,37 +218,41 @@ function formatNumber(num) {
 
 // ===== File Upload Handling =====
 
-const uploadZone = document.getElementById('uploadZone');
-const fileInput = document.getElementById('fileUpload');
-const uploadedFilesContainer = document.getElementById('uploadedFiles');
-const uploadContinueBtn = document.getElementById('uploadContinue');
+let uploadZone, fileInput, uploadedFilesContainer, uploadContinueBtn;
 
-if (uploadZone) {
-    // Click to upload
-    uploadZone.addEventListener('click', () => {
-        fileInput.click();
-    });
+function initFileUpload() {
+    uploadZone = document.getElementById('uploadZone');
+    fileInput = document.getElementById('fileUpload');
+    uploadedFilesContainer = document.getElementById('uploadedFiles');
+    uploadContinueBtn = document.getElementById('uploadContinue');
 
-    // Drag and drop
-    uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.classList.add('drag-over');
-    });
+    if (uploadZone) {
+        // Click to upload
+        uploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
 
-    uploadZone.addEventListener('dragleave', () => {
-        uploadZone.classList.remove('drag-over');
-    });
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
 
-    uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadZone.classList.remove('drag-over');
-        handleFiles(e.dataTransfer.files);
-    });
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-over');
+        });
 
-    // File input change
-    fileInput.addEventListener('change', () => {
-        handleFiles(fileInput.files);
-    });
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // File input change
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+    }
 }
 
 function handleFiles(files) {
@@ -853,6 +857,9 @@ function updateCashOutflows() {
 document.addEventListener('DOMContentLoaded', async () => {
     // No login required - anyone can generate a report
     // Non-logged-in users will see blurred sections in the final report
+
+    // Initialize file upload handling
+    initFileUpload();
 
     // Set current month/year as default
     const now = new Date();
