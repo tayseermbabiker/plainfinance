@@ -851,15 +851,8 @@ function updateCashOutflows() {
 // ===== Initialize =====
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check if user is logged in
-    if (typeof getUser === 'function') {
-        const user = await getUser();
-        if (!user) {
-            // Show login prompt
-            showLoginRequired();
-            return;
-        }
-    }
+    // No login required - anyone can generate a report
+    // Non-logged-in users will see blurred sections in the final report
 
     // Set current month/year as default
     const now = new Date();
