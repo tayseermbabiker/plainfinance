@@ -2544,7 +2544,7 @@ async function applyBlurStrategy() {
 async function checkIfUserLoggedIn() {
     // Check if Supabase is available
     if (typeof supabase === 'undefined' || !supabase) {
-        return true; // Allow if Supabase not loaded (testing mode)
+        return false; // Not logged in if Supabase not loaded
     }
 
     try {
@@ -2552,7 +2552,7 @@ async function checkIfUserLoggedIn() {
         return !!user;
     } catch (e) {
         console.error('Error checking auth:', e);
-        return true; // Allow on error
+        return false; // Assume not logged in on error
     }
 }
 
