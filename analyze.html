@@ -445,17 +445,16 @@
                         </div>
                     </div>
 
-                    <div class="form-group optional-field">
+                    <div class="form-group">
                         <label for="ytdStartingCash">
                             Cash at Start of Year
-                            <span class="tooltip" data-tip="Your bank balance on Jan 1st (or start of your YTD period). Helps calculate more accurate cash runway.">?</span>
-                            <span class="optional-badge">Optional</span>
+                            <span class="tooltip" data-tip="Your bank balance on Jan 1st (or start of your YTD period). Used to calculate cash runway.">?</span>
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="ytdStartingCash" name="ytdStartingCash" placeholder="0" min="0">
+                            <input type="number" id="ytdStartingCash" name="ytdStartingCash" placeholder="0" min="0" required>
                         </div>
-                        <small class="field-hint">Used to calculate average monthly cash burn for runway</small>
+                        <small class="field-hint">Your bank balance at the beginning of the year</small>
                     </div>
 
                     <div class="form-group">
