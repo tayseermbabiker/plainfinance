@@ -446,18 +446,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="ytdStartingCash">
-                            Cash at Start of Year
-                            <span class="tooltip" data-tip="Your bank balance on Jan 1st (or start of your YTD period). Used to calculate cash runway.">?</span>
-                        </label>
-                        <div class="input-with-currency">
-                            <span class="currency-prefix">AED</span>
-                            <input type="number" id="ytdStartingCash" name="ytdStartingCash" placeholder="0" min="0" required>
-                        </div>
-                        <small class="field-hint">Your bank balance at the beginning of the year</small>
-                    </div>
-
-                    <div class="form-group">
                         <label for="receivables">
                             Money Customers Owe You (AR)
                             <span class="tooltip" data-tip="Invoices you've sent but haven't been paid yet">?</span>
@@ -597,15 +585,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="openingCash">
-                            Opening Cash (Start of Year)
-                            <span class="tooltip" data-tip="How much cash did you have in the bank on January 1st (or start of your financial year)?">?</span>
+                        <label for="ytdStartingCash">
+                            Cash at Start of Year
+                            <span class="tooltip" data-tip="Your bank balance on Jan 1st (or start of your financial year). Used to calculate average monthly burn rate.">?</span>
                         </label>
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
-                            <input type="number" id="openingCash" name="openingCash" placeholder="0" min="0" required>
+                            <input type="number" id="ytdStartingCash" name="ytdStartingCash" placeholder="0" min="0" required>
                         </div>
-                        <small class="field-hint">Used to calculate your average monthly cash burn</small>
+                        <small class="field-hint">Used to calculate your cash runway</small>
                     </div>
 
                     <div class="form-group">

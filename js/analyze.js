@@ -365,8 +365,8 @@ function parseCSVTemplate(file) {
                     'output vat': 'vatCollected',
                     'vat paid': 'vatPaid',
                     'input vat': 'vatPaid',
-                    'opening cash': 'openingCash',
-                    'opening cash (start of month)': 'openingCash',
+                    'opening cash': 'ytdStartingCash',
+                    'opening cash (start of year)': 'ytdStartingCash',
                     'cash at start of year': 'ytdStartingCash',
                     'ytd starting cash': 'ytdStartingCash',
                     'starting cash (ytd)': 'ytdStartingCash',
@@ -669,8 +669,7 @@ function collectFormData() {
             otherLiabilities: parseFloat(document.getElementById('otherLiabilities')?.value) || 0,
             vatCollected: parseFloat(document.getElementById('vatCollected')?.value) || 0,
             vatPaid: parseFloat(document.getElementById('vatPaid')?.value) || 0,
-            // Cash Movements (for Cash Bridge and Runway analysis)
-            openingCash: parseFloat(document.getElementById('openingCash')?.value) || 0,
+            // Cash Movements (for Cash Bridge analysis)
             loanRepayments: parseFloat(document.getElementById('loanRepayments')?.value) || 0,
             ownerDrawings: parseFloat(document.getElementById('ownerDrawings')?.value) || 0,
             assetPurchases: parseFloat(document.getElementById('assetPurchases')?.value) || 0,
