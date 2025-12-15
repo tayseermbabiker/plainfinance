@@ -1,7 +1,7 @@
 // ===== PlainFinancials - Report Page Logic (Simplified Language) =====
 
 // Load data from localStorage (from API response)
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // First try the new API response format
     const storedReport = localStorage.getItem('plainfinance_report');
 
@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         month: 'long',
         day: 'numeric'
     });
+
+    // Apply blur strategy AFTER report is populated
+    setTimeout(() => applyBlurStrategy(), 100);
 });
 
 // Populate report from API response (includes AI analysis)
@@ -2557,32 +2560,76 @@ async function checkIfUserLoggedIn() {
 }
 
 function applyBlurToSections() {
-    // Sections to blur for non-logged-in users (to create intrigue)
-    const sectionsToBlur = [
-        { selector: '#actionList', label: 'Your 3 Actions' },
-        { selector: '.cash-forecast', label: 'Cash Forecast' },
-        { selector: '#meetingSummary', label: 'Bank Summary' }
-    ];
+    // Sneak peek strategy: Show first meaningful info, blur the rest
+    // This lets users see the value before signing up
 
-    sectionsToBlur.forEach(({ selector, label }) => {
-        const section = document.querySelector(selector);
-        if (section && !section.classList.contains('blurred-section')) {
-            section.classList.add('blurred-section');
+    // 1. Cash Bridge: Show profit step, blur the final reconciliation
+    const bridgeFinal = document.querySelector('#bridgeFinalSection');
+    if (bridgeFinal) {
+        applyPeekBlur(bridgeFinal, 'See how your bank balance changed');
+    }
 
-            // Add signup overlay
-            const overlay = document.createElement('div');
-            overlay.className = 'blur-signup-overlay';
-            overlay.innerHTML = `
-                <div class="blur-overlay-content">
-                    <h4>Sign up free to unlock</h4>
-                    <p>${label}</p>
-                    <a href="signup.html" class="btn-signup">Create Free Account</a>
-                </div>
-            `;
-            section.style.position = 'relative';
-            section.appendChild(overlay);
+    // 2. Actions: Show first action, blur actions 2 & 3
+    const actionItems = document.querySelectorAll('#actionList .action-item');
+    actionItems.forEach((item, index) => {
+        if (index >= 1) { // Blur 2nd and 3rd action
+            applyPeekBlur(item, index === 1 ? 'Action #2' : 'Action #3');
         }
     });
+
+    // 3. Cash Forecast: Show first month, blur months 2 & 3
+    const forecastMonths = document.querySelectorAll('.forecast-month');
+    forecastMonths.forEach((month, index) => {
+        if (index >= 1) {
+            applyPeekBlur(month, `Month ${index + 1} forecast`);
+        }
+    });
+
+    // 4. Cash Runway: Blur just the value, show the label
+    const runwayValue = document.querySelector('#runwayValue');
+    if (runwayValue) {
+        applyPeekBlur(runwayValue.parentElement, 'Cash Runway');
+    }
+
+    // 5. Bank Summary: Show strength, blur the risk
+    const summaryRisk = document.querySelector('#meetingSummary .talking-point.risk');
+    if (summaryRisk) {
+        applyPeekBlur(summaryRisk, 'Key Risk');
+    }
+
+    // 6. YTD: Show revenue, blur profit and margins
+    const ytdCards = document.querySelectorAll('.ytd-card');
+    ytdCards.forEach((card, index) => {
+        if (index >= 1) { // Blur profit and margins
+            applyPeekBlur(card, 'YTD Performance');
+        }
+    });
+
+    // 7. Benchmarks: Show first benchmark, blur the rest
+    const benchmarkItems = document.querySelectorAll('#benchmarkGrid .benchmark-item');
+    benchmarkItems.forEach((item, index) => {
+        if (index >= 1) {
+            applyPeekBlur(item, 'Industry Comparison');
+        }
+    });
+}
+
+function applyPeekBlur(element, label) {
+    if (!element || element.classList.contains('peek-blurred')) return;
+
+    element.classList.add('peek-blurred');
+    element.style.position = 'relative';
+
+    // Add the blur overlay with signup prompt
+    const overlay = document.createElement('div');
+    overlay.className = 'peek-blur-overlay';
+    overlay.innerHTML = `
+        <div class="peek-blur-content">
+            <span class="peek-lock">🔒</span>
+            <a href="signup.html" class="peek-unlock">Sign up free to see</a>
+        </div>
+    `;
+    element.appendChild(overlay);
 }
 
 function removeBlurOverlays() {
@@ -2590,14 +2637,13 @@ function removeBlurOverlays() {
     document.querySelectorAll('.blurred-section').forEach(el => {
         el.classList.remove('blurred-section');
     });
+    document.querySelectorAll('.peek-blurred').forEach(el => {
+        el.classList.remove('peek-blurred');
+    });
 
-    document.querySelectorAll('.blur-signup-overlay').forEach(el => {
+    document.querySelectorAll('.blur-signup-overlay, .peek-blur-overlay').forEach(el => {
         el.remove();
     });
 }
 
-// Apply blur strategy on page load
-document.addEventListener('DOMContentLoaded', () => {
-    // Delay slightly to ensure Supabase is loaded
-    setTimeout(applyBlurStrategy, 500);
-});
+// Blur strategy is now called from main DOMContentLoaded after report populates

@@ -2987,3 +2987,56 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
 }
+
+/* ===== Peek Blur - Show Sneak Peek Then Blur ===== */
+
+.peek-blurred {
+    position: relative;
+}
+
+.peek-blurred > *:not(.peek-blur-overlay) {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.peek-blur-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.95) 100%);
+    z-index: 10;
+    border-radius: 8px;
+}
+
+.peek-blur-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.peek-lock {
+    font-size: 14px;
+}
+
+.peek-unlock {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--report-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.peek-unlock:hover {
+    color: var(--report-primary-dark);
+    text-decoration: underline;
+}

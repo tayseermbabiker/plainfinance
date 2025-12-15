@@ -47,6 +47,80 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a5f'/><text x='50' y='65' font-size='50' fill='white' text-anchor='middle' font-family='Arial'>PF</text></svg>">
+
+    <!-- FAQ Schema Markup for Google Rich Results -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Why does my profit and loss statement say I made money, but my bank account feels empty?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Profit is an accounting concept that doesn't account for timing—when customers pay you vs when you pay suppliers. Your P&L might show profit, but if customers owe you money or you've stocked up on inventory, that cash isn't in your bank yet. PlainFinancials shows you exactly where your cash is tied up with a simple cash bridge explanation."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Which 5-6 numbers should I actually look at each month to understand my business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Focus on: Revenue (are sales growing?), Cost of Goods Sold (what it costs to deliver), Operating Expenses (overhead), Net Profit (what's left), Cash in Bank (can you pay bills?), and Accounts Receivable (money owed to you). These six numbers tell the complete story of your business health."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is cash runway and how do I calculate it for my small business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Cash runway is how many months your business can survive on its current cash, assuming no new income. Calculate it by dividing your cash in bank by your average monthly expenses (or burn rate). If you have $30,000 cash and spend $10,000/month, you have 3 months of runway."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Why is my cash always tight even when sales look good?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Three common reasons: customers are paying late (your money is stuck in receivables), you're holding too much inventory, or you're paying suppliers faster than customers pay you. This timing mismatch is called the cash conversion cycle."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is a profit and loss statement and what does it tell me?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A profit and loss statement (P&L) shows your business income minus expenses over a period—usually a month or year. It answers: Did I make or lose money? The top shows revenue, the middle shows costs (goods sold, salaries, rent, etc.), and the bottom shows net profit or loss."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How can I tell if my business is financially healthy without being a finance expert?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ask three simple questions: Am I profitable (net profit is positive)? Can I pay my bills for the next 3 months (cash runway)? Are customers paying me on time (receivables aren't growing out of control)? If yes to all three, you're in decent shape."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What financial reports should I ask my accountant for each month?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ask for three reports: Profit & Loss Statement (shows if you made money), Balance Sheet (shows what you own and owe), and Aged Receivables (shows who owes you money and how overdue). Most accounting software generates these automatically."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is PlainFinancials replacing my accountant?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No. Your accountant handles compliance—VAT filing, bookkeeping, annual returns. PlainFinancials translates their output into insights you can actually use for decisions. Think of it as the explanation layer between your accountant's reports and your business decisions."
+                }
+            }
+        ]
+    }
+    </script>
 </head>
 <body>
     <!-- Navigation -->
@@ -393,27 +467,117 @@ Current Ratio: 1.2
         </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="faq">
+    <!-- FAQ - SEO Optimized -->
+    <section class="faq" id="faq">
         <div class="container">
-            <h2 class="section-title">Questions & Answers</h2>
+            <h2 class="section-title">Common Questions About Financial Statements</h2>
             <div class="faq-list">
+                <!-- SEO Questions - Understanding Reports -->
                 <div class="faq-item">
                     <button class="faq-question">
-                        <span>Is this replacing my accountant?</span>
+                        <span>Why does my profit and loss statement say I made money, but my bank account feels empty?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>No. Your accountant handles compliance: VAT filing, bookkeeping, etc. We translate their output into insights you can actually use. Think of us as the explanation layer between your accountant and your decision-making.</p>
+                        <p>This is one of the most common frustrations for business owners. Profit is an accounting concept that doesn't account for timing—when customers pay you vs when you pay suppliers. Your P&L might show profit, but if customers owe you money or you've stocked up on inventory, that cash isn't in your bank yet. PlainFinancials shows you exactly where your cash is tied up with a simple "cash bridge" explanation.</p>
                     </div>
                 </div>
                 <div class="faq-item">
                     <button class="faq-question">
-                        <span>What numbers do I need?</span>
+                        <span>Which 5-6 numbers should I actually look at each month to understand my business?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Just 5-6 figures: Revenue, Cost of Goods Sold, Operating Expenses, Net Profit, Cash in Bank, and Accounts Receivable. You can get these from your accountant's monthly report or your accounting software.</p>
+                        <p>Focus on: Revenue (are sales growing?), Cost of Goods Sold (what it costs to deliver), Operating Expenses (overhead), Net Profit (what's left), Cash in Bank (can you pay bills?), and Accounts Receivable (money owed to you). These six numbers tell the complete story of your business health. Upload them to PlainFinancials and get a plain English explanation of what they mean together.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>I get monthly reports from my accountant but don't understand them. What should I focus on?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Start with three things: Are you profitable (net profit line)? Do you have enough cash to pay upcoming bills? Are customers paying you on time? Your accountant's report contains all this, but it's buried in accounting jargon. PlainFinancials reads your report and highlights exactly what changed and what it means for your business—no accounting knowledge needed.</p>
+                    </div>
+                </div>
+
+                <!-- SEO Questions - Cash Flow & Runway -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is cash runway and how do I calculate it for my small business?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Cash runway is how many months your business can survive on its current cash, assuming no new income. Calculate it by dividing your cash in bank by your average monthly expenses (or "burn rate"). If you have $30,000 cash and spend $10,000/month, you have 3 months of runway. PlainFinancials calculates this automatically from your numbers and warns you when runway gets dangerously low.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Why is my cash always tight even when sales look good?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Three common reasons: customers are paying late (your money is stuck in receivables), you're holding too much inventory, or you're paying suppliers faster than customers pay you. This timing mismatch is called the "cash conversion cycle." PlainFinancials analyzes your numbers and tells you exactly which of these is causing your cash crunch—and what to do about it.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How can I quickly see if I have enough cash to survive the next few months?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Look at your current cash balance, subtract any bills due in the next 30-60 days, and compare that to your monthly operating costs. If you have less than 2-3 months of expenses covered, you need to act fast. PlainFinancials does this math for you and gives you a clear "cash forecast" showing your projected balance for the next 3 months.</p>
+                    </div>
+                </div>
+
+                <!-- SEO Questions - P&L Statements -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is a profit and loss statement and what does it tell me?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>A profit and loss statement (P&L) shows your business income minus expenses over a period—usually a month or year. It answers: "Did I make or lose money?" The top shows revenue, the middle shows costs (goods sold, salaries, rent, etc.), and the bottom shows net profit or loss. PlainFinancials takes your P&L and explains each section in plain English, highlighting what's changed and why it matters.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Which lines on my P&L should I watch to know if my business is improving?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Watch these four: Revenue (is it growing?), Gross Margin (revenue minus cost of goods—are you pricing right?), Operating Expenses (is overhead under control?), and Net Profit (what's actually left). Compare each month to the previous month and same month last year. PlainFinancials highlights these comparisons automatically and tells you whether you're trending better or worse.</p>
+                    </div>
+                </div>
+
+                <!-- SEO Questions - Financial Health -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How can I tell if my business is financially healthy without being a finance expert?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Ask three simple questions: Am I profitable (net profit is positive)? Can I pay my bills for the next 3 months (cash runway)? Are customers paying me on time (receivables aren't growing out of control)? If yes to all three, you're in decent shape. PlainFinancials gives you a simple health score based on these factors and compares you to industry benchmarks—no finance degree required.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What financial reports should I ask my accountant for each month?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Ask for three reports: Profit & Loss Statement (shows if you made money), Balance Sheet (shows what you own and owe), and Aged Receivables (shows who owes you money and how overdue). Most accounting software generates these automatically. Upload any of these to PlainFinancials and get a one-page summary explaining what it all means in plain English.</p>
+                    </div>
+                </div>
+
+                <!-- Product Questions -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Is PlainFinancials replacing my accountant?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No. Your accountant handles compliance—VAT filing, bookkeeping, annual returns. We translate their output into insights you can actually use for decisions. Think of us as the explanation layer between your accountant's reports and your business decisions.</p>
                     </div>
                 </div>
                 <div class="faq-item">
@@ -422,16 +586,7 @@ Current Ratio: 1.2
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Absolutely. We use bank-level encryption, do not store your data longer than needed, and never share it with anyone. You can delete your data anytime.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question">
-                        <span>How accurate is the analysis?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>The calculations are precise, using standard financial ratios and formulas. The insights are based on your actual numbers and industry benchmarks. For major business decisions, we always recommend consulting with your accountant.</p>
+                        <p>Absolutely. We use bank-level encryption, don't store your data longer than needed, and never share it with third parties. You can delete your data anytime. Your numbers stay yours.</p>
                     </div>
                 </div>
             </div>
