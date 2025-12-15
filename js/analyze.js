@@ -889,7 +889,7 @@ function showLoginRequired() {
                 <a href="signup.html" class="btn btn-primary btn-lg">Create Free Account</a>
                 <a href="login.html" class="btn btn-secondary btn-lg">Log In</a>
             </div>
-            <p class="login-note">Free accounts get 2 reports. No credit card required.</p>
+            <p class="login-note">Free accounts get 1 full report. No credit card required.</p>
         </div>
     `;
 }
