@@ -1797,11 +1797,30 @@ function closeEmailModal() {
     document.getElementById('emailModal').classList.remove('active');
 }
 
+// ===== EmailJS Configuration =====
+// Sign up at https://www.emailjs.com/ (free 200 emails/month)
+// Replace these 3 values:
+const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';      // Account → API Keys
+const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';      // Email Services → Service ID
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';    // Email Templates → Template ID
+
+// Initialize EmailJS when configured
+if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+}
+
 async function sendEmail() {
     const emailInput = document.getElementById('emailAddress');
     const email = emailInput.value.trim();
     const statusEl = document.getElementById('emailStatus');
     const sendBtn = document.getElementById('sendEmailBtn');
+
+    // Check if EmailJS is configured
+    if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+        statusEl.textContent = 'Email service not configured yet.';
+        statusEl.className = 'modal-status error';
+        return;
+    }
 
     // Validate email
     if (!email || !email.includes('@')) {
@@ -1811,63 +1830,70 @@ async function sendEmail() {
     }
 
     // Show loading
-    statusEl.textContent = 'Generating PDF and sending...';
+    statusEl.textContent = 'Sending report summary...';
     statusEl.className = 'modal-status loading';
     sendBtn.disabled = true;
 
     try {
-        // Generate PDF as base64
-        const reportContainer = document.querySelector('.report-container');
-        const nav = document.querySelector('.nav-report');
-        nav.style.display = 'none';
+        const companyName = document.getElementById('companyName').textContent || 'Your Company';
+        const period = document.getElementById('reportPeriod').textContent || '';
+        const healthStatus = document.getElementById('healthStatus')?.textContent || '';
+        const netProfit = document.getElementById('netProfitAmount')?.textContent || '';
+        const currency = document.getElementById('currency')?.textContent || '';
+        const cashRunway = document.getElementById('runwayValue')?.textContent || '';
 
-        const options = {
-            margin: [10, 10, 10, 10],
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+        // Get summary points
+        const summaryProfit = document.getElementById('summaryProfit')?.textContent || '';
+        const summaryCash = document.getElementById('summaryCash')?.textContent || '';
+        const summaryAction = document.getElementById('summaryAction')?.textContent || '';
 
-        const pdfBlob = await html2pdf().set(options).from(reportContainer).outputPdf('blob');
-        nav.style.display = '';
+        // Build report summary
+        const reportSummary = `
+Company: ${companyName}
+Period: ${period}
+Status: ${healthStatus}
 
-        // Convert blob to base64
-        const reader = new FileReader();
-        reader.readAsDataURL(pdfBlob);
+KEY NUMBERS
+Net Profit: ${currency} ${netProfit}
+Cash Runway: ${cashRunway}
 
-        reader.onloadend = async () => {
-            const base64data = reader.result.split(',')[1];
-            const companyName = document.getElementById('companyName').textContent || 'Your Company';
-            const period = document.getElementById('reportPeriod').textContent || '';
+HIGHLIGHTS
+- ${summaryProfit}
+- ${summaryCash}
+- ${summaryAction}
 
-            // Send to API
-            const response = await fetch('/api/send-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: email,
-                    companyName: companyName,
-                    period: period,
-                    pdfBase64: base64data
-                })
-            });
+View full report: ${window.location.href}
+        `.trim();
 
-            const result = await response.json();
+        // Send via EmailJS
+        const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email: email,
+            company_name: companyName,
+            period: period,
+            health_status: healthStatus,
+            net_profit: `${currency} ${netProfit}`,
+            cash_runway: cashRunway,
+            summary_profit: summaryProfit,
+            summary_cash: summaryCash,
+            summary_action: summaryAction,
+            report_summary: reportSummary,
+            report_link: window.location.href
+        });
 
-            if (result.success) {
-                statusEl.textContent = 'Report sent successfully. Check your inbox.';
-                statusEl.className = 'modal-status success';
-                setTimeout(() => {
-                    closeEmailModal();
-                }, 2000);
-            } else {
-                throw new Error(result.error || 'Failed to send email');
-            }
-        };
+        if (response.status === 200) {
+            statusEl.textContent = 'Report summary sent! Check your inbox.';
+            statusEl.className = 'modal-status success';
+            setTimeout(() => {
+                closeEmailModal();
+                emailInput.value = '';
+            }, 2000);
+        } else {
+            throw new Error('Failed to send');
+        }
 
     } catch (error) {
         console.error('Email error:', error);
-        statusEl.textContent = 'Failed to send email. Please try again.';
+        statusEl.textContent = 'Failed to send. Please try again.';
         statusEl.className = 'modal-status error';
     } finally {
         sendBtn.disabled = false;
