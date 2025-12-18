@@ -1798,11 +1798,9 @@ function closeEmailModal() {
 }
 
 // ===== EmailJS Configuration =====
-// Sign up at https://www.emailjs.com/ (free 200 emails/month)
-// Replace these 3 values:
-const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';      // Account → API Keys
-const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';      // Email Services → Service ID
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';    // Email Templates → Template ID
+const EMAILJS_PUBLIC_KEY = 'iiNsT5dTdpWVFWXZo';
+const EMAILJS_SERVICE_ID = 'service_pqu7djh';
+const EMAILJS_TEMPLATE_ID = 'template_eyxdz78';
 
 // Initialize EmailJS when configured
 if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
