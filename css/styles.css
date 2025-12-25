@@ -27,7 +27,7 @@
     --radius: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
-    --section-spacing: 80px;
+    --section-spacing: 48px;
 }
 
 /* ===== Unified Page Flow ===== */
@@ -228,7 +228,7 @@ img {
 
 /* ===== Hero Section ===== */
 .hero {
-    padding: 140px 0 var(--section-spacing);
+    padding: 120px 0 32px;
     background: transparent;
 }
 
@@ -450,7 +450,7 @@ img {
 
 /* ===== Section Styles ===== */
 section {
-    padding: 80px 0;
+    padding: 48px 0;
 }
 
 .section-title {
@@ -463,7 +463,7 @@ section {
     font-size: 18px;
     color: var(--gray-600);
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
 }
 
 /* ===== Problem Section ===== */
@@ -476,7 +476,7 @@ section {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
-    margin-top: 48px;
+    margin-top: 32px;
 }
 
 .problem-card {
@@ -515,7 +515,7 @@ section {
 
 .solution-header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
 }
 
 .solution-comparison {
@@ -597,7 +597,7 @@ section {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 32px;
-    margin-top: 48px;
+    margin-top: 32px;
 }
 
 .step {
@@ -648,7 +648,7 @@ section {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    margin-top: 48px;
+    margin-top: 32px;
 }
 
 .feature-card {
@@ -703,7 +703,7 @@ section {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    margin-top: 48px;
+    margin-top: 32px;
 }
 
 .pricing-grid.pricing-single {
@@ -938,7 +938,7 @@ section {
 
 .faq-list {
     max-width: 700px;
-    margin: 48px auto 0;
+    margin: 32px auto 0;
 }
 
 .faq-item {
@@ -1353,8 +1353,8 @@ section {
 
 /* Hero Pain Points */
 .hero-problems {
-    margin-top: 60px;
-    padding-top: 40px;
+    margin-top: 40px;
+    padding-top: 32px;
     border-top: 1px solid var(--gray-200);
 }
 
