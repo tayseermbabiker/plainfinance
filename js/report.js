@@ -1,7 +1,25 @@
 // ===== PlainFinancials - Report Page Logic (Simplified Language) =====
 
+// Check if this is sample mode (from URL parameter)
+const urlParams = new URLSearchParams(window.location.search);
+const isSampleMode = urlParams.get('sample') === 'true';
+
 // Load data from localStorage (from API response)
 document.addEventListener('DOMContentLoaded', async () => {
+    // Sample mode: always show sample data, no blur
+    if (isSampleMode) {
+        populateReportWithSampleData();
+        showSampleBanner();
+        // Set generated date
+        document.getElementById('generatedDate').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        // No blur in sample mode - let visitors see the full report
+        return;
+    }
+
     // First try the new API response format
     const storedReport = localStorage.getItem('plainfinance_report');
 
@@ -30,6 +48,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Apply blur strategy AFTER report is populated
     setTimeout(() => applyBlurStrategy(), 100);
 });
+
+// Show sample report banner
+function showSampleBanner() {
+    const banner = document.createElement('div');
+    banner.className = 'sample-banner';
+    banner.innerHTML = `
+        <div class="sample-banner-content">
+            <span class="sample-badge">Sample Report</span>
+            <span class="sample-text">This is a demo report for Gulf Trading LLC. See what you will get.</span>
+            <a href="analyze.html" class="btn btn-primary btn-sm">Try With Your Numbers</a>
+        </div>
+    `;
+    document.body.insertBefore(banner, document.body.firstChild);
+}
 
 // Populate report from API response (includes AI analysis)
 function populateReportFromAPI(reportData) {
@@ -2552,20 +2584,16 @@ function updateGoDeeperBox(current, metrics) {
     list.innerHTML = topics.slice(0, 3).map(t => `<li>${t}</li>`).join('');
 }
 
-// ===== Blur Strategy for Non-Signup Users =====
+// ===== Blur Strategy (Disabled) =====
+// Blur is no longer needed because:
+// - Sample mode shows full report (for demo)
+// - Custom reports require signup (gated at analyze page)
+// - Logged-in users always see full report
 
 async function applyBlurStrategy() {
-    // Check if user is logged in
-    const isLoggedIn = await checkIfUserLoggedIn();
-
-    if (isLoggedIn) {
-        // Remove any blur overlays
-        removeBlurOverlays();
-        return;
-    }
-
-    // Apply blur to specific sections for non-logged-in users
-    applyBlurToSections();
+    // Always show full report - no blur needed
+    removeBlurOverlays();
+    return;
 }
 
 async function checkIfUserLoggedIn() {

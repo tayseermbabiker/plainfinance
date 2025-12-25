@@ -854,10 +854,16 @@ function updateCashOutflows() {
 // ===== Initialize =====
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // No login required - anyone can generate a report
-    // Non-logged-in users will see blurred sections in the final report
+    // Check if user is logged in - signup required to analyze
+    const isLoggedIn = await checkUserLoggedIn();
 
-    // Initialize file upload handling
+    if (!isLoggedIn) {
+        // Show signup prompt instead of form
+        showLoginRequired();
+        return;
+    }
+
+    // User is logged in - initialize the form
     initFileUpload();
 
     // Set current month/year as default
@@ -871,6 +877,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateProgress(1);
 });
 
+// Check if user is logged in
+async function checkUserLoggedIn() {
+    // Check if Supabase is available
+    if (typeof getUser !== 'function') {
+        return false;
+    }
+
+    try {
+        const user = await getUser();
+        return !!user;
+    } catch (e) {
+        console.error('Error checking auth:', e);
+        return false;
+    }
+}
+
 function showLoginRequired() {
     const container = document.querySelector('.analyze-container');
     if (!container) return;
@@ -879,17 +901,24 @@ function showLoginRequired() {
         <div class="login-required">
             <div class="login-icon">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
             </div>
-            <h1>Sign in to continue</h1>
-            <p>Create a free account to generate your financial report. It only takes a minute.</p>
+            <h1>Sign up to analyze your numbers</h1>
+            <p>Create a free account to generate your personalized financial report. See exactly where your cash is going and what to do about it.</p>
             <div class="login-actions">
                 <a href="signup.html" class="btn btn-primary btn-lg">Create Free Account</a>
                 <a href="login.html" class="btn btn-secondary btn-lg">Log In</a>
             </div>
             <p class="login-note">Free accounts get 1 full report. No credit card required.</p>
+            <div class="login-sample">
+                <p>Want to see what you will get first?</p>
+                <a href="report.html?sample=true" class="sample-link">View Sample Report</a>
+            </div>
         </div>
     `;
 }

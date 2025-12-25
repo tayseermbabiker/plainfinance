@@ -1236,3 +1236,87 @@ section {
         grid-column: 2;
     }
 }
+
+/* ===== Sample Report Banner ===== */
+.sample-banner {
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    color: white;
+    padding: 12px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.sample-banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.sample-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sample-text {
+    font-size: 14px;
+}
+
+.sample-banner .btn {
+    background: white;
+    color: var(--primary);
+    border: none;
+    font-weight: 600;
+}
+
+.sample-banner .btn:hover {
+    background: var(--gray-100);
+}
+
+@media (max-width: 640px) {
+    .sample-banner-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+}
+
+/* ===== Login Required / Sample Link ===== */
+.login-sample {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    text-align: center;
+}
+
+.login-sample p {
+    color: var(--gray-500);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.sample-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sample-link:hover {
+    text-decoration: underline;
+}
+
+.sample-link::after {
+    content: "→";
+}
