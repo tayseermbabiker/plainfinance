@@ -56,7 +56,7 @@ function showSampleBanner() {
     banner.innerHTML = `
         <div class="sample-banner-content">
             <span class="sample-badge">Sample Report</span>
-            <span class="sample-text">This is a demo report for Gulf Trading LLC. See what you will get.</span>
+            <span class="sample-text">This is a demo report for Atlas Retail Inc. See what you will get.</span>
             <a href="analyze.html" class="btn btn-primary btn-sm">Try With Your Numbers</a>
         </div>
     `;
@@ -497,10 +497,10 @@ function updateTalkingPoints(metrics, current, currency) {
 function populateReportWithSampleData() {
     const sampleData = {
         company: {
-            name: 'Gulf Trading LLC',
+            name: 'Atlas Retail Inc',
             industry: 'product',
             period: { month: '11', year: '2024' },
-            currency: 'AED'
+            currency: 'USD'
         },
         current: {
             revenue: 500000,
@@ -561,6 +561,9 @@ function populateReport(data) {
 
         // Section 4: Cash Flow Story
         updateCashFlowStory(metrics, currency);
+
+        // Section 4.5: Cash Bridge (Why Profit ≠ Cash)
+        updateCashBridge(current, previous, metrics, currency);
 
         // Section 5: Actions
         updateActions(current, metrics, currency);
