@@ -27,6 +27,17 @@
     --radius: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
+    --section-spacing: 80px;
+}
+
+/* ===== Unified Page Flow ===== */
+body {
+    background: linear-gradient(180deg,
+        var(--gray-50) 0%,
+        var(--white) 15%,
+        var(--white) 85%,
+        var(--gray-50) 100%
+    );
 }
 
 /* ===== Reset & Base ===== */
@@ -45,7 +56,6 @@ body {
     font-size: 16px;
     line-height: 1.6;
     color: var(--gray-700);
-    background-color: var(--white);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -218,8 +228,8 @@ img {
 
 /* ===== Hero Section ===== */
 .hero {
-    padding: 140px 0 80px;
-    background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+    padding: 140px 0 var(--section-spacing);
+    background: transparent;
 }
 
 .hero .container {
@@ -458,7 +468,8 @@ section {
 
 /* ===== Problem Section ===== */
 .problem {
-    background: var(--white);
+    background: transparent;
+    padding: var(--section-spacing) 0;
 }
 
 .problem-grid {
@@ -498,7 +509,8 @@ section {
 
 /* ===== Solution Section ===== */
 .solution {
-    background: var(--gray-50);
+    background: transparent;
+    padding: var(--section-spacing) 0;
 }
 
 .solution-header {
@@ -578,7 +590,7 @@ section {
 
 /* ===== How It Works ===== */
 .how-it-works {
-    background: var(--white);
+    background: transparent;
 }
 
 .steps {
@@ -629,7 +641,7 @@ section {
 
 /* ===== Features Section ===== */
 .features {
-    background: var(--gray-50);
+    background: transparent;
 }
 
 .features-grid {
@@ -684,7 +696,7 @@ section {
 
 /* ===== Pricing Section ===== */
 .pricing {
-    background: var(--white);
+    background: transparent;
 }
 
 .pricing-grid {
@@ -857,7 +869,7 @@ section {
 
 /* ===== About Section ===== */
 .about {
-    background: var(--gray-50);
+    background: transparent;
 }
 
 .about-content {
@@ -921,7 +933,7 @@ section {
 
 /* ===== FAQ Section ===== */
 .faq {
-    background: var(--white);
+    background: transparent;
 }
 
 .faq-list {
