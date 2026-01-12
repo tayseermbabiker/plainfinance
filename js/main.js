@@ -163,3 +163,74 @@ document.querySelectorAll('.pricing-card').forEach(card => {
 console.log('%c PlainFinancials ', 'background: #2563eb; color: white; font-size: 24px; font-weight: bold; padding: 10px;');
 console.log('%c Your numbers, finally explained. ', 'color: #64748b; font-size: 14px;');
 console.log('%c Built by Tayseer Mohammed, FCCA ', 'color: #64748b; font-size: 12px;');
+
+// ===== Exit Intent Popup =====
+(function() {
+    const exitPopup = document.getElementById('exitPopup');
+    const exitPopupClose = document.getElementById('exitPopupClose');
+    const exitPopupDismiss = document.getElementById('exitPopupDismiss');
+
+    if (!exitPopup) return;
+
+    let exitIntentShown = false;
+    const STORAGE_KEY = 'exitPopupDismissed';
+    const DISMISS_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+    // Check if popup was recently dismissed
+    function wasRecentlyDismissed() {
+        const dismissed = localStorage.getItem(STORAGE_KEY);
+        if (!dismissed) return false;
+        const dismissedTime = parseInt(dismissed, 10);
+        return (Date.now() - dismissedTime) < DISMISS_DURATION;
+    }
+
+    // Show popup
+    function showExitPopup() {
+        if (exitIntentShown || wasRecentlyDismissed()) return;
+        exitIntentShown = true;
+        exitPopup.classList.add('active');
+    }
+
+    // Hide popup
+    function hideExitPopup(saveDismissal) {
+        exitPopup.classList.remove('active');
+        if (saveDismissal) {
+            localStorage.setItem(STORAGE_KEY, Date.now().toString());
+        }
+    }
+
+    // Exit intent detection (desktop - cursor leaves viewport at top)
+    document.addEventListener('mouseout', function(e) {
+        if (e.clientY < 10 && e.relatedTarget === null) {
+            showExitPopup();
+        }
+    });
+
+    // Close button
+    if (exitPopupClose) {
+        exitPopupClose.addEventListener('click', function() {
+            hideExitPopup(true);
+        });
+    }
+
+    // Dismiss button
+    if (exitPopupDismiss) {
+        exitPopupDismiss.addEventListener('click', function() {
+            hideExitPopup(true);
+        });
+    }
+
+    // Click outside to close
+    exitPopup.addEventListener('click', function(e) {
+        if (e.target === exitPopup) {
+            hideExitPopup(true);
+        }
+    });
+
+    // Escape key to close
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && exitPopup.classList.contains('active')) {
+            hideExitPopup(true);
+        }
+    });
+})();

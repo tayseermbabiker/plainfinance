@@ -117,13 +117,13 @@ img {
 .btn-secondary {
     background: var(--white);
     color: var(--gray-700);
-    border: 1px solid var(--gray-300);
+    border: 2px solid var(--gray-400);
 }
 
 .btn-secondary:hover {
     background: var(--gray-50);
     color: var(--gray-900);
-    border-color: var(--gray-400);
+    border-color: var(--gray-600);
 }
 
 .btn-sm {
@@ -1386,4 +1386,93 @@ section {
         margin-top: 40px;
         padding-top: 30px;
     }
+}
+
+/* ===== Exit Intent Popup ===== */
+.exit-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.exit-popup-overlay.active {
+    display: flex;
+}
+
+.exit-popup {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-xl);
+    animation: popupSlideIn 0.3s ease-out;
+}
+
+@keyframes popupSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.exit-popup-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--gray-400);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+}
+
+.exit-popup-close:hover {
+    color: var(--gray-600);
+}
+
+.exit-popup h3 {
+    font-size: 24px;
+    margin-bottom: 12px;
+    color: var(--gray-900);
+}
+
+.exit-popup p {
+    color: var(--gray-600);
+    margin-bottom: 24px;
+    font-size: 16px;
+}
+
+.exit-popup .btn {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.exit-popup-dismiss {
+    background: none;
+    border: none;
+    color: var(--gray-500);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.exit-popup-dismiss:hover {
+    color: var(--gray-700);
 }
