@@ -581,6 +581,21 @@
     line-height: 1.6;
 }
 
+.benchmark-note {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.benchmark-note:empty {
+    display: none;
+}
+
 .hero-section .why-matters {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
@@ -1568,9 +1583,120 @@
 
 /* ===== Print Styles ===== */
 
+/* ===== PDF Export Mode ===== */
+.pdf-export-mode {
+    background: white !important;
+}
+
+.pdf-export-mode .nav-report,
+.pdf-export-mode .story-of-month,
+.pdf-export-mode .scenario-builder,
+.pdf-export-mode .report-actions,
+.pdf-export-mode .sample-banner,
+.pdf-export-mode .modal,
+.pdf-export-mode .tooltip,
+.pdf-export-mode #investorSummary {
+    display: none !important;
+}
+
+.pdf-export-mode .report-main {
+    padding-top: 0;
+    background: white;
+}
+
+.pdf-export-mode .report-container {
+    max-width: 100%;
+    padding: 0;
+}
+
+.pdf-export-mode .report-section {
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 16px;
+    page-break-inside: avoid;
+}
+
+.pdf-export-mode .hero-section {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color: white !important;
+    padding: 24px !important;
+    border: none;
+}
+
+.pdf-export-mode .hero-section * {
+    color: white !important;
+}
+
+.pdf-export-mode .hero-status {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.pdf-export-mode .key-metrics {
+    gap: 12px;
+}
+
+.pdf-export-mode .key-metric {
+    padding: 16px;
+}
+
+.pdf-export-mode .action-card {
+    page-break-inside: avoid;
+}
+
+.pdf-export-mode .meeting-summary {
+    page-break-inside: avoid;
+}
+
+.pdf-export-mode h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.pdf-export-mode .section-subtitle {
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+/* Add company header for PDF */
+.pdf-header {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    border-bottom: 2px solid #1e3a5f;
+    margin-bottom: 20px;
+}
+
+.pdf-export-mode .pdf-header {
+    display: block;
+}
+
+.pdf-header h1 {
+    font-size: 24px;
+    color: #1e3a5f;
+    margin-bottom: 4px;
+}
+
+.pdf-header .pdf-period {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.pdf-header .pdf-generated {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 8px;
+}
+
 @media print {
-    .nav-report {
-        display: none;
+    .nav-report,
+    .story-of-month,
+    .scenario-builder,
+    .report-actions,
+    .sample-banner,
+    .modal {
+        display: none !important;
     }
 
     .report-main {
@@ -1580,11 +1706,6 @@
 
     .report-container {
         max-width: 100%;
-    }
-
-    /* Hide story-of-month in print */
-    .story-of-month {
-        display: none !important;
     }
 
     .report-section {

@@ -174,6 +174,12 @@ function updateHeroSectionFromAPI(current, metrics, currency, analysis, ytdMetri
         `;
     }
 
+    // Display benchmark comparison note if available
+    const benchmarkEl = document.getElementById('benchmarkNote');
+    if (benchmarkEl && analysis && analysis.benchmarkNote) {
+        benchmarkEl.textContent = analysis.benchmarkNote;
+    }
+
     // YTD badge removed - YTD has its own section lower in the report
 }
 
@@ -1801,21 +1807,33 @@ async function downloadPDF() {
     const period = document.getElementById('reportPeriod').textContent || '';
     const filename = `${companyName.replace(/\s+/g, '_')}_${period.replace(/\s+/g, '_')}.pdf`;
 
-    // Hide nav for PDF
-    const nav = document.querySelector('.nav-report');
-    nav.style.display = 'none';
+    // Enter PDF export mode
+    document.body.classList.add('pdf-export-mode');
+
+    // Populate PDF header
+    const pdfCompanyName = document.getElementById('pdfCompanyName');
+    const pdfPeriod = document.getElementById('pdfPeriod');
+    const pdfDate = document.getElementById('pdfDate');
+    if (pdfCompanyName) pdfCompanyName.textContent = companyName;
+    if (pdfPeriod) pdfPeriod.textContent = period;
+    if (pdfDate) pdfDate.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const options = {
-        margin: [10, 10, 10, 10],
+        margin: [15, 15, 15, 15],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     html2pdf().set(options).from(reportContainer).save().then(() => {
-        nav.style.display = '';
+        // Exit PDF export mode
+        document.body.classList.remove('pdf-export-mode');
     });
 }
 

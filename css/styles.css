@@ -288,13 +288,21 @@ img {
     align-items: center;
 }
 
-.hero-trust span:not(.divider) {
+.hero-trust .trust-item {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
-.hero-trust span:not(.divider)::before {
+.hero-trust .trust-item:first-child {
+    color: var(--primary);
+}
+
+.hero-trust .trust-item:first-child svg {
+    flex-shrink: 0;
+}
+
+.hero-trust .trust-item:not(:first-child)::before {
     content: "✓";
     color: var(--success);
     font-weight: 700;

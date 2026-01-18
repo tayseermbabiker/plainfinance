@@ -716,6 +716,8 @@ Please provide:
 
 7. MEETING_SUMMARY: 2-3 sentences an owner can say when asked "How is your business doing?" Include revenue, profit margin, and one key focus area.
 
+8. BENCHMARK_NOTE: One sentence comparing a key metric to industry peers. Format: "Based on data from 100+ businesses, your [metric] is [above/below/in line with] the typical range for [industry type]." Pick the most notable metric (good or bad).
+
 Format your response EXACTLY like this (each label on its own line):
 
 HERO_SUMMARY: [your text here]
@@ -738,6 +740,8 @@ ACTION_3_DESC: [description here]
 
 MEETING_SUMMARY: [your text here]
 
+BENCHMARK_NOTE: [your text here]
+
 IMPORTANT: Put each section on its own line. Do not combine multiple sections on one line.`;
 
     return prompt;
@@ -754,7 +758,8 @@ function parseAnalysisResponse(content, data, metrics, currency) {
         action2Desc: extractSection(content, 'ACTION_2_DESC'),
         action3Title: extractSection(content, 'ACTION_3_TITLE'),
         action3Desc: extractSection(content, 'ACTION_3_DESC'),
-        meetingSummary: extractSection(content, 'MEETING_SUMMARY')
+        meetingSummary: extractSection(content, 'MEETING_SUMMARY'),
+        benchmarkNote: extractSection(content, 'BENCHMARK_NOTE')
     };
 
     // If parsing failed, return defaults
