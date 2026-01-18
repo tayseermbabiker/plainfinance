@@ -200,11 +200,19 @@ console.log('%c Built by Tayseer Mohammed, FCCA ', 'color: #64748b; font-size: 1
     }
 
     // Exit intent detection (desktop - cursor leaves viewport at top)
-    document.addEventListener('mouseout', function(e) {
-        if (e.clientY < 10 && e.relatedTarget === null) {
+    document.addEventListener('mouseleave', function(e) {
+        if (e.clientY <= 0) {
             showExitPopup();
         }
     });
+
+    // Fallback: show after 45 seconds if user hasn't engaged
+    setTimeout(function() {
+        const hasScrolled = window.scrollY > 300;
+        if (!hasScrolled && !exitIntentShown) {
+            showExitPopup();
+        }
+    }, 45000);
 
     // Close button
     if (exitPopupClose) {
