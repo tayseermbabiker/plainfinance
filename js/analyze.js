@@ -761,6 +761,26 @@ async function sendToAnalyze(formData) {
             return;
         }
 
+        // Fetch historical data for context (if available)
+        if (typeof getHistoricalReports === 'function') {
+            try {
+                const { data: historicalReports } = await getHistoricalReports(3);
+                if (historicalReports && historicalReports.length > 0) {
+                    formData.historicalReports = historicalReports;
+                }
+            } catch (e) {
+                console.log('Could not fetch historical reports:', e);
+            }
+        }
+
+        // Include previous action items with their updated status
+        if (pendingActionItems && pendingActionItems.length > 0) {
+            formData.previousActions = pendingActionItems.map(item => ({
+                title: item.title,
+                status: item.status
+            }));
+        }
+
         // Call the Netlify Function
         const response = await fetch('/api/analyze', {
             method: 'POST',
@@ -779,11 +799,24 @@ async function sendToAnalyze(formData) {
             localStorage.setItem('plainfinance_report', JSON.stringify(result));
 
             // Save to user account if logged in
+            let savedReportId = null;
             if (typeof saveReport === 'function') {
                 try {
-                    await saveReport(result);
+                    const { data: savedReport } = await saveReport(result);
+                    if (savedReport && savedReport[0]) {
+                        savedReportId = savedReport[0].id;
+                    }
                 } catch (e) {
                     console.log('Not logged in or save failed, continuing...');
+                }
+            }
+
+            // Save action items if report was saved
+            if (savedReportId && result.actionItems && typeof saveActionItems === 'function') {
+                try {
+                    await saveActionItems(savedReportId, result.actionItems);
+                } catch (e) {
+                    console.log('Could not save action items:', e);
                 }
             }
 
@@ -851,6 +884,89 @@ function updateCashOutflows() {
     }
 }
 
+// ===== Previous Actions =====
+
+let pendingActionItems = [];
+
+async function loadPreviousActions() {
+    if (typeof getPendingActionItems !== 'function') return;
+
+    try {
+        const { data: items } = await getPendingActionItems();
+        if (items && items.length > 0) {
+            pendingActionItems = items;
+            showPreviousActionsUI(items);
+        }
+    } catch (e) {
+        console.log('Could not load previous actions:', e);
+    }
+}
+
+function showPreviousActionsUI(items) {
+    const container = document.getElementById('previousActionsContainer');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="previous-actions-card">
+            <h3>Before we generate your new report...</h3>
+            <p>Last time, we recommended these actions. Check off what you completed:</p>
+            <div class="action-items-list">
+                ${items.map(item => `
+                    <label class="action-item-check" data-id="${item.id}">
+                        <input type="checkbox" name="action_status_${item.id}" value="done">
+                        <span>${item.title}</span>
+                    </label>
+                `).join('')}
+            </div>
+            <div class="previous-actions-footer">
+                <button type="button" class="skip-actions" onclick="skipActionsReview()">Skip this</button>
+                <button type="button" class="btn btn-primary" onclick="saveActionsAndContinue()">Continue</button>
+            </div>
+        </div>
+    `;
+
+    container.style.display = 'block';
+
+    // Add checkbox toggle styling
+    container.querySelectorAll('.action-item-check input').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            this.closest('.action-item-check').classList.toggle('completed', this.checked);
+        });
+    });
+}
+
+async function saveActionsAndContinue() {
+    const container = document.getElementById('previousActionsContainer');
+    if (!container) return;
+
+    // Update status of checked items
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+
+    for (const checkbox of checkboxes) {
+        const actionId = checkbox.name.replace('action_status_', '');
+        const newStatus = checkbox.checked ? 'done' : 'pending';
+
+        // Only update if marked as done
+        if (checkbox.checked && typeof updateActionItemStatus === 'function') {
+            try {
+                await updateActionItemStatus(actionId, newStatus);
+            } catch (e) {
+                console.log('Could not update action status:', e);
+            }
+        }
+    }
+
+    // Hide the previous actions and show the form
+    container.style.display = 'none';
+}
+
+function skipActionsReview() {
+    const container = document.getElementById('previousActionsContainer');
+    if (container) {
+        container.style.display = 'none';
+    }
+}
+
 // ===== Initialize =====
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -865,6 +981,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // User is logged in - initialize the form
     initFileUpload();
+
+    // Load previous action items (if any)
+    await loadPreviousActions();
 
     // Set current month/year as default
     const now = new Date();

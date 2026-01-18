@@ -1274,3 +1274,96 @@
 .cash-movements-fields .calculated-value {
     color: #b45309;
 }
+
+/* ===== Previous Actions Review ===== */
+
+.previous-actions-container {
+    margin-bottom: 32px;
+}
+
+.previous-actions-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--primary);
+}
+
+.previous-actions-card h3 {
+    font-size: 18px;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.previous-actions-card > p {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.action-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.action-item-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.action-item-check:hover {
+    background: #f1f5f9;
+}
+
+.action-item-check input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.action-item-check span {
+    font-size: 15px;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.action-item-check.completed {
+    background: #ecfdf5;
+}
+
+.action-item-check.completed span {
+    text-decoration: line-through;
+    color: #64748b;
+}
+
+.previous-actions-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.skip-actions {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 0;
+}
+
+.skip-actions:hover {
+    color: #334155;
+    text-decoration: underline;
+}

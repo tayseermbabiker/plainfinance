@@ -42,8 +42,11 @@ exports.handler = async (event, context) => {
         const industryType = data.company.industry || 'other';
         const metrics = calculateMetrics(data.current, data.previous || {}, industryType, data.ytd || null);
 
+        // Build historical context for AI prompt
+        const historicalContext = buildHistoricalContext(data.historicalReports, data.previousActions);
+
         // Generate plain English analysis using OpenAI
-        const analysis = await generateAnalysis(data, metrics);
+        const analysis = await generateAnalysis(data, metrics, historicalContext);
 
         // Get industry benchmarks
         const benchmarks = getIndustryBenchmarks(data.company.industry);
@@ -53,6 +56,13 @@ exports.handler = async (event, context) => {
         if (data.ytd && data.ytd.revenue > 0) {
             ytdMetrics = calculateYtdMetrics(data.ytd);
         }
+
+        // Extract structured action items for saving
+        const actionItems = [
+            { title: analysis.action1Title, description: analysis.action1Desc, priority: 1 },
+            { title: analysis.action2Title, description: analysis.action2Desc, priority: 2 },
+            { title: analysis.action3Title, description: analysis.action3Desc, priority: 3 }
+        ].filter(item => item.title && item.description);
 
         // Return complete report data
         return {
@@ -67,7 +77,8 @@ exports.handler = async (event, context) => {
                 metrics: metrics,
                 ytdMetrics: ytdMetrics,
                 benchmarks: benchmarks,
-                analysis: analysis
+                analysis: analysis,
+                actionItems: actionItems
             })
         };
 
@@ -80,6 +91,56 @@ exports.handler = async (event, context) => {
         };
     }
 };
+
+// ===== HISTORICAL CONTEXT BUILDER =====
+
+function buildHistoricalContext(historicalReports, previousActions) {
+    let context = '';
+
+    // Add historical trends if available
+    if (historicalReports && historicalReports.length > 0) {
+        context += '\nHISTORICAL TREND (last ' + historicalReports.length + ' reports):\n';
+
+        historicalReports.slice(0, 3).forEach((report, index) => {
+            const month = report.period_month;
+            const year = report.period_year;
+            context += `- ${month}/${year}: Revenue ${report.revenue?.toLocaleString() || 'N/A'}, `;
+            context += `Net Profit ${report.net_profit?.toLocaleString() || 'N/A'}, `;
+            context += `Net Margin ${report.net_margin || 'N/A'}%, `;
+            context += `Cash ${report.cash?.toLocaleString() || 'N/A'}\n`;
+        });
+
+        context += '\nUse this trend to note if this month is better/worse than recent history. ';
+        context += 'Mention specific improvements or concerns.\n';
+    }
+
+    // Add previous action items if available
+    if (previousActions && previousActions.length > 0) {
+        context += '\nPREVIOUS RECOMMENDATIONS AND STATUS:\n';
+
+        const completed = previousActions.filter(a => a.status === 'done');
+        const pending = previousActions.filter(a => a.status === 'pending');
+
+        if (completed.length > 0) {
+            context += 'Completed since last report:\n';
+            completed.forEach(action => {
+                context += `- [DONE] ${action.title}\n`;
+            });
+        }
+
+        if (pending.length > 0) {
+            context += 'Still pending:\n';
+            pending.forEach(action => {
+                context += `- [NOT DONE] ${action.title}\n`;
+            });
+        }
+
+        context += '\nIn your NARRATIVE, briefly acknowledge what was completed. ';
+        context += 'If key items are still pending, reinforce them in your new actions.\n';
+    }
+
+    return context;
+}
 
 // ===== INDUSTRY BENCHMARKS =====
 // Typical SME target ranges based on recent industry studies (not strict standards)
@@ -387,7 +448,7 @@ function calculateYtdMetrics(ytd) {
     };
 }
 
-async function generateAnalysis(data, metrics) {
+async function generateAnalysis(data, metrics, historicalContext = '') {
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
     if (!OPENAI_API_KEY) {
@@ -399,7 +460,7 @@ async function generateAnalysis(data, metrics) {
     const industryType = data.company.industry || 'product';
     const language = data.language || 'en';
 
-    const prompt = buildPrompt(data, metrics, currency, industryType, language);
+    const prompt = buildPrompt(data, metrics, currency, industryType, language, historicalContext);
 
     // Build system message based on language
     let systemMessage = '';
@@ -493,7 +554,7 @@ METRICS:
     }
 }
 
-function buildPrompt(data, metrics, currency, industryType, language = 'en') {
+function buildPrompt(data, metrics, currency, industryType, language = 'en', historicalContext = '') {
     const current = data.current;
     const previous = data.previous || {};
     const benchmarks = getIndustryBenchmarks(industryType);
@@ -571,6 +632,11 @@ YTD COMPARISON RULES:
 - Only mention YTD in the NARRATIVE if this month differs from YTD average by more than 10-15%.
 - Keep the focus on THIS MONTH - YTD is context, not the main story.
 `;
+    }
+
+    // Add historical context (trends and previous actions)
+    if (historicalContext) {
+        prompt += historicalContext;
     }
 
     const wcSource = metrics.workingCapitalSource === 'ytd' ? 'YTD data (more accurate)' : 'this month only (approximate)';

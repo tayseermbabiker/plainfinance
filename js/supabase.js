@@ -204,6 +204,9 @@ async function saveReport(reportData) {
     const user = await getUser();
     if (!user) return { error: { message: 'Not authenticated' } };
 
+    // Extract metrics for queryable columns
+    const metrics = reportData.metrics || {};
+
     const { data, error } = await client.from('reports').insert({
         user_id: user.id,
         company_name: reportData.company?.name,
@@ -214,6 +217,15 @@ async function saveReport(reportData) {
         net_profit: reportData.current?.netProfit,
         cash: reportData.current?.cash,
         report_data: reportData,
+        // New metric columns for historical tracking
+        gross_margin: metrics.grossMargin || null,
+        net_margin: metrics.netMargin || null,
+        dso: metrics.dso || null,
+        dio: metrics.dio || null,
+        dpo: metrics.dpo || null,
+        ccc: metrics.ccc || null,
+        cash_runway: metrics.cashRunway || null,
+        current_ratio: metrics.currentRatio || null,
         created_at: new Date().toISOString()
     }).select();
 
@@ -267,6 +279,89 @@ async function deleteReport(reportId) {
         .eq('user_id', user.id);
 
     return { error };
+}
+
+// ===== Action Items =====
+
+async function saveActionItems(reportId, actionItems) {
+    const client = getSupabase();
+    if (!client) return { error: { message: 'Supabase not initialized' } };
+
+    const user = await getUser();
+    if (!user) return { error: { message: 'Not authenticated' } };
+
+    const items = actionItems.map(item => ({
+        report_id: reportId,
+        user_id: user.id,
+        title: item.title,
+        description: item.description || '',
+        priority: item.priority || 1,
+        status: 'pending',
+        created_at: new Date().toISOString()
+    }));
+
+    const { data, error } = await client
+        .from('action_items')
+        .insert(items)
+        .select();
+
+    return { data, error };
+}
+
+async function getPendingActionItems() {
+    const client = getSupabase();
+    if (!client) return { data: [], error: null };
+
+    const user = await getUser();
+    if (!user) return { data: [], error: null };
+
+    const { data, error } = await client
+        .from('action_items')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+    return { data: data || [], error };
+}
+
+async function updateActionItemStatus(actionId, status) {
+    const client = getSupabase();
+    if (!client) return { error: { message: 'Supabase not initialized' } };
+
+    const user = await getUser();
+    if (!user) return { error: { message: 'Not authenticated' } };
+
+    const updates = {
+        status: status,
+        completed_at: status === 'done' ? new Date().toISOString() : null
+    };
+
+    const { error } = await client
+        .from('action_items')
+        .update(updates)
+        .eq('id', actionId)
+        .eq('user_id', user.id);
+
+    return { error };
+}
+
+async function getHistoricalReports(limit = 6) {
+    const client = getSupabase();
+    if (!client) return { data: [], error: null };
+
+    const user = await getUser();
+    if (!user) return { data: [], error: null };
+
+    const { data, error } = await client
+        .from('reports')
+        .select('id, period_month, period_year, revenue, net_profit, cash, gross_margin, net_margin, dso, ccc, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+    return { data: data || [], error };
 }
 
 // ===== Auth State Listener =====
