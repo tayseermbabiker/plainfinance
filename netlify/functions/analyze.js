@@ -456,7 +456,7 @@ async function generateAnalysis(data, metrics, historicalContext = '') {
         return getDefaultAnalysis(data, metrics);
     }
 
-    const currency = data.company.currency || 'AED';
+    const currency = data.company.currency || 'USD';
     const industryType = data.company.industry || 'product';
     const language = data.language || 'en';
 
@@ -489,7 +489,7 @@ async function generateAnalysis(data, metrics, historicalContext = '') {
 - اجعل شرح المقاييس في سطر واحد.
 - اكتب التقرير بالكامل باللغة العربية.`;
     } else {
-        systemMessage = `You are a friendly financial advisor explaining business finances to a non-finance business owner in the UAE.
+        systemMessage = `You are a friendly financial advisor explaining business finances to a non-finance business owner.
 
 WRITING STYLE:
 - Write in short visual blocks, not dense paragraphs.
@@ -787,7 +787,7 @@ function extractSection(content, sectionName) {
 }
 
 function getDefaultAnalysis(data, metrics) {
-    const currency = data.company?.currency || 'AED';
+    const currency = data.company?.currency || 'USD';
     const current = data.current;
 
     const profitStatus = current.netProfit > 0 ? 'made a profit' : current.netProfit < 0 ? 'made a loss' : 'broke even';
