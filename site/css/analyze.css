@@ -8,9 +8,9 @@
 }
 
 .analyze-container {
-    max-width: 640px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
 /* ===== Progress Bar ===== */
@@ -198,14 +198,20 @@
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 14px 16px;
-    border: 2px solid #e2e8f0;
+    padding: 16px 18px;
+    border: 1px solid #e2e8f0;
     border-radius: 10px;
     font-size: 16px;
     font-family: inherit;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    background: white;
+    background: #f8fafc;
     color: #0f172a;
+    box-sizing: border-box;
+}
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: #cbd5e1;
 }
 
 .form-group input[type="number"] {
@@ -221,8 +227,9 @@
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    background: white;
 }
 
 .form-group input::placeholder {
@@ -471,7 +478,7 @@
     gap: 8px;
     padding: 24px 16px;
     background: white;
-    border: 2px solid #e2e8f0;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -508,7 +515,7 @@
 /* ===== Upload Zone ===== */
 
 .upload-zone {
-    border: 2px dashed #cbd5e1;
+    border: 1px dashed #cbd5e1;
     border-radius: 16px;
     padding: 48px 24px;
     text-align: center;
@@ -660,7 +667,7 @@
     text-align: center;
     padding: 32px 20px;
     background: white;
-    border: 2px solid #e2e8f0;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -776,7 +783,7 @@
 .btn-secondary {
     background: white;
     color: #475569;
-    border: 2px solid #e2e8f0;
+    border: 1px solid #e2e8f0;
 }
 
 .btn-secondary:hover {
