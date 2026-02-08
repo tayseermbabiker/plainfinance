@@ -268,8 +268,9 @@ img {
     font-size: 20px;
     color: var(--gray-600);
     margin-bottom: 32px;
-    max-width: 500px;
+    max-width: 650px;
 }
+
 
 .hero-cta {
     display: flex;
@@ -1346,9 +1347,21 @@ section {
     text-align: center;
 }
 
+.hero.hero-centered .container {
+    display: block;
+}
+
 .hero.hero-centered .hero-content {
-    max-width: 700px;
+    max-width: 1100px;
     margin: 0 auto;
+}
+
+.hero.hero-centered h1 {
+    white-space: nowrap;
+}
+
+.hero.hero-centered .hero-subtitle {
+    max-width: none;
 }
 
 .hero.hero-centered .hero-cta {
@@ -1483,4 +1496,274 @@ section {
 
 .exit-popup-dismiss:hover {
     color: var(--gray-700);
+}
+
+/* ===== Runway Calculator Widget ===== */
+.runway-calculator {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 40px 56px;
+    margin-top: 48px;
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--gray-200);
+    max-width: 1100px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.calculator-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.calculator-header h3 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 8px;
+}
+
+.calculator-header p {
+    color: var(--gray-500);
+    font-size: 16px;
+}
+
+.calculator-inputs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 28px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.calc-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.calc-input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.input-with-prefix {
+    display: flex;
+    align-items: center;
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-with-prefix:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-prefix {
+    padding: 14px 16px;
+    background: var(--gray-100);
+    color: var(--gray-500);
+    font-weight: 600;
+    font-size: 16px;
+    border-right: 1px solid var(--gray-200);
+    flex-shrink: 0;
+}
+
+.input-with-prefix input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 14px 12px;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--gray-900);
+    outline: none;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-with-prefix input::placeholder {
+    color: var(--gray-400);
+    font-weight: 400;
+}
+
+/* Calculator Result */
+.calculator-result {
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.result-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--gray-400);
+    font-size: 15px;
+}
+
+.placeholder-icon {
+    opacity: 0.5;
+}
+
+/* Runway Display */
+.runway-display {
+    width: 100%;
+}
+
+.runway-months {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.runway-number {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    transition: color 0.3s;
+}
+
+.runway-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.runway-estimate {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+}
+
+.runway-message {
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.runway-warning {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--gray-300);
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.5;
+}
+
+/* Status Colors */
+.runway-status-danger .runway-number {
+    color: var(--danger);
+}
+
+.runway-status-danger {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 2px solid #fecaca;
+}
+
+.runway-status-danger .runway-message {
+    color: var(--danger);
+}
+
+.runway-status-warning .runway-number {
+    color: var(--warning);
+}
+
+.runway-status-warning {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px solid #fde68a;
+}
+
+.runway-status-warning .runway-message {
+    color: #b45309;
+}
+
+.runway-status-safe .runway-number {
+    color: var(--accent);
+}
+
+.runway-status-safe {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 2px solid #a7f3d0;
+}
+
+.runway-status-safe .runway-message {
+    color: #047857;
+}
+
+.runway-status-growing .runway-number {
+    color: var(--primary);
+}
+
+.runway-status-growing {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 2px solid #93c5fd;
+}
+
+.runway-status-growing .runway-message {
+    color: var(--primary);
+}
+
+/* Calculator CTA */
+.calculator-cta {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.calculator-cta .btn {
+    width: 100%;
+}
+
+.cta-note {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--gray-500);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .runway-calculator {
+        padding: 24px;
+        margin-top: 32px;
+    }
+
+    .calculator-inputs {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .runway-number {
+        font-size: 44px;
+    }
+
+    .runway-label {
+        font-size: 16px;
+    }
+
+    .calculator-header h3 {
+        font-size: 20px;
+    }
 }

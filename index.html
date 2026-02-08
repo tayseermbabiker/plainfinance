@@ -327,8 +327,8 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-badge">Non-Accountant Friendly Financial Analysis</div>
-                <h1>Your Numbers,<br><span class="gradient-text">Finally Explained</span></h1>
-                <p class="hero-subtitle">Stop staring at confusing spreadsheets. Upload your financials and get a report that actually makes sense, written like a friend explaining over coffee.</p>
+                <h1>Your Numbers, <span class="gradient-text">Finally Explained</span></h1>
+                <p class="hero-subtitle">Stop staring at confusing spreadsheets. Get a report that actually makes sense, like a friend explaining over coffee.</p>
                 <div class="hero-cta">
                     <a href="report.html?sample=true" class="btn btn-primary btn-lg">See Sample Report</a>
                     <a href="analyze.html" class="btn btn-secondary btn-lg">Analyze My Numbers</a>
@@ -344,6 +344,57 @@
                     <span class="trust-item">No accounting jargon</span>
                     <span class="divider">•</span>
                     <span class="trust-item">Your data stays private</span>
+                </div>
+            </div>
+
+            <!-- Instant Runway Calculator -->
+            <div class="runway-calculator" id="runwayCalculator">
+                <div class="calculator-header">
+                    <h3>Quick Burn Calculator</h3>
+                    <p>How many months of oxygen does your business have? Find out in 10 seconds.</p>
+                </div>
+
+                <div class="calculator-inputs">
+                    <div class="calc-input-group">
+                        <label for="calcCash">Cash in Bank</label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="calcCash" inputmode="numeric" placeholder="50,000" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label for="calcExpenses">Monthly Expenses</label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="calcExpenses" inputmode="numeric" placeholder="15,000" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label for="calcRevenue">Monthly Revenue</label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="calcRevenue" inputmode="numeric" placeholder="12,000" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculator-result" id="calculatorResult">
+                    <div class="result-placeholder">
+                        <span class="placeholder-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </span>
+                        <span>Enter your numbers above</span>
+                    </div>
+                </div>
+
+                <div class="calculator-cta" id="calculatorCta" style="display: none;">
+                    <a href="signup.html" class="btn btn-primary btn-lg">See Your Real Runway (Free)</a>
+                    <p class="cta-note">Get the full picture: AP, loans, receivables, and what to do about them</p>
                 </div>
             </div>
 
