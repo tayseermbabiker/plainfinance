@@ -1,0 +1,27 @@
+Ideas that fit your exact profile
+1) “Bank pack in a click” (ACCA + AI + n8n)
+Pipeline: n8n pulls TB and P&L from Xero/QuickBooks/Wafeq, your cloud code standardizes it, AI drafts a bank‑style summary.​
+
+Output: clean financials + covenant ratios + plain‑English overview for lenders, tailored to Gulf banks’ expectations.
+
+2) Automated chart‑of‑accounts cleaner
+Use n8n to fetch COA / TB exports, cloud functions to map to your standardized templates per sector, AI to explain changes.​
+
+ACCA + audit background lets you embed “best practice” mappings others cannot fake.
+
+3) “60‑minute budget & cash plan” wizard
+Web UI + AI questions, then cloud code builds a 12‑month P&L and cash forecast, and n8n can push it back to Google Sheets or the accounting system.​
+
+Great for US and Gulf micro‑SMEs who will never touch full FP&A tools.
+
+4) Accounting data quality scanner
+Upload TB / GL; cloud code runs audit‑style checks, flags issues (mis‑classified VAT, negative balances, missing accruals); AI explains each finding in plain language.​
+
+5) Sector “mini‑SaaS” verticals
+Reuse your PlainFinance engine with different front ends:
+
+F&B cash and margin coach (table‑turns, food cost, delivery fees).​
+
+Freelancer / agency health check (utilization, effective hourly rate, runway).​
+
+Your mix of ACCA, FP&A, audit, n8n, and AI means you can own the “explain and fix my numbers” niche for SMEs, while competitors stay either in pure software or pure consulting.

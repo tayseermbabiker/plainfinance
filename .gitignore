@@ -1,0 +1,25 @@
+# Sensitive files
+API KEYS.txt
+Stripe Price ID.txt
+.env
+*.env
+.env.*
+
+# Dependencies
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local Netlify folder
+.netlify/

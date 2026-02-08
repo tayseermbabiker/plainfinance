@@ -1,0 +1,13 @@
+# PlainFinance robots.txt
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://plainfinancials.com/sitemap.xml
+
+# Disallow admin/private areas
+Disallow: /dashboard.html
+Disallow: /report.html
+Disallow: /api/
+Disallow: /.netlify/

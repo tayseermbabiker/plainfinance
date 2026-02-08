@@ -1,0 +1,360 @@
+/* ===== RTL (Right-to-Left) Support for Arabic ===== */
+
+/* Base RTL */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] body {
+    font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
+}
+
+/* Navigation */
+[dir="rtl"] .nav-links {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nav-logo {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+[dir="rtl"] .nav-actions {
+    flex-direction: row-reverse;
+}
+
+/* Buttons with icons */
+[dir="rtl"] .btn svg {
+    margin-left: 8px;
+    margin-right: 0;
+}
+
+/* Form elements */
+[dir="rtl"] .form-group label {
+    text-align: right;
+}
+
+[dir="rtl"] .input-with-currency .currency-prefix {
+    left: auto;
+    right: 16px;
+}
+
+[dir="rtl"] .input-with-currency input {
+    padding-left: 16px;
+    padding-right: 54px;
+}
+
+[dir="rtl"] .tooltip {
+    margin-left: 0;
+    margin-right: 6px;
+}
+
+/* Progress steps */
+[dir="rtl"] .progress-steps {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .progress-track {
+    transform: scaleX(-1);
+}
+
+/* Cards and grids */
+[dir="rtl"] .report-card-header,
+[dir="rtl"] .report-card-footer {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .metric-card {
+    text-align: right;
+}
+
+/* Report sections */
+[dir="rtl"] .hero-section,
+[dir="rtl"] .report-section {
+    text-align: right;
+}
+
+[dir="rtl"] .key-metrics {
+    direction: rtl;
+}
+
+[dir="rtl"] .action-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .action-content {
+    text-align: right;
+}
+
+/* Bills check */
+[dir="rtl"] .bills-item {
+    border-left: none;
+    border-right: 4px solid;
+}
+
+[dir="rtl"] .bills-item.good {
+    border-right-color: var(--report-good);
+}
+
+[dir="rtl"] .bills-item.warning {
+    border-right-color: var(--report-warning);
+}
+
+[dir="rtl"] .bills-item.danger {
+    border-right-color: var(--report-danger);
+}
+
+/* Insight boxes */
+[dir="rtl"] .insight-box {
+    border-left: none;
+    border-right: 4px solid;
+}
+
+[dir="rtl"] .insight-box.good {
+    border-right-color: var(--report-good);
+}
+
+[dir="rtl"] .insight-box.warning {
+    border-right-color: var(--report-warning);
+}
+
+[dir="rtl"] .insight-box.danger {
+    border-right-color: var(--report-danger);
+}
+
+[dir="rtl"] .insight-box.neutral {
+    border-right-color: var(--report-gray-500);
+}
+
+/* Dropdowns */
+[dir="rtl"] .dropdown-menu {
+    left: 0;
+    right: auto;
+}
+
+/* Cash flow story */
+[dir="rtl"] .cash-flow-story {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .flow-arrow {
+    transform: rotate(180deg);
+}
+
+/* Benchmark */
+[dir="rtl"] .benchmark-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .benchmark-range-labels {
+    flex-direction: row-reverse;
+}
+
+/* Dashboard */
+[dir="rtl"] .dashboard-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .subscription-banner {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .report-actions {
+    flex-direction: row-reverse;
+}
+
+/* Why matters box */
+[dir="rtl"] .why-matters {
+    border-left: none;
+    border-right: 3px solid var(--report-accent);
+}
+
+/* Modal */
+[dir="rtl"] .modal-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-footer {
+    flex-direction: row-reverse;
+}
+
+/* Feature grid */
+[dir="rtl"] .feature-icon {
+    margin-left: 16px;
+    margin-right: 0;
+}
+
+[dir="rtl"] .feature-content {
+    text-align: right;
+}
+
+/* Pricing */
+[dir="rtl"] .pricing-feature {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .pricing-feature svg {
+    margin-left: 12px;
+    margin-right: 0;
+}
+
+/* Trends */
+[dir="rtl"] .trends-summary {
+    direction: rtl;
+}
+
+/* VAT */
+[dir="rtl"] .vat-summary {
+    direction: rtl;
+}
+
+/* Elements that should NEVER be mirrored */
+[dir="rtl"] .nav-logo,
+[dir="rtl"] .logo,
+[dir="rtl"] .logo-text,
+[dir="rtl"] canvas,
+[dir="rtl"] .chart-container,
+[dir="rtl"] svg:not(.rtl-flip),
+[dir="rtl"] img,
+[dir="rtl"] .footer-branding {
+    direction: ltr;
+    transform: none !important;
+}
+
+/* Keep logo on the right in RTL but don't flip it */
+[dir="rtl"] .nav-container {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nav-logo,
+[dir="rtl"] .logo {
+    order: 0;
+}
+
+/* Language switcher tabs */
+.lang-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 3px;
+}
+
+.lang-tab {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lang-tab:hover {
+    color: white;
+}
+
+.lang-tab.active {
+    background: white;
+    color: #1e3a5f;
+}
+
+/* Old single button style (keep for backwards compat) */
+.lang-switcher {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lang-switcher:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Fix for numbers - keep LTR */
+[dir="rtl"] .metric-value,
+[dir="rtl"] .amount,
+[dir="rtl"] .forecast-value,
+[dir="rtl"] .benchmark-value,
+[dir="rtl"] .vat-value,
+[dir="rtl"] .trend-value,
+[dir="rtl"] input[type="number"] {
+    direction: ltr;
+    text-align: right;
+}
+
+/* Tables */
+[dir="rtl"] table {
+    direction: rtl;
+}
+
+[dir="rtl"] td:last-child,
+[dir="rtl"] th:last-child {
+    text-align: left;
+}
+
+[dir="rtl"] td:first-child,
+[dir="rtl"] th:first-child {
+    text-align: right;
+}
+
+/* Health Strip */
+[dir="rtl"] .health-strip {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .health-indicator {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .health-text {
+    text-align: right;
+}
+
+[dir="rtl"] .health-metrics {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .health-metric {
+    align-items: flex-start;
+}
+
+/* Alerts Section */
+[dir="rtl"] .alert-item {
+    flex-direction: row-reverse;
+    border-left: none;
+    border-right: 4px solid;
+}
+
+[dir="rtl"] .alert-item.warning {
+    border-right-color: #fbbf24;
+}
+
+[dir="rtl"] .alert-item.danger {
+    border-right-color: #ef4444;
+}
+
+[dir="rtl"] .alert-content {
+    text-align: right;
+}
+
+[dir="rtl"] .alert-setting-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .alert-setting label {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .alert-threshold {
+    flex-direction: row-reverse;
+}

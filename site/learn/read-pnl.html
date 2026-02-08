@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Read a P&L Without Accounting Knowledge | PlainFinancials</title>
+    <meta name="description" content="Learn how to read a profit and loss statement in 5 minutes. No accounting knowledge needed. Focus on 4 lines, ask 5 questions, ignore the rest.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://plainfinancials.com/learn/read-pnl">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://plainfinancials.com/learn/read-pnl">
+    <meta property="og:title" content="How to Read a P&L Without Accounting Knowledge">
+    <meta property="og:description" content="A P&L isn't a test. It's a signal. Here's how to read yours in 5 minutes.">
+    <meta property="og:image" content="https://plainfinancials.com/og-image.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .article-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+        .article-page h1 {
+            font-size: 2.5rem;
+            color: var(--gray-900);
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+        .article-page .lead {
+            font-size: 1.3rem;
+            color: var(--gray-600);
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+        .article-page h2 {
+            font-size: 1.5rem;
+            color: var(--gray-800);
+            margin-top: 48px;
+            margin-bottom: 16px;
+        }
+        .article-page h3 {
+            font-size: 1.2rem;
+            color: var(--gray-800);
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+        .article-page p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--gray-700);
+            margin-bottom: 20px;
+        }
+        .article-page ul, .article-page ol {
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+        .article-page li {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+        .article-page strong {
+            color: var(--gray-900);
+        }
+        .flow-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .flow-box p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .flow-box p:last-child {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--gray-600);
+            margin-bottom: 0;
+        }
+        .line-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .line-card h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.15rem;
+        }
+        .line-card p {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .line-card .ask {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--gray-700);
+            margin-top: 12px;
+        }
+        .questions-box {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+        .questions-box h3 {
+            color: #065f46;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        .questions-box ul {
+            margin-bottom: 0;
+        }
+        .questions-box li {
+            color: #065f46;
+        }
+        .questions-box p {
+            color: #065f46;
+            margin-bottom: 0;
+            margin-top: 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .ignore-box {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+        .ignore-box h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        .ignore-box ul {
+            margin-bottom: 0;
+        }
+        .ignore-box p {
+            margin-top: 16px;
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        .story-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+        .story-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .story-box ol {
+            margin-bottom: 0;
+        }
+        .story-box li {
+            margin-bottom: 8px;
+        }
+        .story-box p {
+            margin-top: 20px;
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        .lesson-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 48px;
+            text-align: center;
+        }
+        .lesson-box h2 {
+            margin-top: 0;
+        }
+        .lesson-box p {
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 12px;
+        }
+        .lesson-box p:last-child {
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        .cta-box {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, #2d5a87 100%);
+            border-radius: 16px;
+            color: white;
+        }
+        .cta-box h2 {
+            color: white;
+            margin-top: 0;
+        }
+        .cta-box p {
+            color: rgba(255,255,255,0.9);
+        }
+        .cta-box .btn {
+            margin-top: 16px;
+        }
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+        }
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .related-articles {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--gray-200);
+        }
+        .related-articles h3 {
+            margin-top: 0;
+        }
+        .related-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .related-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 1.05rem;
+        }
+        .related-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <span class="logo-text">PlainFinancials</span>
+            </a>
+            <div class="nav-links">
+                <a href="../index.html#how-it-works">How It Works</a>
+                <a href="../index.html#pricing">Pricing</a>
+                <a href="../login.html" class="btn btn-secondary btn-sm">Log In</a>
+                <a href="../signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="article-page">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> → <a href="../understand-business-financials.html">Learn</a> → How to Read a P&L
+        </div>
+
+        <h1>How to Read a P&L Without Accounting Knowledge</h1>
+
+        <p class="lead">A P&L isn't a test.<br>It's a signal.<br>And you can read it in five minutes.</p>
+
+        <!-- Forget Most of It -->
+        <h2>Forget Most of It</h2>
+
+        <p>A P&L has dozens of lines.<br>You don't need to understand all of them.</p>
+
+        <p>Just follow the flow:</p>
+
+        <div class="flow-box">
+            <p>Revenue → Gross Profit → Operating Costs → Net Profit</p>
+            <p>That's the whole story. Everything else is just detail.</p>
+        </div>
+
+        <!-- The 4 Lines -->
+        <h2>The 4 Lines That Actually Matter</h2>
+
+        <div class="line-card">
+            <h3>1. Revenue (Sales)</h3>
+            <p>Money coming in from customers.</p>
+            <div class="ask"><strong>Ask:</strong> Is it rising, flat, or falling?</div>
+        </div>
+
+        <div class="line-card">
+            <h3>2. Gross Profit</h3>
+            <p>Revenue minus the cost of what you sell.<br>This shows how much you keep after paying for the product or service.</p>
+            <div class="ask"><strong>Ask:</strong> Is the margin healthy or shrinking?</div>
+        </div>
+
+        <div class="line-card">
+            <h3>3. Operating Expenses</h3>
+            <p>Rent, salaries, software, marketing — the cost of running the business.</p>
+            <div class="ask"><strong>Ask:</strong> Are these growing faster than revenue?</div>
+        </div>
+
+        <div class="line-card">
+            <h3>4. Net Profit</h3>
+            <p>What's left after everything.<br>Your true bottom line.</p>
+            <div class="ask"><strong>Ask:</strong> Is it positive? Stable? Growing?</div>
+        </div>
+
+        <!-- Questions to Ask -->
+        <div class="questions-box">
+            <h3>The Questions to Ask Every Month</h3>
+            <ul>
+                <li>Is revenue trending up or down?</li>
+                <li>Is gross margin improving or tightening?</li>
+                <li>Are operating costs rising faster than sales?</li>
+                <li>Is profit steady or jumping around?</li>
+                <li>Did any line suddenly spike?</li>
+            </ul>
+            <p>If you can answer these, you understand your P&L.</p>
+        </div>
+
+        <!-- What to Ignore -->
+        <div class="ignore-box">
+            <h3>What You Can Ignore</h3>
+            <p>You don't need to stress about:</p>
+            <ul>
+                <li><strong>Depreciation and amortization</strong> — non-cash adjustments</li>
+                <li><strong>Interest expense</strong> — unless debt is significant</li>
+                <li><strong>Tax lines</strong> — your accountant handles them</li>
+                <li><strong>Any line under 2% of revenue</strong> — noise, not signal</li>
+            </ul>
+            <p>Focus on the big buckets. Ignore the clutter.</p>
+        </div>
+
+        <!-- Simple Framework -->
+        <div class="story-box">
+            <h3>A Simple Way to Read It</h3>
+            <p>Think of your P&L like a story:</p>
+            <ol>
+                <li>Did we sell more or less? <strong>(Revenue)</strong></li>
+                <li>Did we keep enough after costs? <strong>(Gross Profit)</strong></li>
+                <li>Did overhead eat into it? <strong>(Operating Expenses)</strong></li>
+                <li>What's actually left? <strong>(Net Profit)</strong></li>
+            </ol>
+            <p>That's it. No accounting degree needed.</p>
+        </div>
+
+        <!-- The Real Skill -->
+        <div class="lesson-box">
+            <h2>The Real Skill</h2>
+            <p>The real skill isn't knowing the terms.<br>It's noticing the change.</p>
+            <p>Compare this month to last month.<br>Compare this quarter to the same quarter last year.</p>
+            <p>The direction matters more than the number.</p>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-box">
+            <h2>See Your P&L Explained in Plain English</h2>
+            <p>PlainFinancials reads your numbers and tells you what they actually mean — no jargon, just clarity.</p>
+            <a href="../report.html?sample=true" class="btn btn-secondary btn-lg">View Sample Report</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+            <h3>Related Articles</h3>
+            <div class="related-links">
+                <a href="../understand-business-financials.html">Understanding Your Business Numbers (The Complete Guide)</a>
+                <a href="profit-vs-cash.html">Why Your P&L Shows Profit but Your Bank Account Is Empty</a>
+                <a href="cash-runway.html">What Is Cash Runway and Why It Matters More Than Profit</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 40px 24px; color: var(--gray-500); font-size: 14px;">
+        <p>&copy; 2025 PlainFinancials. All rights reserved.</p>
+        <p><a href="../index.html">Home</a> &middot; <a href="../about-plainfinancials.html">About</a> &middot; <a href="../privacy.html">Privacy</a> &middot; <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

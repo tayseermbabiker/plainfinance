@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Cash Runway Calculator & Survival Guide for SMEs | PlainFinancials</title>
+    <meta name="description" content="Calculate your business survival time in seconds. Free cash runway calculator + actionable tips to extend your runway. No signup required.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://plainfinancials.com/learn/cash-runway">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://plainfinancials.com/learn/cash-runway">
+    <meta property="og:title" content="Free Cash Runway Calculator - How Long Can Your Business Survive?">
+    <meta property="og:description" content="Calculate your survival time in 10 seconds. Free calculator + expert tips to extend your runway. Built by a CFO, designed for non-accountants.">
+    <meta property="og:image" content="https://plainfinancials.com/og-image.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JNPY5QZ8NG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JNPY5QZ8NG');
+    </script>
+
+    <!-- Breadcrumb Schema for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://plainfinancials.com/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Learn",
+                "item": "https://plainfinancials.com/understand-business-financials.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Cash Runway Calculator & Guide",
+                "item": "https://plainfinancials.com/learn/cash-runway.html"
+            }
+        ]
+    }
+    </script>
+
+    <!-- Article Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Free Cash Runway Calculator & Survival Guide for SMEs",
+        "description": "Calculate your business survival time in seconds. Learn the formula, understand what the numbers mean, and get actionable tips to extend your runway.",
+        "author": {
+            "@type": "Person",
+            "name": "Tayseer Mohammed",
+            "jobTitle": "FCCA, CFO"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "PlainFinancials",
+            "url": "https://plainfinancials.com"
+        },
+        "datePublished": "2025-01-18",
+        "dateModified": "2026-02-07",
+        "mainEntityOfPage": "https://plainfinancials.com/learn/cash-runway.html"
+    }
+    </script>
+
+    <style>
+        .article-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+        .article-page h1 {
+            font-size: 2.5rem;
+            color: var(--gray-900);
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+        .article-page .lead {
+            font-size: 1.3rem;
+            color: var(--gray-600);
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+        .article-page h2 {
+            font-size: 1.5rem;
+            color: var(--gray-800);
+            margin-top: 48px;
+            margin-bottom: 16px;
+        }
+        .article-page p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--gray-700);
+            margin-bottom: 20px;
+        }
+        .article-page ul {
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+        .article-page li {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+        .article-page strong {
+            color: var(--gray-900);
+        }
+        .question-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+            text-align: center;
+        }
+        .question-box p {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        .question-box p:last-child {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--gray-600);
+            margin-bottom: 0;
+        }
+        .formula-box {
+            background: var(--gray-900);
+            color: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+        .formula-box h3 {
+            color: white;
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+        .formula-box .formula {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .formula-box .example {
+            background: rgba(255,255,255,0.1);
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .formula-box .example p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 8px;
+        }
+        .formula-box .example p:last-child {
+            margin-bottom: 0;
+        }
+        .formula-box .example strong {
+            color: #6ee7b7;
+        }
+        .levels-grid {
+            display: grid;
+            gap: 16px;
+            margin: 32px 0;
+        }
+        .level-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+        .level-card.healthy {
+            background: #ecfdf5;
+            border-color: #6ee7b7;
+        }
+        .level-card.caution {
+            background: #fefce8;
+            border-color: #fde047;
+        }
+        .level-card.danger {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+        .level-card.emergency {
+            background: #fef2f2;
+            border-color: #f87171;
+        }
+        .level-card .months {
+            font-weight: 700;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        .level-card.healthy .months { color: #065f46; }
+        .level-card.caution .months { color: #854d0e; }
+        .level-card.danger .months { color: #dc2626; }
+        .level-card.emergency .months { color: #b91c1c; }
+        .level-card .desc {
+            font-size: 1rem;
+            color: var(--gray-700);
+        }
+        .level-card .label {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .level-card.healthy .label { color: #065f46; }
+        .level-card.caution .label { color: #854d0e; }
+        .level-card.danger .label { color: #dc2626; }
+        .level-card.emergency .label { color: #b91c1c; }
+        .insight-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+        .insight-box p {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+        .insight-box p:last-child {
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        .extend-box {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+        .extend-box h3 {
+            color: #065f46;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        .extend-box ul {
+            margin-bottom: 0;
+        }
+        .extend-box li {
+            color: #065f46;
+        }
+        .extend-box p {
+            color: #065f46;
+            margin-bottom: 0;
+            margin-top: 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .lesson-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 48px;
+            text-align: center;
+        }
+        .lesson-box h2 {
+            margin-top: 0;
+        }
+        .lesson-box p {
+            font-size: 1.15rem;
+            max-width: 500px;
+            margin: 0 auto 12px;
+        }
+        .lesson-box p:last-child {
+            margin-bottom: 0;
+        }
+        .cta-box {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, #2d5a87 100%);
+            border-radius: 16px;
+            color: white;
+        }
+        .cta-box h2 {
+            color: white;
+            margin-top: 0;
+        }
+        .cta-box p {
+            color: rgba(255,255,255,0.9);
+        }
+        .cta-box .btn {
+            margin-top: 16px;
+        }
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+        }
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .related-articles {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--gray-200);
+        }
+        .related-articles h3 {
+            margin-top: 0;
+        }
+        .related-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .related-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 1.05rem;
+        }
+        .related-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <span class="logo-text">PlainFinancials</span>
+            </a>
+            <div class="nav-links">
+                <a href="../index.html#how-it-works">How It Works</a>
+                <a href="../index.html#pricing">Pricing</a>
+                <a href="../login.html" class="btn btn-secondary btn-sm">Log In</a>
+                <a href="../signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="article-page">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> → <a href="../understand-business-financials.html">Learn</a> → Cash Runway
+        </div>
+
+        <h1>What Is Cash Runway (And Why It Matters More Than Profit)</h1>
+
+        <p class="lead">Cash runway tells you one thing:<br><strong>How long your business can survive at its current spending level.</strong></p>
+
+        <!-- The One Question -->
+        <div class="question-box">
+            <p>"How many months do I have if nothing changes?"</p>
+            <p>A profitable business with a short runway is still at risk.<br>An unprofitable business with a long runway has time to fix things.</p>
+            <p>Runway is time — and time is safety.</p>
+        </div>
+
+        <!-- The Formula -->
+        <div class="formula-box">
+            <h3>The Formula</h3>
+            <div class="formula">Cash Runway = Cash in Bank ÷ Monthly Burn Rate</div>
+            <div class="example">
+                <p><strong>Example:</strong></p>
+                <p>$60,000 cash ÷ $15,000 per month = <strong>4 months of runway</strong></p>
+                <p>That means you have four months to adjust, improve, or turn things around if revenue stopped tomorrow.</p>
+            </div>
+        </div>
+
+        <!-- Quick Calculator CTA -->
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #93c5fd; border-radius: 12px; padding: 24px; margin: 32px 0; text-align: center;">
+            <p style="font-size: 1.2rem; font-weight: 600; color: #1e40af; margin-bottom: 8px;">Calculate Your Runway in 10 Seconds</p>
+            <p style="color: #3b82f6; margin-bottom: 16px;">Use our free calculator. No signup required.</p>
+            <a href="../index.html#runwayCalculator" class="btn btn-primary">Try the Free Calculator</a>
+        </div>
+
+        <!-- What the Numbers Mean -->
+        <h2>What the Numbers Mean</h2>
+
+        <div class="levels-grid">
+            <div class="level-card healthy">
+                <div class="months">12+ months</div>
+                <div class="desc"><span class="label">Healthy.</span> You have breathing room.</div>
+            </div>
+            <div class="level-card caution">
+                <div class="months">6–12 months</div>
+                <div class="desc"><span class="label">Caution.</span> Keep a close eye on spending.</div>
+            </div>
+            <div class="level-card danger">
+                <div class="months">Under 6 months</div>
+                <div class="desc"><span class="label">Danger.</span> You need to act.</div>
+            </div>
+            <div class="level-card emergency">
+                <div class="months">Under 3 months</div>
+                <div class="desc"><span class="label">Emergency.</span> Stop everything else and focus on survival.</div>
+            </div>
+        </div>
+
+        <!-- Why Runway Matters More -->
+        <h2>Why Runway Matters More Than Profit</h2>
+
+        <div class="insight-box">
+            <p>Profit tells you if your business model works.<br>Runway tells you if you'll survive long enough to prove it.</p>
+            <p>Plenty of profitable businesses die because customers pay late.<br>Plenty of unprofitable startups survive because they had enough runway to pivot.</p>
+            <p>Runway buys time. Time buys options.</p>
+        </div>
+
+        <!-- How to Extend -->
+        <div class="extend-box">
+            <h3>How to Extend Your Runway</h3>
+            <ul>
+                <li>Collect cash faster (follow up on receivables)</li>
+                <li>Delay non-essential spending</li>
+                <li>Cut or pause fixed costs</li>
+                <li>Renegotiate payment terms with suppliers</li>
+                <li>Increase prices if the market allows</li>
+            </ul>
+            <p>Every dollar saved or collected adds days to your runway.</p>
+        </div>
+
+        <!-- The Real Lesson -->
+        <div class="lesson-box">
+            <h2>The Real Lesson</h2>
+            <p><strong>Growth without runway is gambling.<br>Runway without growth is slow death.</strong></p>
+            <p>You need both.<br>But if you must choose — choose runway.</p>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-box">
+            <h2>Know Your Runway. Take Control.</h2>
+            <p>Use our free calculator now, or get a full analysis with actionable next steps.</p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px;">
+                <a href="../index.html#runwayCalculator" class="btn btn-secondary btn-lg" style="background: white; color: var(--primary);">Free Calculator</a>
+                <a href="../signup.html" class="btn btn-primary btn-lg" style="background: rgba(255,255,255,0.2); border: 2px solid white;">Get Full Report Free</a>
+            </div>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+            <h3>Related Articles</h3>
+            <div class="related-links">
+                <a href="../understand-business-financials.html">Understanding Your Business Numbers (The Complete Guide)</a>
+                <a href="profit-vs-cash.html">Why Your P&L Shows Profit but Your Bank Account Is Empty</a>
+                <a href="read-pnl.html">How to Read a P&L Without Accounting Knowledge</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 40px 24px; color: var(--gray-500); font-size: 14px;">
+        <p>&copy; 2025 PlainFinancials. All rights reserved.</p>
+        <p><a href="../index.html">Home</a> &middot; <a href="../about-plainfinancials.html">About</a> &middot; <a href="../privacy.html">Privacy</a> &middot; <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

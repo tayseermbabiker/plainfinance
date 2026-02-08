@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO -->
+    <title>PlainFinancials | Financial Statements Explained Simply for Small Business</title>
+    <meta name="description" content="Non-accountant friendly financial analysis tool that translates your P&L and balance sheet into plain English. Understand why profit doesn't match cash. No accounting knowledge needed.">
+    <meta name="keywords" content="financial analysis software for non-accountants, profit and loss explained simply, why does my P&L say profit but bank account is empty, cash flow analysis for small business, translate financial statements into plain English, understand P&L without accounting knowledge, beginner-friendly financial analysis, non-accountant friendly financial tools, small business financial dashboard">
+    <meta name="author" content="PlainFinancials">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://plainfinancials.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://plainfinancials.com/">
+    <meta property="og:title" content="PlainFinancials | Your Numbers, Finally Explained">
+    <meta property="og:description" content="Stop staring at confusing spreadsheets. Upload your financials and get a report that actually makes sense, written like a friend explaining over coffee.">
+    <meta property="og:image" content="https://plainfinancials.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="PlainFinancials">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://plainfinancials.com/">
+    <meta name="twitter:title" content="PlainFinancials | Your Numbers, Finally Explained">
+    <meta name="twitter:description" content="Financial statements translated from accounting jargon into plain English. Get actionable insights in 2 minutes.">
+    <meta name="twitter:image" content="https://plainfinancials.com/og-image.png">
+
+    <!-- Additional Meta -->
+    <meta name="application-name" content="PlainFinancials">
+    <meta name="theme-color" content="#1e3a5f">
+
+    <!-- Google Search Console -->
+    <meta name="google-site-verification" content="5otneS85295rQNGZAeYdlhL8nBlrzZvyDjHqtXxmN78">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JNPY5QZ8NG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JNPY5QZ8NG');
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/rtl.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a5f'/><text x='50' y='65' font-size='50' fill='white' text-anchor='middle' font-family='Arial'>PF</text></svg>">
+
+    <!-- FAQ Schema Markup for Google Rich Results -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Why does my profit and loss statement say I made money, but my bank account feels empty?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Profit is an accounting concept that doesn't account for timing—when customers pay you vs when you pay suppliers. Your P&L might show profit, but if customers owe you money or you've stocked up on inventory, that cash isn't in your bank yet. PlainFinancials shows you exactly where your cash is tied up with a simple cash bridge explanation."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Which 5-6 numbers should I actually look at each month to understand my business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Focus on: Revenue (are sales growing?), Cost of Goods Sold (what it costs to deliver), Operating Expenses (overhead), Net Profit (what's left), Cash in Bank (can you pay bills?), and Accounts Receivable (money owed to you). These six numbers tell the complete story of your business health."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is cash runway and how do I calculate it for my small business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Cash runway is how many months your business can survive on its current cash, assuming no new income. Calculate it by dividing your cash in bank by your average monthly expenses (or burn rate). If you have $30,000 cash and spend $10,000/month, you have 3 months of runway."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Why is my cash always tight even when sales look good?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Three common reasons: customers are paying late (your money is stuck in receivables), you're holding too much inventory, or you're paying suppliers faster than customers pay you. This timing mismatch is called the cash conversion cycle."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is a profit and loss statement and what does it tell me?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A profit and loss statement (P&L) shows your business income minus expenses over a period—usually a month or year. It answers: Did I make or lose money? The top shows revenue, the middle shows costs (goods sold, salaries, rent, etc.), and the bottom shows net profit or loss."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How can I tell if my business is financially healthy without being a finance expert?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ask three simple questions: Am I profitable (net profit is positive)? Can I pay my bills for the next 3 months (cash runway)? Are customers paying me on time (receivables aren't growing out of control)? If yes to all three, you're in decent shape."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What financial reports should I ask my accountant for each month?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ask for three reports: Profit & Loss Statement (shows if you made money), Balance Sheet (shows what you own and owe), and Aged Receivables (shows who owes you money and how overdue). Most accounting software generates these automatically."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I read a balance sheet for my small business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A balance sheet shows what your business owns (assets) vs what it owes (liabilities) at a specific moment. Assets include cash, inventory, and money customers owe you. Liabilities include loans, unpaid bills, and money you owe suppliers. The difference is your equity—what the business is actually worth."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is accounts receivable and why does it matter for cash flow?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Accounts receivable (AR) is money customers owe you for work you've already done or products you've delivered. It matters because high AR means your cash is stuck with customers instead of in your bank. If AR keeps growing, you're essentially funding your customers' businesses."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How can I improve my small business cash flow?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Three practical ways: (1) Get paid faster—send invoices immediately and follow up on overdue payments, (2) Slow down payments—negotiate longer payment terms with suppliers, (3) Reduce inventory—order smaller quantities more often instead of big bulk orders."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is a good profit margin for small businesses in my industry?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "It varies by industry: Retail typically sees 2-5% net margin, Services 10-20%, Technology 15-25%, and Food & Beverage 3-10%. Gross margin (before overhead) is usually much higher—25-50% for most businesses."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is PlainFinancials replacing my accountant?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No. Your accountant handles compliance—VAT filing, bookkeeping, annual returns. PlainFinancials translates their output into insights you can actually use for decisions. Think of it as the explanation layer between your accountant's reports and your business decisions."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What tool explains financial statements in plain English?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "PlainFinancials is a tool specifically designed to translate financial statements from accounting jargon into plain English. It takes your P&L, balance sheet, and cash flow data and explains what the numbers mean in simple terms—like having a friend who's a CFO explain your finances over coffee."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is the best financial analysis tool for small business owners?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "For small business owners who want to understand their finances without an accounting background, PlainFinancials offers plain English reports, cash runway calculations, health indicators, and specific weekly actions. It's designed for business owners, not accountants—focusing on clarity and actionable insights rather than complex spreadsheets."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is the best financial analysis software for non-accountants?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "PlainFinancials is designed specifically for non-accountants. It translates numbers into insights with simple language reports, visual charts showing profit trends, automatic categorization of what matters, and alerts when something needs attention. Unlike tools like QuickBooks or Xero that create financial statements, PlainFinancials explains what those statements mean in plain English—without accounting jargon."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What tools help small business owners understand their financial statements?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "While accounting tools like QuickBooks and Xero generate financial statements, PlainFinancials is a translation tool that explains what those statements mean. It takes your P&L, balance sheet, and cash flow data and converts accounting jargon into beginner-friendly insights. Perfect for small business owners who need to understand their numbers without learning accounting."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How can I understand my P&L without accounting knowledge?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "PlainFinancials translates your P&L into plain English. Instead of seeing confusing terms like gross margin and EBITDA, you get explanations like 'You made $55,000 profit this month. For every $1 of sales, you kept $0.11 after all expenses.' The tool calculates key metrics and tells you what they mean for your specific business."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is my financial data secure with PlainFinancials?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. PlainFinancials uses bank-level encryption to protect your data. We don't store your financial data longer than needed, never share it with third parties, and you can delete your data at any time. Your numbers stay yours."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <!-- SoftwareApplication Schema for AI Discovery -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "PlainFinancials",
+        "alternateName": "Plain Financials",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "Financial Analysis",
+        "operatingSystem": "Web Browser",
+        "description": "Non-accountant friendly financial analysis tool that translates numbers into insights. Converts P&L statements and balance sheets from accounting jargon into plain English. Answers 'why does my P&L say profit but my bank account is empty?' with a clear cash bridge explanation. Beginner-friendly, no accounting knowledge needed.",
+        "url": "https://plainfinancials.com",
+        "featureList": [
+            "Plain English financial reports",
+            "Cash runway calculation",
+            "Cash bridge analysis explaining profit vs cash",
+            "3-month cash flow forecast",
+            "Industry benchmark comparison",
+            "Health indicators (Safe/Tight/Danger)",
+            "3 specific weekly action items",
+            "PDF report downloads",
+            "Multi-currency support"
+        ],
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Free Plan",
+                "price": "0",
+                "priceCurrency": "USD",
+                "description": "1 full report lifetime, complete analysis, health indicators, cash forecast"
+            },
+            {
+                "@type": "Offer",
+                "name": "Owner Plan",
+                "price": "30",
+                "priceCurrency": "USD",
+                "description": "6 reports per month, PDF downloads, 12-month history"
+            },
+            {
+                "@type": "Offer",
+                "name": "Pro Plan",
+                "price": "85",
+                "priceCurrency": "USD",
+                "description": "20 reports per month, scenario analysis, team access, branded reports"
+            }
+        ],
+        "author": {
+            "@type": "Person",
+            "name": "Tayseer Mohammed",
+            "jobTitle": "FCCA, CFO",
+            "description": "ACCA-qualified finance professional with 17+ years of FP&A experience"
+        },
+        "audience": {
+            "@type": "Audience",
+            "audienceType": "Small Business Owners, Startup Founders, Entrepreneurs, Freelancers"
+        }
+    }
+    </script>
+
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "PlainFinancials",
+        "url": "https://plainfinancials.com",
+        "description": "Financial statement translation for small business owners. We turn accounting jargon into plain English insights.",
+        "foundingDate": "2025",
+        "founder": {
+            "@type": "Person",
+            "name": "Tayseer Mohammed",
+            "jobTitle": "FCCA"
+        },
+        "sameAs": [
+            "https://www.linkedin.com/company/plainfinancials"
+        ]
+    }
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="logo-text">PlainFinancials</span>
+            </a>
+            <div class="nav-links">
+                <a href="#how-it-works" data-i18n="nav_how_it_works">How It Works</a>
+                <a href="#pricing" data-i18n="nav_pricing">Pricing</a>
+                <a href="understand-business-financials.html">Learn</a>
+                <a href="login.html" class="btn btn-secondary btn-sm" data-i18n="nav_login">Log In</a>
+                <a href="signup.html" class="btn btn-primary btn-sm" data-i18n="nav_signup">Sign Up</a>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="understand-business-financials.html">Learn</a>
+        <a href="login.html">Log In</a>
+        <a href="signup.html" class="btn btn-primary">Sign Up</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero hero-centered">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">Non-Accountant Friendly Financial Analysis</div>
+                <h1>Your Numbers, <span class="gradient-text">Finally Explained</span></h1>
+                <p class="hero-subtitle">Stop staring at confusing spreadsheets. Get a report that actually makes sense, like a friend explaining over coffee.</p>
+                <div class="hero-cta">
+                    <a href="report.html?sample=true" class="btn btn-primary btn-lg">See Sample Report</a>
+                    <a href="analyze.html" class="btn btn-secondary btn-lg">Analyze My Numbers</a>
+                </div>
+                <div class="hero-trust">
+                    <span class="trust-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        Bank-level encryption
+                    </span>
+                    <span class="divider">•</span>
+                    <span class="trust-item">No accounting jargon</span>
+                    <span class="divider">•</span>
+                    <span class="trust-item">Your data stays private</span>
+                </div>
+            </div>
+
+            <!-- Instant Runway Calculator -->
+            <div class="runway-calculator" id="runwayCalculator">
+                <div class="calculator-header">
+                    <h3>Quick Burn Calculator</h3>
+                    <p>How many months of oxygen does your business have? Find out in 10 seconds.</p>
+                </div>
+
+                <div class="calculator-inputs">
+                    <div class="calc-input-group">
+                        <label for="calcCash">Cash in Bank</label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="calcCash" inputmode="numeric" placeholder="50,000" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label for="calcExpenses">Monthly Expenses</label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="calcExpenses" inputmode="numeric" placeholder="15,000" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label for="calcRevenue">Monthly Revenue</label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="calcRevenue" inputmode="numeric" placeholder="12,000" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculator-result" id="calculatorResult">
+                    <div class="result-placeholder">
+                        <span class="placeholder-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </span>
+                        <span>Enter your numbers above</span>
+                    </div>
+                </div>
+
+                <div class="calculator-cta" id="calculatorCta" style="display: none;">
+                    <a href="signup.html" class="btn btn-primary btn-lg">See Your Real Runway (Free)</a>
+                    <p class="cta-note">Get the full picture: AP, loans, receivables, and what to do about them</p>
+                </div>
+            </div>
+
+            <!-- Pain Points -->
+            <div class="hero-problems">
+                <h2 class="hero-problems-title">Sound Familiar?</h2>
+                <div class="hero-problems-grid">
+                    <div class="problem-card">
+                        <h3>"I do not understand my own financials"</h3>
+                        <p>Your accountant sends reports full of jargon. You nod along, pretending you get it. You see numbers but have no idea if they are healthy or a warning sign.</p>
+                    </div>
+                    <div class="problem-card">
+                        <h3>"Profitable on paper, but where is the cash?"</h3>
+                        <p>The P&L says you made money. Your bank account disagrees. Should you hire? Expand? You are guessing, not knowing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution">
+        <div class="container">
+            <div class="solution-header">
+                <h2 class="section-title">Finance, Translated</h2>
+                <p class="section-subtitle">Upload your data. Get clarity. Take action.</p>
+            </div>
+
+            <div class="solution-comparison">
+                <div class="comparison-card before">
+                    <div class="comparison-label">What You Get Now</div>
+                    <div class="comparison-content">
+                        <code>
+Revenue: $1,245,892<br>
+COGS: $891,204<br>
+Gross Margin: 28.48%<br>
+EBITDA: $156,402<br>
+DSO: 47 days<br>
+Current Ratio: 1.2
+                        </code>
+                    </div>
+                    <div class="comparison-reaction">"What does this even mean?"</div>
+                </div>
+
+                <div class="comparison-arrow">→</div>
+
+                <div class="comparison-card after">
+                    <div class="comparison-label">What PlainFinancials Gives You</div>
+                    <div class="comparison-content">
+                        <p><strong>You made $156K profit</strong>, and that is good!</p>
+                        <p>But your <strong>margins dropped 2%</strong> because supplier costs went up.</p>
+                        <p><strong>Cash is tight</strong>: you have 6 weeks of runway.</p>
+                        <p>Customers take <strong>47 days to pay you</strong>. That is too slow.</p>
+                        <p><strong>Action:</strong> Chase the $78K in overdue invoices this week.</p>
+                    </div>
+                    <div class="comparison-reaction">"Now I know what to do!"</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Enter Your Numbers</h3>
+                    <p>Key in 5-6 figures from your P&L and balance sheet. Takes about 2 minutes.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>We Analyze</h3>
+                    <p>We crunch the numbers, calculate key ratios, and identify what matters most for your business.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get Your Report</h3>
+                    <p>A clear, simple briefing in plain English. What happened, why it matters, and what to do.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Take Action</h3>
+                    <p>Get 3 specific actions for this week. Share the report with partners or your accountant.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">What You Get</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Plain English Reports</h3>
+                    <p>Clear briefings that tell you exactly what is happening in your business, in words you understand.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>3 Actions This Week</h3>
+                    <p>Not just "here is what happened", but specific actions you can take right now.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Health Indicators</h3>
+                    <p>Instant traffic-light view: Safe, Tight, or Danger. Know where you stand at a glance.</p>
+                </div>
+                <div class="feature-card featured">
+                    <h3>Cash Runway</h3>
+                    <p>The survival question answered: "How many months until we run out of cash?" Based on your actual YTD cash movement — captures ALL cash flows automatically, not just P&L items.</p>
+                </div>
+                <div class="feature-card featured">
+                    <h3>Cash Bridge</h3>
+                    <p>The "why" behind your cash: "Why didn't my profit match my bank balance?" See exactly where your money went this month — receivables, inventory, loan repayments, owner drawings.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Cash Flow Forecast</h3>
+                    <p>See where your cash is heading over the next 3 months based on your payment patterns.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Industry Benchmarks</h3>
+                    <p>Compare your margins and ratios to typical businesses in your industry.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Share with Banks & Partners</h3>
+                    <p>Download a clean PDF summary to share with your bank, investors, or business partners.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple Pricing</h2>
+            <p class="section-subtitle">Start free. Upgrade when you need more.</p>
+
+            <div class="pricing-grid">
+                <!-- Free Tier -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Free</div>
+                    <div class="pricing-price">
+                        <span class="currency">$</span>
+                        <span class="amount">0</span>
+                    </div>
+                    <p class="pricing-desc">Try it out</p>
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> 1 full report (lifetime)</li>
+                        <li><span class="check">✓</span> Full financial analysis</li>
+                        <li><span class="check">✓</span> Health indicators</li>
+                        <li><span class="check">✓</span> Cash forecast</li>
+                        <li><span class="check">✓</span> Industry benchmarks</li>
+                        <li><span class="dash">–</span> No PDF download</li>
+                        <li><span class="dash">–</span> 30-day history only</li>
+                    </ul>
+                    <a href="signup.html" class="btn btn-secondary btn-block">Get Started</a>
+                </div>
+
+                <!-- Owner Tier -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-name">Owner</div>
+                    <div class="pricing-price">
+                        <span class="currency">$</span>
+                        <span class="amount">30</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p class="pricing-desc">Monthly clarity for your business</p>
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> 6 reports per month</li>
+                        <li><span class="check">✓</span> Full financial analysis</li>
+                        <li><span class="check">✓</span> Health indicators</li>
+                        <li><span class="check">✓</span> Cash forecast</li>
+                        <li><span class="check">✓</span> Industry benchmarks</li>
+                        <li><span class="check">✓</span> PDF downloads</li>
+                        <li><span class="check">✓</span> 12-month history</li>
+                        <li><span class="check">✓</span> Email support</li>
+                    </ul>
+                    <a href="signup.html" class="btn btn-primary btn-block">Get Started</a>
+                    <p class="pricing-note">$300/year (save 2 months)</p>
+                </div>
+
+                <!-- Pro Tier -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Pro</div>
+                    <div class="pricing-price">
+                        <span class="currency">$</span>
+                        <span class="amount">85</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p class="pricing-desc">For growing businesses</p>
+                    <ul class="pricing-features">
+                        <li><span class="check">✓</span> 20 reports per month</li>
+                        <li><span class="check">✓</span> Full financial analysis</li>
+                        <li><span class="check">✓</span> Health indicators</li>
+                        <li><span class="check">✓</span> Cash forecast</li>
+                        <li><span class="check">✓</span> Industry benchmarks</li>
+                        <li><span class="check">✓</span> PDF downloads</li>
+                        <li><span class="check">✓</span> 12-month history</li>
+                        <li><span class="check">✓</span> Scenario analysis</li>
+                        <li><span class="check">✓</span> Branded PDF reports</li>
+                        <li><span class="check">✓</span> Team access (up to 5)</li>
+                        <li><span class="check">✓</span> Priority support</li>
+                    </ul>
+                    <a href="signup.html" class="btn btn-secondary btn-block">Get Started</a>
+                    <p class="pricing-note">$850/year (save 2 months)</p>
+                </div>
+            </div>
+
+            <!-- Consultation Add-on -->
+            <div class="pricing-addon">
+                <div class="addon-content">
+                    <div class="addon-text">
+                        <h3>Need a human to walk you through it?</h3>
+                        <p>Book a 30-minute call with a chartered accountant who speaks plain English.</p>
+                    </div>
+                    <div class="addon-cta">
+                        <span class="addon-price">$59</span>
+                        <a href="#" class="btn btn-secondary">Book a Call</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-image">
+                    <div class="about-placeholder about-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="about-text">
+                    <h2>Why We Built This</h2>
+                    <p class="about-intro"><strong>Financial reports should inform decisions, not confuse them.</strong></p>
+                    <p>Most business owners are brilliant at what they do: running operations, serving customers, building products. But they never learned to read a balance sheet, and traditional financial reports were not designed for them.</p>
+                    <p>PlainFinancials bridges the gap between accounting output and business decisions. We take the numbers your accountant produces and translate them into clear insights you can act on.</p>
+                    <p><strong>No jargon. No confusion. Just clarity.</strong></p>
+                    <div class="about-credentials">
+                        <span class="credential">Built for SMEs</span>
+                        <span class="credential">Works globally</span>
+                        <span class="credential">Multi-currency</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ - SEO Optimized -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <h2 class="section-title">Common Questions About Financial Statements</h2>
+            <div class="faq-list">
+                <!-- SEO Questions - Understanding Reports -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Why does my profit and loss statement say I made money, but my bank account feels empty?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>This is one of the most common frustrations for business owners. Profit is an accounting concept that doesn't account for timing—when customers pay you vs when you pay suppliers. Your P&L might show profit, but if customers owe you money or you've stocked up on inventory, that cash isn't in your bank yet. PlainFinancials shows you exactly where your cash is tied up with a simple "cash bridge" explanation.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Which 5-6 numbers should I actually look at each month to understand my business?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Focus on: Revenue (are sales growing?), Cost of Goods Sold (what it costs to deliver), Operating Expenses (overhead), Net Profit (what's left), Cash in Bank (can you pay bills?), and Accounts Receivable (money owed to you). These six numbers tell the complete story of your business health. Upload them to PlainFinancials and get a plain English explanation of what they mean together.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>I get monthly reports from my accountant but don't understand them. What should I focus on?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Start with three things: Are you profitable (net profit line)? Do you have enough cash to pay upcoming bills? Are customers paying you on time? Your accountant's report contains all this, but it's buried in accounting jargon. PlainFinancials reads your report and highlights exactly what changed and what it means for your business—no accounting knowledge needed.</p>
+                    </div>
+                </div>
+
+                <!-- SEO Questions - Cash Flow & Runway -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is cash runway and how do I calculate it for my small business?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Cash runway is how many months your business can survive on its current cash, assuming no new income. Calculate it by dividing your cash in bank by your average monthly expenses (or "burn rate"). If you have $30,000 cash and spend $10,000/month, you have 3 months of runway. PlainFinancials calculates this automatically from your numbers and warns you when runway gets dangerously low.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Why is my cash always tight even when sales look good?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Three common reasons: customers are paying late (your money is stuck in receivables), you're holding too much inventory, or you're paying suppliers faster than customers pay you. This timing mismatch is called the "cash conversion cycle." PlainFinancials analyzes your numbers and tells you exactly which of these is causing your cash crunch—and what to do about it.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How can I quickly see if I have enough cash to survive the next few months?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Look at your current cash balance, subtract any bills due in the next 30-60 days, and compare that to your monthly operating costs. If you have less than 2-3 months of expenses covered, you need to act fast. PlainFinancials does this math for you and gives you a clear "cash forecast" showing your projected balance for the next 3 months.</p>
+                    </div>
+                </div>
+
+                <!-- SEO Questions - P&L Statements -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is a profit and loss statement and what does it tell me?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>A profit and loss statement (P&L) shows your business income minus expenses over a period—usually a month or year. It answers: "Did I make or lose money?" The top shows revenue, the middle shows costs (goods sold, salaries, rent, etc.), and the bottom shows net profit or loss. PlainFinancials takes your P&L and explains each section in plain English, highlighting what's changed and why it matters.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Which lines on my P&L should I watch to know if my business is improving?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Watch these four: Revenue (is it growing?), Gross Margin (revenue minus cost of goods—are you pricing right?), Operating Expenses (is overhead under control?), and Net Profit (what's actually left). Compare each month to the previous month and same month last year. PlainFinancials highlights these comparisons automatically and tells you whether you're trending better or worse.</p>
+                    </div>
+                </div>
+
+                <!-- SEO Questions - Financial Health -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How can I tell if my business is financially healthy without being a finance expert?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Ask three simple questions: Am I profitable (net profit is positive)? Can I pay my bills for the next 3 months (cash runway)? Are customers paying me on time (receivables aren't growing out of control)? If yes to all three, you're in decent shape. PlainFinancials gives you a simple health score based on these factors and compares you to industry benchmarks—no finance degree required.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What financial reports should I ask my accountant for each month?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Ask for three reports: Profit & Loss Statement (shows if you made money), Balance Sheet (shows what you own and owe), and Aged Receivables (shows who owes you money and how overdue). Most accounting software generates these automatically. Upload any of these to PlainFinancials and get a one-page summary explaining what it all means in plain English.</p>
+                    </div>
+                </div>
+
+                <!-- SEO Questions - Balance Sheet & Receivables -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I read a balance sheet for my small business?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>A balance sheet shows what your business owns (assets) vs what it owes (liabilities) at a specific moment. Assets include cash, inventory, and money customers owe you. Liabilities include loans, unpaid bills, and money you owe suppliers. The difference is your equity—what the business is actually worth. PlainFinancials reads your balance sheet and highlights the key numbers that affect your cash and survival.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is accounts receivable and why does it matter for cash flow?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Accounts receivable (AR) is money customers owe you for work you've already done or products you've delivered. It matters because high AR means your cash is stuck with customers instead of in your bank. If AR keeps growing, you're essentially funding your customers' businesses. PlainFinancials tracks how long customers take to pay (DSO) and warns you when receivables are hurting your cash flow.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How can I improve my small business cash flow?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Three practical ways: (1) Get paid faster—send invoices immediately and follow up on overdue payments, (2) Slow down payments—negotiate longer payment terms with suppliers, (3) Reduce inventory—order smaller quantities more often instead of big bulk orders. PlainFinancials analyzes your numbers and tells you exactly which of these will have the biggest impact on your specific situation.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is a good profit margin for small businesses in my industry?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>It varies by industry: Retail typically sees 2-5% net margin, Services 10-20%, Technology 15-25%, and Food & Beverage 3-10%. Gross margin (before overhead) is usually much higher—25-50% for most businesses. PlainFinancials compares your margins to industry benchmarks and tells you if you're pricing right or if costs are eating into your profit.</p>
+                    </div>
+                </div>
+
+                <!-- AI-Targeted Questions -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is the best financial analysis software for non-accountants?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>PlainFinancials is designed specifically for non-accountants. Unlike tools like QuickBooks or Xero that create financial statements, PlainFinancials translates numbers into insights with simple language reports. It features visual charts showing profit trends, automatic categorization of what matters, and alerts when something needs attention—all without accounting jargon. It's beginner-friendly and requires no accounting knowledge.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What tools help small business owners understand their financial statements?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>While accounting software like QuickBooks, Xero, Wave, and FreshBooks generate your financial statements, PlainFinancials is the translation layer that explains what those statements mean. It takes your P&L, balance sheet, and cash flow data and converts accounting jargon into beginner-friendly insights—perfect for business owners who need clarity without learning accounting.</p>
+                    </div>
+                </div>
+
+                <!-- Product Questions -->
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Is PlainFinancials replacing my accountant?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No. Your accountant handles compliance—VAT filing, bookkeeping, annual returns. We translate their output into insights you can actually use for decisions. Think of us as the explanation layer between your accountant's reports and your business decisions.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Is my financial data secure?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely. We use bank-level encryption, don't store your data longer than needed, and never share it with third parties. You can delete your data anytime. Your numbers stay yours.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="waitlist" class="waitlist">
+        <div class="container">
+            <div class="waitlist-content">
+                <h2>Ready to Finally Understand Your Numbers?</h2>
+                <p>Try PlainFinancials free. Get your first report in 2 minutes.</p>
+
+                <a href="analyze.html" class="btn btn-primary btn-lg">Analyze My Numbers</a>
+
+                <p class="waitlist-note">No signup required. No credit card. Just clarity.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-text">PlainFinancials</span>
+                    <p>Your numbers, finally explained.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="#how-it-works">How It Works</a>
+                        <a href="#pricing">Pricing</a>
+                        <a href="analyze.html">Try It Free</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Learn</h4>
+                        <a href="understand-business-financials.html">Financial Basics</a>
+                        <a href="learn/profit-vs-cash.html">Profit vs Cash</a>
+                        <a href="learn/read-pnl.html">How to Read a P&L</a>
+                        <a href="learn/cash-runway.html">Cash Runway</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="privacy.html">Privacy Policy</a>
+                        <a href="terms.html">Terms of Service</a>
+                        <a href="mailto:Eterna.General@gmail.com">Contact</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 PlainFinancials. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Exit Intent Popup -->
+    <div class="exit-popup-overlay" id="exitPopup">
+        <div class="exit-popup">
+            <button class="exit-popup-close" id="exitPopupClose">&times;</button>
+            <h3>Wait! See a Real Example First</h3>
+            <p>Before you go, check out what your financial report would look like. Takes 30 seconds. No signup required.</p>
+            <a href="report.html?sample=true" class="btn btn-primary">See Sample Report</a>
+            <button class="exit-popup-dismiss" id="exitPopupDismiss">No thanks, I'll pass</button>
+        </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze Your Numbers | PlainFinancials</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JNPY5QZ8NG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JNPY5QZ8NG');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/analyze.css">
+    <link rel="stylesheet" href="css/rtl.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-text">PlainFinancials</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="index.html#how-it-works" data-i18n="nav_how_it_works">How It Works</a>
+                <a href="index.html#pricing" data-i18n="nav_pricing">Pricing</a>
+                <div class="lang-tabs">
+                    <button class="lang-tab" onclick="setLang('en')" data-lang="en">EN</button>
+                    <button class="lang-tab" onclick="setLang('ar')" data-lang="ar">عربي</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="analyze-main">
+        <div class="analyze-container">
+
+            <!-- Previous Actions Review (shown if user has pending actions) -->
+            <div id="previousActionsContainer" class="previous-actions-container" style="display: none;">
+                <!-- Content populated by JavaScript -->
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <span>Company</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <span>Sales</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <span>Cash</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <span>Payables</span>
+                    </div>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-fill" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <!-- Form Container -->
+            <form id="analyzeForm" class="analyze-form">
+
+                <!-- Step 1: Company Info -->
+                <div class="form-step active" data-step="1">
+                    <div class="step-header">
+                        <h1>Let's understand your business</h1>
+                        <p>We'll use this to give you relevant insights and benchmarks</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" name="companyName" placeholder="e.g., Gulf Trading LLC" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="industry">Industry</label>
+                        <select id="industry" name="industry" required>
+                            <option value="">What type of business do you run?</option>
+                            <option value="product">Product-based business (retail, wholesale, e-commerce, trading)</option>
+                            <option value="online">Online-only business (apps, SaaS, digital services)</option>
+                            <option value="services">Services business (agencies, consultants, freelancers)</option>
+                            <option value="food">Food & hospitality (restaurants, cafes, catering, hotels)</option>
+                            <option value="construction">Construction & real estate (contractors, developers)</option>
+                            <option value="manufacturing">Manufacturing & industrial (factories, logistics)</option>
+                            <option value="healthcare">Healthcare & wellness (clinics, pharmacies)</option>
+                            <option value="other">Other / not listed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reportMonth">Reporting Period</label>
+                            <select id="reportMonth" name="reportMonth" required>
+                                <option value="">Month</option>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportYear">&nbsp;</label>
+                            <select id="reportYear" name="reportYear" required>
+                                <option value="">Year</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency" name="currency" required>
+                            <option value="AED">AED - UAE Dirham</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="SAR">SAR - Saudi Riyal</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                        </select>
+                    </div>
+
+                    <div class="input-method-toggle">
+                        <p>How would you like to share your numbers?</p>
+                        <div class="toggle-options">
+                            <button type="button" class="toggle-btn active" data-method="form">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                <span>Quick Entry</span>
+                                <small>Type key figures (2 min)</small>
+                            </button>
+                            <button type="button" class="toggle-btn" data-method="upload">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span>Upload Reports</span>
+                                <small>Excel, CSV, or PDF</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary next-step">
+                            Continue
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Sales & Profit (Form Entry) -->
+                <div class="form-step" data-step="2" data-method="form">
+                    <div class="step-header">
+                        <h1>How did you do this period?</h1>
+                        <p>Enter your income statement figures</p>
+                    </div>
+
+                    <!-- Column Headers -->
+                    <div class="dual-column-header">
+                        <div class="column-label"></div>
+                        <div class="column-label">This Month</div>
+                        <div class="column-label">Year to Date</div>
+                    </div>
+
+                    <!-- Revenue Row -->
+                    <div class="dual-column-row">
+                        <label>
+                            Sales / Revenue
+                            <span class="tooltip" data-tip="All money earned from selling your products or services">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="revenue" name="revenue" placeholder="0" min="0" required>
+                        </div>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="ytdRevenue" name="ytdRevenue" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- COGS Row -->
+                    <div class="dual-column-row">
+                        <label>
+                            Cost of Goods Sold
+                            <span class="tooltip" data-tip="What you paid for products sold - materials, manufacturing, direct labor">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="cogs" name="cogs" placeholder="0" min="0" required>
+                        </div>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="ytdCogs" name="ytdCogs" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- Gross Profit Display -->
+                    <div class="dual-column-row calculated">
+                        <span>Gross Profit</span>
+                        <span class="calculated-value" id="grossProfitDisplay">AED 0</span>
+                        <span class="calculated-value" id="ytdGrossProfitDisplay">AED 0</span>
+                    </div>
+
+                    <!-- OPEX Row -->
+                    <div class="dual-column-row">
+                        <label>
+                            Operating Expenses
+                            <span class="tooltip" data-tip="Salaries, rent, marketing, utilities - everything except COGS">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="opex" name="opex" placeholder="0" min="0" required>
+                        </div>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="ytdOpex" name="ytdOpex" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- Net Profit Row -->
+                    <div class="dual-column-row">
+                        <label>
+                            Net Profit
+                            <span class="tooltip" data-tip="What's left after ALL expenses - the bottom line">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="netProfit" name="netProfit" placeholder="0" required>
+                        </div>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="ytdNetProfit" name="ytdNetProfit" placeholder="0" required>
+                        </div>
+                    </div>
+
+                    <!-- Net Margin Display -->
+                    <div class="dual-column-row calculated highlight">
+                        <span>Net Margin</span>
+                        <span class="calculated-value" id="netMarginDisplay">0%</span>
+                        <span class="calculated-value" id="ytdNetMarginDisplay">0%</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary prev-step">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            Back
+                        </button>
+                        <button type="button" class="btn btn-primary next-step">
+                            Continue
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: File Upload -->
+                <div class="form-step" data-step="2" data-method="upload">
+                    <div class="step-header">
+                        <h1>Upload your financial data</h1>
+                        <p>Use our CSV template to import your numbers</p>
+                    </div>
+
+                    <!-- Template Download Section -->
+                    <div class="template-section">
+                        <div class="template-box">
+                            <div class="template-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="template-info">
+                                <h4>Not sure what format to use?</h4>
+                                <p>Download our template and fill in your numbers</p>
+                            </div>
+                            <a href="templates/plainfinance-template.csv" download class="btn btn-secondary btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download Template
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <h3>Drag & drop your files here</h3>
+                        <p>or click to browse</p>
+                        <input type="file" id="fileUpload" name="files" accept=".csv" hidden>
+                        <div class="accepted-formats">
+                            <span>CSV (.csv)</span>
+                        </div>
+                    </div>
+
+                    <div class="uploaded-files" id="uploadedFiles">
+                        <!-- Files will be listed here -->
+                    </div>
+
+                    <!-- Expected Format Guide -->
+                    <div class="format-guide">
+                        <button type="button" class="format-guide-toggle" onclick="toggleFormatGuide()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            What columns should my file have?
+                            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div class="format-guide-content" id="formatGuideContent" style="display: none;">
+                            <div class="format-columns">
+                                <div class="format-column">
+                                    <h5>Income Statement (Required)</h5>
+                                    <ul>
+                                        <li><code>Revenue</code> or <code>Sales</code></li>
+                                        <li><code>COGS</code> or <code>Cost of Goods Sold</code></li>
+                                        <li><code>Operating Expenses</code> or <code>OPEX</code></li>
+                                        <li><code>Net Profit</code> or <code>Net Income</code></li>
+                                    </ul>
+                                </div>
+                                <div class="format-column">
+                                    <h5>Balance Sheet (Recommended)</h5>
+                                    <ul>
+                                        <li><code>Cash</code> or <code>Cash in Bank</code></li>
+                                        <li><code>Accounts Receivable</code> or <code>AR</code></li>
+                                        <li><code>Inventory</code></li>
+                                        <li><code>Accounts Payable</code> or <code>AP</code></li>
+                                    </ul>
+                                </div>
+                                <div class="format-column">
+                                    <h5>Cash Movements</h5>
+                                    <ul>
+                                        <li><code>Opening Cash</code> (Start of Year)</li>
+                                        <li><code>Loan Repayments</code></li>
+                                        <li><code>Owner Drawings</code> or <code>Dividends</code></li>
+                                        <li><code>Asset Purchases</code> or <code>CAPEX</code></li>
+                                        <li><code>Planned Supplier Payments</code></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="format-example">
+                                <h5>Example Format:</h5>
+                                <table class="example-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Field</th>
+                                            <th>This Month</th>
+                                            <th>YTD</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Revenue</td><td>500,000</td><td>2,500,000</td></tr>
+                                        <tr><td>COGS</td><td>325,000</td><td>1,600,000</td></tr>
+                                        <tr><td>OPEX</td><td>120,000</td><td>650,000</td></tr>
+                                        <tr><td>Net Profit</td><td>55,000</td><td>250,000</td></tr>
+                                        <tr><td>Cash</td><td>45,000</td><td>-</td></tr>
+                                        <tr><td>AR</td><td>187,000</td><td>-</td></tr>
+                                        <tr><td>Opening Cash (Start of Year)</td><td>120,000</td><td>-</td></tr>
+                                        <tr><td>Loan Repayments</td><td>15,000</td><td>-</td></tr>
+                                        <tr><td>Owner Drawings</td><td>10,000</td><td>-</td></tr>
+                                        <tr><td>Planned Supplier Payments</td><td>50,000</td><td>-</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary prev-step">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            Back
+                        </button>
+                        <button type="button" class="btn btn-primary next-step" id="uploadContinue" disabled>
+                            Analyze Files
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Cash & Receivables -->
+                <div class="form-step" data-step="3" data-method="form">
+                    <div class="step-header">
+                        <h1>What's your cash position?</h1>
+                        <p>This helps us analyze your working capital health</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cash">
+                            Cash in Bank (today)
+                            <span class="tooltip" data-tip="Total cash across all your bank accounts right now">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="cash" name="cash" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="receivables">
+                            Money Customers Owe You (AR)
+                            <span class="tooltip" data-tip="Invoices you've sent but haven't been paid yet">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="receivables" name="receivables" placeholder="0" min="0" required>
+                        </div>
+                        <small class="field-hint">Accounts Receivable - unpaid invoices</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inventory">
+                            Inventory Value (Stock)
+                            <span class="tooltip" data-tip="Value of products you have in stock ready to sell">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="inventory" name="inventory" placeholder="0" min="0" required>
+                        </div>
+                        <small class="field-hint">Enter 0 if you're a service business</small>
+                    </div>
+
+                    <div class="calculated-field">
+                        <span>Total Current Assets</span>
+                        <span class="calculated-value" id="totalCurrentAssets">AED 0</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary prev-step">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            Back
+                        </button>
+                        <button type="button" class="btn btn-primary next-step">
+                            Continue
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: What You Owe -->
+                <div class="form-step" data-step="4" data-method="form">
+                    <div class="step-header">
+                        <h1>What do you owe others?</h1>
+                        <p>Your short-term obligations</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payables">
+                            Money You Owe Suppliers (AP)
+                            <span class="tooltip" data-tip="Bills you've received but haven't paid yet">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="payables" name="payables" placeholder="0" min="0" required>
+                        </div>
+                        <small class="field-hint">Accounts Payable - unpaid bills</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shortTermLoans">
+                            Short-term Loans
+                            <span class="tooltip" data-tip="Bank loans, credit lines, or other debt due within 12 months">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="shortTermLoans" name="shortTermLoans" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="otherLiabilities">
+                            Other Current Liabilities
+                            <span class="tooltip" data-tip="Credit cards, accrued expenses, taxes payable, etc.">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="otherLiabilities" name="otherLiabilities" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="vat-section">
+                        <h3>VAT Summary</h3>
+                        <p class="section-hint">Enter your VAT/GST amounts. Enter 0 if not applicable.</p>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vatCollected">
+                                    VAT Collected (Output VAT)
+                                    <span class="tooltip" data-tip="VAT you charged customers on your sales">?</span>
+                                </label>
+                                <div class="input-with-currency">
+                                    <span class="currency-prefix">AED</span>
+                                    <input type="number" id="vatCollected" name="vatCollected" placeholder="0" min="0" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="vatPaid">
+                                    VAT Paid (Input VAT)
+                                    <span class="tooltip" data-tip="VAT you paid on your purchases and expenses">?</span>
+                                </label>
+                                <div class="input-with-currency">
+                                    <span class="currency-prefix">AED</span>
+                                    <input type="number" id="vatPaid" name="vatPaid" placeholder="0" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="calculated-field">
+                            <span>VAT Payable to FTA</span>
+                            <span class="calculated-value" id="vatPayable">AED 0</span>
+                            <small>Output VAT - Input VAT</small>
+                        </div>
+                    </div>
+
+                    <div class="calculated-field">
+                        <span>Total Current Liabilities</span>
+                        <span class="calculated-value" id="totalCurrentLiabilities">AED 0</span>
+                    </div>
+
+                    <div class="calculated-field highlight">
+                        <span>Working Capital</span>
+                        <span class="calculated-value" id="workingCapital">AED 0</span>
+                        <small>Current Assets - Current Liabilities</small>
+                    </div>
+
+                    <!-- Cash Movements Section -->
+                    <div class="section-divider">
+                        <h3>Cash Movements</h3>
+                        <p>For calculating cash runway and understanding where your cash went</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ytdStartingCash">
+                            Cash at Start of Year
+                            <span class="tooltip" data-tip="Your bank balance on Jan 1st (or start of your financial year). Used to calculate average monthly burn rate.">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="ytdStartingCash" name="ytdStartingCash" placeholder="0" min="0" required>
+                        </div>
+                        <small class="field-hint">Used to calculate your cash runway</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loanRepayments">
+                            Loan Repayments (This Month)
+                            <span class="tooltip" data-tip="Principal + interest payments made to banks or lenders this month">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="loanRepayments" name="loanRepayments" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ownerDrawings">
+                            Owner Drawings / Dividends
+                            <span class="tooltip" data-tip="Money taken out of the business by owners this month">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="ownerDrawings" name="ownerDrawings" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assetPurchases">
+                            Equipment / Asset Purchases
+                            <span class="tooltip" data-tip="Computers, vehicles, machinery, or other fixed assets bought this month">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="assetPurchases" name="assetPurchases" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="plannedSupplierPayments">
+                            Planned Supplier Payments (Next 30 Days)
+                            <span class="tooltip" data-tip="Supplier invoices you know you need to pay in the next 30 days">?</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="plannedSupplierPayments" name="plannedSupplierPayments" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="calculated-field">
+                        <span>Total Non-P&L Cash Outflows</span>
+                        <span class="calculated-value" id="totalCashOutflows">AED 0</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary prev-step">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            Back
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-generate">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                            Generate My Report
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState" style="display: none;">
+                <div class="loading-animation">
+                    <div class="loading-circle"></div>
+                    <div class="loading-circle"></div>
+                    <div class="loading-circle"></div>
+                </div>
+                <h2>Analyzing your numbers...</h2>
+                <p class="loading-message">Calculating your working capital ratios</p>
+                <div class="loading-steps">
+                    <div class="loading-step active">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Reading your data
+                    </div>
+                    <div class="loading-step">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Calculating metrics
+                    </div>
+                    <div class="loading-step">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Comparing to benchmarks
+                    </div>
+                    <div class="loading-step">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Writing your report
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="js/i18n.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/analyze.js"></script>
+</body>
+</html>

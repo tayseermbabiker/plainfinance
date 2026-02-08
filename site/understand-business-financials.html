@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understand Your Business Financials (No Accounting Required) | PlainFinancials</title>
+    <meta name="description" content="Plain-English guide to understanding your business finances. Learn why profit doesn't equal cash, which numbers actually matter, and what you can safely ignore. No accounting knowledge needed.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://plainfinancials.com/understand-business-financials">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://plainfinancials.com/understand-business-financials">
+    <meta property="og:title" content="Understand Your Business Financials (No Accounting Required)">
+    <meta property="og:description" content="Plain-English explanations for small business owners who want clarity, not accounting lessons.">
+    <meta property="og:image" content="https://plainfinancials.com/og-image.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        .learn-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+        .learn-page h1 {
+            font-size: 2.5rem;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        .learn-page .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            margin-bottom: 48px;
+        }
+        .learn-page h2 {
+            font-size: 1.5rem;
+            color: var(--gray-800);
+            margin-top: 48px;
+            margin-bottom: 16px;
+        }
+        .learn-page h3 {
+            font-size: 1.2rem;
+            color: var(--gray-800);
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+        .learn-page p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--gray-700);
+            margin-bottom: 20px;
+        }
+        .learn-page ul, .learn-page ol {
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+        .learn-page li {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+        .learn-page strong {
+            color: var(--gray-900);
+        }
+        .key-point {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            padding: 20px 24px;
+            margin: 32px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .key-point p {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+        .analogy-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        .analogy-box p {
+            margin-bottom: 8px;
+        }
+        .analogy-box p:last-child {
+            margin-bottom: 0;
+        }
+        .number-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .number-card h4 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .number-card p {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--gray-600);
+        }
+        .number-card p:last-child {
+            margin-bottom: 0;
+        }
+        .number-card .example {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+            margin-top: 12px;
+        }
+        .number-card .example strong {
+            color: var(--gray-700);
+        }
+        .ignore-list {
+            background: var(--gray-50);
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+        .ignore-list ul {
+            margin-bottom: 0;
+        }
+        .ignore-list li {
+            margin-bottom: 16px;
+        }
+        .ignore-list li:last-child {
+            margin-bottom: 0;
+        }
+        .cta-box {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, #2d5a87 100%);
+            border-radius: 16px;
+            color: white;
+        }
+        .cta-box h2 {
+            color: white;
+            margin-top: 0;
+        }
+        .cta-box p {
+            color: rgba(255,255,255,0.9);
+        }
+        .cta-box .btn {
+            margin-top: 16px;
+        }
+        .related-articles {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--gray-200);
+        }
+        .related-articles h3 {
+            margin-top: 0;
+        }
+        .related-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .related-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 1.05rem;
+        }
+        .related-links a:hover {
+            text-decoration: underline;
+        }
+        .bottom-line {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 48px;
+            text-align: center;
+        }
+        .bottom-line h2 {
+            margin-top: 0;
+        }
+        .bottom-line p {
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-text">PlainFinancials</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#how-it-works">How It Works</a>
+                <a href="index.html#pricing">Pricing</a>
+                <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
+                <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="learn-page">
+        <h1>Understanding Your Business Numbers (The Plain Way)</h1>
+        <p class="subtitle">Plain-English explanations for small business owners who want clarity, not accounting lessons.</p>
+
+        <!-- SECTION 1: Profit vs Cash -->
+        <h2>Profit vs. Cash (The Difference That Confuses Everyone)</h2>
+
+        <p>Profit is what your accountant shows you.<br>Cash is what keeps your business alive.</p>
+
+        <p>You can look profitable on paper and still run out of money — and many businesses do. Profit is just a score. Cash is survival.</p>
+
+        <div class="analogy-box">
+            <p><strong>Profit = your report card</strong></p>
+            <p><strong>Cash = the air in your lungs</strong></p>
+            <p>You can live with a bad grade for a while. You can't live without air.</p>
+        </div>
+
+        <h3>Why profit can look good while cash disappears</h3>
+
+        <ul>
+            <li><strong>Customers haven't paid yet</strong><br>You recorded the sale, but the money isn't in your bank. Profit says "great job," cash says "I'm starving."</li>
+            <li><strong>Inventory is sitting on shelves</strong><br>You paid for products, but they haven't sold. Your cash is trapped in boxes.</li>
+            <li><strong>Loan repayments</strong><br>Paying back loans uses real cash, but it doesn't show up as an expense in your profit.</li>
+            <li><strong>Owner withdrawals</strong><br>When you take money out for yourself, cash drops — even though profit doesn't.</li>
+        </ul>
+
+        <div class="key-point">
+            <p><strong>If profit and cash ever argue, cash wins. Every time.</strong></p>
+        </div>
+
+        <!-- SECTION 2: The 5 Numbers -->
+        <h2>The 5 Numbers That Actually Matter</h2>
+
+        <p>Forget the complicated ratios. As a business owner, these five numbers tell you almost everything about your financial health.</p>
+
+        <div class="number-card">
+            <h4>1. Revenue Trend</h4>
+            <p>Are your sales going up, staying flat, or dropping? A downward trend is an early warning sign.</p>
+            <div class="example">
+                <strong>Example:</strong> If your shop's weekly sales fall three weeks in a row, something changed — fewer customers, lower prices, or new competition.
+            </div>
+        </div>
+
+        <div class="number-card">
+            <h4>2. Gross Margin</h4>
+            <p>This is the money you keep after paying for the product or service. It's the cushion that pays for rent, salaries, mistakes, and growth.</p>
+            <div class="example">
+                <strong>Example:</strong> Sell something for $100 that costs $60 → your gross margin is 40%. If that margin shrinks, even higher sales won't save you.
+            </div>
+        </div>
+
+        <div class="number-card">
+            <h4>3. Operating Costs</h4>
+            <p>Rent, salaries, software, subscriptions — the bills that show up no matter how sales are doing.</p>
+            <p>If these grow faster than revenue, profit disappears.</p>
+            <div class="example">
+                <strong>Quick win:</strong> Review them monthly. Cancel anything you don't use.
+            </div>
+        </div>
+
+        <div class="number-card">
+            <h4>4. Cash Runway</h4>
+            <p>How long you can survive if no money comes in.</p>
+            <p><strong>Formula:</strong> Current cash ÷ average monthly expenses</p>
+            <div class="example">
+                <strong>Example:</strong> $60,000 in the bank, $15,000 monthly expenses → <strong>4 months of runway</strong>. This number tells you how much breathing room you have.
+            </div>
+        </div>
+
+        <div class="number-card">
+            <h4>5. Receivables Age</h4>
+            <p>How long customers take to pay you. If your 30-day terms quietly turn into 60 days, your cash gets squeezed.</p>
+            <div class="example">
+                <strong>Tip:</strong> Offer small early-payment discounts or use automated reminders.
+            </div>
+        </div>
+
+        <!-- SECTION 3: What to Ignore -->
+        <h2>What You Can Ignore (For Now)</h2>
+
+        <p>When you're building or growing a business, don't drown in accounting jargon. Focus on the numbers that help you make decisions.</p>
+
+        <p>You can safely ignore:</p>
+
+        <div class="ignore-list">
+            <ul>
+                <li><strong>Accounting standards (GAAP, IFRS)</strong><br>Only relevant if you're audited or raising investment.</li>
+                <li><strong>Debits and credits</strong><br>That's your accountant's job. You just need the meaning behind the numbers.</li>
+                <li><strong>Depreciation</strong><br>It's an accounting adjustment, not real cash leaving your bank.</li>
+                <li><strong>Complex ratios</strong><br>Useful for investors, not for daily decisions.</li>
+            </ul>
+        </div>
+
+        <!-- Bottom Line -->
+        <div class="bottom-line">
+            <h2>The Bottom Line</h2>
+            <p>What matters most is clarity: <strong>where your money comes from, where it goes, and how long it will last.</strong></p>
+            <p>If you can understand that, you can run your business with confidence — no accounting degree needed.</p>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-box">
+            <h2>See What a Plain-English Report Looks Like</h2>
+            <p>View a real financial report translated into language you can actually use.</p>
+            <a href="report.html?sample=true" class="btn btn-secondary btn-lg">View Sample Report</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+            <h3>Learn More</h3>
+            <div class="related-links">
+                <a href="learn/profit-vs-cash.html">Why Your P&L Shows Profit but Your Bank Account Is Empty</a>
+                <a href="learn/read-pnl.html">How to Read a P&L Without Accounting Knowledge</a>
+                <a href="learn/cash-runway.html">What Is Cash Runway and Why It Matters More Than Profit</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 40px 24px; color: var(--gray-500); font-size: 14px;">
+        <p>&copy; 2025 PlainFinancials. All rights reserved.</p>
+        <p><a href="index.html">Home</a> &middot; <a href="about-plainfinancials.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

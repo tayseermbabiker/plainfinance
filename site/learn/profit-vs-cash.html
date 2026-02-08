@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Your P&L Shows Profit but Your Bank Account Is Empty | PlainFinancials</title>
+    <meta name="description" content="Your P&L says you made money but your bank account disagrees. Here's why profit doesn't equal cash, and what to do about it. Plain English explanation for business owners.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://plainfinancials.com/learn/profit-vs-cash">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://plainfinancials.com/learn/profit-vs-cash">
+    <meta property="og:title" content="Why Your P&L Shows Profit but Your Bank Account Is Empty">
+    <meta property="og:description" content="Your P&L says profit. Your bank says empty. Here's why — and what to do about it.">
+    <meta property="og:image" content="https://plainfinancials.com/og-image.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .article-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+        .article-page h1 {
+            font-size: 2.5rem;
+            color: var(--gray-900);
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+        .article-page .lead {
+            font-size: 1.3rem;
+            color: var(--gray-600);
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+        .article-page h2 {
+            font-size: 1.5rem;
+            color: var(--gray-800);
+            margin-top: 48px;
+            margin-bottom: 16px;
+        }
+        .article-page h3 {
+            font-size: 1.2rem;
+            color: var(--gray-800);
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+        .article-page p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--gray-700);
+            margin-bottom: 20px;
+        }
+        .article-page ul, .article-page ol {
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+        .article-page li {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+        .article-page strong {
+            color: var(--gray-900);
+        }
+        .key-point {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            padding: 20px 24px;
+            margin: 32px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .key-point p {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+        .cause-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .cause-card h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.15rem;
+        }
+        .cause-card p {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .cause-card p:last-child {
+            margin-bottom: 0;
+        }
+        .cause-card .example {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+            margin-top: 12px;
+        }
+        .cause-card .example strong {
+            color: var(--gray-700);
+        }
+        .action-box {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+        .action-box h3 {
+            color: #065f46;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        .action-box ul {
+            margin-bottom: 0;
+        }
+        .action-box li {
+            color: #065f46;
+        }
+        .action-box p {
+            color: #065f46;
+            margin-bottom: 0;
+            margin-top: 16px;
+            font-size: 0.95rem;
+        }
+        .cta-box {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, #2d5a87 100%);
+            border-radius: 16px;
+            color: white;
+        }
+        .cta-box h2 {
+            color: white;
+            margin-top: 0;
+        }
+        .cta-box p {
+            color: rgba(255,255,255,0.9);
+        }
+        .cta-box .btn {
+            margin-top: 16px;
+        }
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+        }
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .related-articles {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--gray-200);
+        }
+        .related-articles h3 {
+            margin-top: 0;
+        }
+        .related-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .related-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 1.05rem;
+        }
+        .related-links a:hover {
+            text-decoration: underline;
+        }
+        .tldr-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 48px;
+        }
+        .tldr-box h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: var(--gray-800);
+        }
+        .tldr-box p {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        .tldr-box p:last-child {
+            margin-bottom: 0;
+        }
+        .analogy-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .analogy-box p {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        .analogy-box p:last-child {
+            margin-bottom: 0;
+        }
+        .lesson-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 48px;
+            text-align: center;
+        }
+        .lesson-box h2 {
+            margin-top: 0;
+        }
+        .lesson-box p {
+            font-size: 1.15rem;
+            max-width: 500px;
+            margin: 0 auto 12px;
+        }
+        .lesson-box p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <span class="logo-text">PlainFinancials</span>
+            </a>
+            <div class="nav-links">
+                <a href="../index.html#how-it-works">How It Works</a>
+                <a href="../index.html#pricing">Pricing</a>
+                <a href="../login.html" class="btn btn-secondary btn-sm">Log In</a>
+                <a href="../signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="article-page">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> → <a href="../understand-business-financials.html">Learn</a> → Profit vs Cash
+        </div>
+
+        <h1>Why Your P&L Shows Profit but Your Bank Account Is Empty</h1>
+
+        <p class="lead">Your P&L says you made money.<br>Your bank account disagrees.<br>Let's fix that confusion.</p>
+
+        <!-- The Short Answer -->
+        <div class="tldr-box">
+            <h3>The Short Answer</h3>
+            <p>Your <strong>P&L records when you <em>earn</em> money.</strong></p>
+            <p>Your <strong>bank only cares when you <em>receive</em> money.</strong></p>
+            <p>Those two moments almost never happen at the same time — and the gap between them is where your cash disappears.</p>
+        </div>
+
+        <!-- P&L Doesn't Track Cash -->
+        <h2>Your P&L Doesn't Track Cash</h2>
+
+        <p>A P&L tracks activity, not movement of money.</p>
+
+        <p>Send an invoice → the P&L counts it as revenue immediately.<br>But the cash? Still sitting in your customer's bank account until they pay.</p>
+
+        <div class="analogy-box">
+            <p><strong>P&L = performance</strong></p>
+            <p><strong>Cash = survival</strong></p>
+            <p>If they ever disagree, trust the cash.</p>
+        </div>
+
+        <!-- The 4 Places -->
+        <h2>The 4 Places Your Cash Is Hiding</h2>
+
+        <div class="cause-card">
+            <h3>1. Customers Haven't Paid Yet (Receivables)</h3>
+            <p>You did the work. You invoiced. You recorded the revenue.<br>But the customer hasn't paid.</p>
+            <div class="example">
+                <strong>Example:</strong> You invoiced $50,000 last month. Only $20,000 arrived. That missing $30,000 shows up as "profit" — but you can't spend it.
+            </div>
+        </div>
+
+        <div class="cause-card">
+            <h3>2. Inventory Sitting on Shelves</h3>
+            <p>You paid for products upfront. They're sitting in your warehouse, not in your bank.</p>
+            <p>The expense only hits your P&L when you sell them.</p>
+            <div class="example">
+                <strong>Example:</strong> A retailer stocks up for the holidays. Cash drops $100K. P&L doesn't move.
+            </div>
+        </div>
+
+        <div class="cause-card">
+            <h3>3. Loan Repayments</h3>
+            <p>Loan payments use real cash, but only the interest shows on the P&L.</p>
+            <div class="example">
+                <strong>Example:</strong> Monthly payment: $5,000. Interest on P&L: $1,000. Principal (the other $4,000): a silent cash drain.
+            </div>
+        </div>
+
+        <div class="cause-card">
+            <h3>4. Owner Withdrawals</h3>
+            <p>When you take money out for yourself, cash drops — but the P&L doesn't record it as an expense.</p>
+            <div class="example">
+                <strong>Example:</strong> $8,000 per month in personal draws = $96,000 a year. All cash out. Zero impact on P&L.
+            </div>
+        </div>
+
+        <!-- What You Can Do -->
+        <div class="action-box">
+            <h3>What You Can Do</h3>
+            <ul>
+                <li>Check overdue invoices every week</li>
+                <li>Keep an eye on inventory levels</li>
+                <li>Review your cash runway every month</li>
+                <li>Understand your loan repayment schedule</li>
+                <li>Plan owner withdrawals instead of reacting to them</li>
+            </ul>
+            <p>Small habits prevent big surprises.</p>
+        </div>
+
+        <!-- The Real Lesson -->
+        <div class="lesson-box">
+            <h2>The Real Lesson</h2>
+            <p>Profit tells you if your business model works.</p>
+            <p>Cash tells you if your business can stay alive.</p>
+            <p><strong>Profit is a score.<br>Cash is oxygen.</strong></p>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-box">
+            <h2>See Where Your Cash Is Actually Going</h2>
+            <p>PlainFinancials shows you the "cash bridge" — exactly where money went between your profit and your bank account.</p>
+            <a href="../report.html?sample=true" class="btn btn-secondary btn-lg">View Sample Report</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+            <h3>Related Articles</h3>
+            <div class="related-links">
+                <a href="../understand-business-financials.html">Understanding Your Business Numbers (The Complete Guide)</a>
+                <a href="read-pnl.html">How to Read a P&L Without Accounting Knowledge</a>
+                <a href="cash-runway.html">What Is Cash Runway and Why It Matters More Than Profit</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 40px 24px; color: var(--gray-500); font-size: 14px;">
+        <p>&copy; 2025 PlainFinancials. All rights reserved.</p>
+        <p><a href="../index.html">Home</a> &middot; <a href="../about-plainfinancials.html">About</a> &middot; <a href="../privacy.html">Privacy</a> &middot; <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>
