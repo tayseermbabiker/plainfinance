@@ -55,7 +55,7 @@ html {
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.75;
     color: var(--gray-700);
     -webkit-font-smoothing: antialiased;
 }
@@ -533,10 +533,10 @@ section {
 }
 
 .section-title {
-    font-size: 40px;
+    font-size: 48px;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     color: var(--gray-900);
     letter-spacing: -0.025em;
 }
@@ -733,6 +733,12 @@ section {
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
     margin-top: 32px;
+}
+
+/* 4-column grid for trimmed features */
+.features-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
 }
 
 .feature-card {
@@ -1232,6 +1238,10 @@ section {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .features-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .pricing-grid {
         grid-template-columns: 1fr;
         max-width: 400px;
@@ -1276,7 +1286,11 @@ section {
     }
 
     .section-title {
-        font-size: 32px;
+        font-size: 36px;
+    }
+
+    .features-grid-4 {
+        grid-template-columns: 1fr;
     }
 
     .steps {
