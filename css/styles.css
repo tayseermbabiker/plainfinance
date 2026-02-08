@@ -28,7 +28,7 @@
     --radius: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
-    --section-spacing: 48px;
+    --section-spacing: 80px;
 }
 
 /* ===== Unified Page Flow ===== */
@@ -329,10 +329,66 @@ img {
     color: var(--gray-400);
 }
 
+/* Hero Split Layout */
+.hero-split {
+    padding: 140px 0 60px;
+}
+
+.hero-split .container {
+    display: block;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.hero-split .hero-content {
+    max-width: 100%;
+}
+
 /* Report Preview */
 .hero-visual {
     display: flex;
     justify-content: center;
+}
+
+.hero-report-preview {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 900px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+    }
+
+    .hero-split .hero-content {
+        order: 1;
+    }
+
+    .hero-visual {
+        order: 2;
+    }
+
+    .hero-cta {
+        justify-content: center;
+    }
+
+    .hero-trust {
+        justify-content: center;
+    }
+
+    .hero-report-preview {
+        max-width: 400px;
+    }
 }
 
 .report-preview {
