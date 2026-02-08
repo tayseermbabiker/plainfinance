@@ -518,7 +518,6 @@ section {
 
 /* ===== Solution Section ===== */
 .solution {
-    background: transparent;
     padding: var(--section-spacing) 0;
 }
 
@@ -1763,4 +1762,47 @@ section {
     .calculator-header h3 {
         font-size: 20px;
     }
+}
+
+/* ===== Alternating Section Backgrounds ===== */
+.solution {
+    background: var(--gray-50);
+}
+
+.how-it-works {
+    background: var(--white);
+}
+
+.features {
+    background: var(--gray-50);
+}
+
+.pricing {
+    background: var(--white);
+}
+
+.about {
+    background: var(--gray-50);
+}
+
+.faq {
+    background: var(--white);
+}
+
+/* ===== Mid-page CTA ===== */
+.mid-cta {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 32px;
+}
+
+/* ===== Sticky Nav CTA ===== */
+.nav .btn-primary.btn-sm {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
+.nav .btn-primary.btn-sm:hover {
+    background: var(--primary-dark);
 }
