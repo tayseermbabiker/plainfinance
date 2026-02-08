@@ -19,11 +19,12 @@
     --gray-900: #0f172a;
     --white: #ffffff;
     --gradient: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    /* Softer, more premium shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     --radius: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
@@ -63,6 +64,19 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--gray-900);
     font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+h1 {
+    font-weight: 800;
+}
+
+h2 {
+    font-weight: 700;
+}
+
+h3 {
+    font-weight: 600;
 }
 
 a {
@@ -464,15 +478,21 @@ section {
 
 .section-title {
     font-size: 40px;
+    font-weight: 700;
     text-align: center;
     margin-bottom: 16px;
+    color: var(--gray-900);
+    letter-spacing: -0.025em;
 }
 
 .section-subtitle {
     font-size: 18px;
-    color: var(--gray-600);
+    color: var(--gray-500);
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* ===== Problem Section ===== */
@@ -732,7 +752,7 @@ section {
     background: var(--white);
     border-radius: var(--radius-xl);
     padding: 32px;
-    border: 2px solid var(--gray-200);
+    border: 1px solid var(--gray-200);
     position: relative;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -829,7 +849,7 @@ section {
     background: var(--gray-50);
     border-radius: var(--radius-xl);
     padding: 32px;
-    border: 2px solid var(--gray-200);
+    border: 1px solid var(--gray-200);
 }
 
 .addon-content {
@@ -1553,7 +1573,7 @@ section {
     display: flex;
     align-items: center;
     background: var(--gray-50);
-    border: 2px solid var(--gray-200);
+    border: 1px solid var(--gray-200);
     border-radius: var(--radius);
     overflow: hidden;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -1766,7 +1786,7 @@ section {
 
 /* ===== Alternating Section Backgrounds ===== */
 .solution {
-    background: var(--gray-50);
+    background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
 }
 
 .how-it-works {
@@ -1774,7 +1794,7 @@ section {
 }
 
 .features {
-    background: var(--gray-50);
+    background: linear-gradient(180deg, var(--white) 0%, var(--gray-50) 50%, var(--white) 100%);
 }
 
 .pricing {
@@ -1782,7 +1802,7 @@ section {
 }
 
 .about {
-    background: var(--gray-50);
+    background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
 }
 
 .faq {
