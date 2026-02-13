@@ -124,6 +124,13 @@
             } else {
                 successEl.textContent = 'Account created! Check your email to confirm your account.';
                 submitBtn.textContent = 'Check your email';
+
+                // Fire-and-forget welcome email
+                fetch('/api/send-welcome', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, name: fullName })
+                }).catch(() => {});
             }
         });
 
