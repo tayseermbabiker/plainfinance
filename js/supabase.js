@@ -32,7 +32,7 @@ function getSupabase() {
 
 // ===== Authentication =====
 
-async function signUp(email, password, fullName) {
+async function signUp(email, password, fullName, extra = {}) {
     const client = getSupabase();
     if (!client) return { error: { message: 'Supabase not initialized' } };
 
@@ -41,7 +41,10 @@ async function signUp(email, password, fullName) {
         password,
         options: {
             data: {
-                full_name: fullName
+                full_name: fullName,
+                job_title: extra.jobTitle || '',
+                company_name: extra.companyName || '',
+                location: extra.location || ''
             }
         }
     });
@@ -52,6 +55,9 @@ async function signUp(email, password, fullName) {
             id: data.user.id,
             email: email,
             full_name: fullName,
+            job_title: extra.jobTitle || '',
+            company_name: extra.companyName || '',
+            location: extra.location || '',
             created_at: new Date().toISOString()
         });
     }
