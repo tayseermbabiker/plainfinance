@@ -74,7 +74,7 @@ function populateReportFromAPI(reportData) {
         updateHealthStrip(metrics);
         updateMiniPL(current, metrics, currency, industry);
         updateProfitInterpretation(current, metrics, currency, analysis);
-        updateOperationalHealth(metrics, currency, analysis, industry, current);
+        updateOperationalHealth(metrics, currency, analysis, industry, current, reportData.ytd);
         const fcfValue = updateFCF(current, previous, metrics, currency);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
@@ -101,7 +101,7 @@ function populateReport(data) {
         updateHealthStrip(metrics);
         updateMiniPL(current, metrics, currency, industry);
         updateProfitInterpretation(current, metrics, currency, null);
-        updateOperationalHealth(metrics, currency, null, industry, current);
+        updateOperationalHealth(metrics, currency, null, industry, current, ytd);
         const fcfValue = updateFCF(current, previous, metrics, currency);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
@@ -178,9 +178,18 @@ function calculateMetrics(current, previous, days, ytd = {}) {
     const totalCurrentLiabilities = payables + shortTermLoans + otherLiabilities;
     const currentRatio = totalCurrentLiabilities > 0 ? totalCurrentAssets / totalCurrentLiabilities : 0;
 
-    const dso = revenue > 0 ? (receivables / revenue) * days : 0;
-    const dio = cogs > 0 ? (inventory / cogs) * days : 0;
-    const dpo = cogs > 0 ? (payables / cogs) * days : 0;
+    // Use YTD data for DSO/DIO/DPO when available (matches server calculation)
+    let dso, dio, dpo;
+    if (ytd && ytd.revenue > 0 && ytd.monthsElapsed > 1) {
+        const ytdDays = ytd.monthsElapsed * 30;
+        dso = (receivables / ytd.revenue) * ytdDays;
+        dio = ytd.cogs > 0 ? (inventory / ytd.cogs) * ytdDays : (cogs > 0 ? (inventory / cogs) * days : 0);
+        dpo = ytd.cogs > 0 ? (payables / ytd.cogs) * ytdDays : (cogs > 0 ? (payables / cogs) * days : 0);
+    } else {
+        dso = revenue > 0 ? (receivables / revenue) * days : 0;
+        dio = cogs > 0 ? (inventory / cogs) * days : 0;
+        dpo = cogs > 0 ? (payables / cogs) * days : 0;
+    }
     const ccc = dso + dio - dpo;
 
     let cashRunway = 0;
@@ -432,7 +441,7 @@ function updateProfitInterpretation(current, metrics, currency, analysis) {
 
 // ===== Section 3: Operational Health =====
 
-function updateOperationalHealth(metrics, currency, analysis, industry, current) {
+function updateOperationalHealth(metrics, currency, analysis, industry, current, ytd) {
     document.getElementById('opDIO').textContent = `${Math.round(metrics.dio)} days`;
     document.getElementById('opDSO').textContent = `${Math.round(metrics.dso)} days`;
     document.getElementById('opDPO').textContent = `${Math.round(metrics.dpo)} days`;
@@ -456,7 +465,7 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current)
 
     // WCR table
     if (current) {
-        updateWCRTable(current, metrics, bench, currency, industry);
+        updateWCRTable(current, metrics, bench, currency, industry, ytd);
     }
 
     // Interpretation from AI or generated
@@ -470,10 +479,18 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current)
     }
 }
 
-function updateWCRTable(current, metrics, bench, currency, industry) {
-    const periodDays = 30;
-    const revenue = current.revenue || 0;
-    const cogs = current.cogs || 0;
+function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
+    // Use YTD revenue/cogs when available (matches DSO/DIO/DPO calculation base)
+    let periodDays, revenueBase, cogsBase;
+    if (ytd && ytd.revenue > 0 && ytd.monthsElapsed > 1) {
+        periodDays = ytd.monthsElapsed * 30;
+        revenueBase = ytd.revenue;
+        cogsBase = ytd.cogs || current.cogs || 0;
+    } else {
+        periodDays = 30;
+        revenueBase = current.revenue || 0;
+        cogsBase = current.cogs || 0;
+    }
 
     // Actuals
     const arActual = current.receivables || 0;
@@ -482,9 +499,9 @@ function updateWCRTable(current, metrics, bench, currency, industry) {
     const wcrActual = arActual + invActual - apActual;
 
     // Industry targets using industry average days
-    const arTarget = revenue > 0 ? (bench.dso.industry / periodDays) * revenue : 0;
-    const invTarget = cogs > 0 ? (bench.dio.industry / periodDays) * cogs : 0;
-    const apTarget = cogs > 0 ? (bench.dpo.industry / periodDays) * cogs : 0;
+    const arTarget = revenueBase > 0 ? (bench.dso.industry / periodDays) * revenueBase : 0;
+    const invTarget = cogsBase > 0 ? (bench.dio.industry / periodDays) * cogsBase : 0;
+    const apTarget = cogsBase > 0 ? (bench.dpo.industry / periodDays) * cogsBase : 0;
     const wcrIndustry = arTarget + invTarget - apTarget;
 
     // Variance
