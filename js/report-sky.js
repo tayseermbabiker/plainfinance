@@ -74,7 +74,7 @@ function populateReportFromAPI(reportData) {
         updateHealthStrip(metrics);
         updateMiniPL(current, metrics, currency, industry);
         updateProfitInterpretation(current, metrics, currency, analysis);
-        updateOperationalHealth(metrics, currency, analysis, industry);
+        updateOperationalHealth(metrics, currency, analysis, industry, current);
         const fcfValue = updateFCF(current, previous, metrics, currency);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
@@ -101,7 +101,7 @@ function populateReport(data) {
         updateHealthStrip(metrics);
         updateMiniPL(current, metrics, currency, industry);
         updateProfitInterpretation(current, metrics, currency, null);
-        updateOperationalHealth(metrics, currency, null, industry);
+        updateOperationalHealth(metrics, currency, null, industry, current);
         const fcfValue = updateFCF(current, previous, metrics, currency);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
@@ -223,14 +223,14 @@ function signedAmount(val, currency) {
 
 function getDefaultBenchmarks(industry) {
     const b = {
-        'retail':        { name: 'Retail',        grossMargin: { min: 25, max: 50, ideal: 35 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 15, max: 45, ideal: 30 } },
-        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 20, max: 45, ideal: 30 } },
-        'service':       { name: 'Service',       grossMargin: { min: 40, max: 70, ideal: 55 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 25, max: 60, ideal: 40 } },
-        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 20, max: 45, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 5, max: 20, ideal: 10 } },
-        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 30, max: 60, ideal: 45 } },
-        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 }, dso: { min: 25, max: 50, ideal: 35 } },
-        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 55, max: 70, ideal: 62 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 5, max: 15, ideal: 7 } },
-        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 45, max: 90, ideal: 60 } }
+        'retail':        { name: 'Retail',        grossMargin: { min: 25, max: 50, ideal: 35 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 15, max: 45, ideal: 30 }, dio: { min: 20, max: 50, ideal: 35 }, dpo: { min: 20, max: 45, ideal: 30 } },
+        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 20, max: 45, ideal: 30 }, dio: { min: 25, max: 60, ideal: 40 }, dpo: { min: 20, max: 45, ideal: 30 } },
+        'service':       { name: 'Service',       grossMargin: { min: 40, max: 70, ideal: 55 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 25, max: 60, ideal: 40 }, dio: { min: 0, max: 5, ideal: 0 }, dpo: { min: 15, max: 40, ideal: 25 } },
+        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 20, max: 45, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 5, max: 20, ideal: 10 }, dio: { min: 15, max: 40, ideal: 25 }, dpo: { min: 20, max: 45, ideal: 30 } },
+        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 30, max: 60, ideal: 45 }, dio: { min: 40, max: 90, ideal: 60 }, dpo: { min: 30, max: 60, ideal: 45 } },
+        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 }, dso: { min: 25, max: 50, ideal: 35 }, dio: { min: 20, max: 50, ideal: 35 }, dpo: { min: 25, max: 50, ideal: 35 } },
+        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 55, max: 70, ideal: 62 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 5, max: 15, ideal: 7 }, dio: { min: 3, max: 10, ideal: 5 }, dpo: { min: 10, max: 30, ideal: 15 } },
+        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 45, max: 90, ideal: 60 }, dio: { min: 10, max: 30, ideal: 20 }, dpo: { min: 30, max: 60, ideal: 45 } }
     };
     return b[industry?.toLowerCase()] || b['product'];
 }
@@ -431,7 +431,7 @@ function updateProfitInterpretation(current, metrics, currency, analysis) {
 
 // ===== Section 3: Operational Health =====
 
-function updateOperationalHealth(metrics, currency, analysis, industry) {
+function updateOperationalHealth(metrics, currency, analysis, industry, current) {
     document.getElementById('opDIO').textContent = `${Math.round(metrics.dio)} days`;
     document.getElementById('opDSO').textContent = `${Math.round(metrics.dso)} days`;
     document.getElementById('opDPO').textContent = `${Math.round(metrics.dpo)} days`;
@@ -467,6 +467,11 @@ function updateOperationalHealth(metrics, currency, analysis, industry) {
     const bench = getDefaultBenchmarks(industry);
     renderBenchBar('benchDSO', 'Days Sales Outstanding', metrics.dso, bench.dso, ' days', false);
 
+    // WCR table
+    if (current) {
+        updateWCRTable(current, metrics, bench, currency);
+    }
+
     // Interpretation from AI or generated
     const interpEl = document.getElementById('opInterpretation');
     if (interpEl) {
@@ -474,6 +479,83 @@ function updateOperationalHealth(metrics, currency, analysis, industry) {
             interpEl.innerHTML = `<p>${analysis.cashCycleExplanation}</p>`;
         } else {
             interpEl.innerHTML = '';
+        }
+    }
+}
+
+function updateWCRTable(current, metrics, bench, currency) {
+    const periodDays = 30;
+    const revenue = current.revenue || 0;
+    const cogs = current.cogs || 0;
+
+    // Actuals
+    const arActual = current.receivables || 0;
+    const invActual = current.inventory || 0;
+    const apActual = current.payables || 0;
+    const wcrActual = arActual + invActual - apActual;
+
+    // Industry targets using ideal days
+    const arTarget = revenue > 0 ? (bench.dso.ideal / periodDays) * revenue : 0;
+    const invTarget = cogs > 0 ? (bench.dio.ideal / periodDays) * cogs : 0;
+    const apTarget = cogs > 0 ? (bench.dpo.ideal / periodDays) * cogs : 0;
+    const wcrIndustry = arTarget + invTarget - apTarget;
+
+    // Variance
+    const arVar = arActual - arTarget;
+    const invVar = invActual - invTarget;
+    const apVar = apActual - apTarget;
+    const wcrVar = wcrActual - wcrIndustry;
+
+    const fmtCell = (val) => `${currency} ${formatNumber(val)}`;
+    const fmtVar = (val) => {
+        const sign = val > 0 ? '+' : val < 0 ? '-' : '';
+        const cls = val > 0 ? 'wcr-over' : val < 0 ? 'wcr-under' : '';
+        return `<span class="${cls}">${sign} ${currency} ${formatNumber(Math.abs(val))}</span>`;
+    };
+    // For AP, positive variance is good (you're stretching payments)
+    const fmtVarAP = (val) => {
+        const sign = val > 0 ? '+' : val < 0 ? '-' : '';
+        const cls = val > 0 ? 'wcr-under' : val < 0 ? 'wcr-over' : '';
+        return `<span class="${cls}">${sign} ${currency} ${formatNumber(Math.abs(val))}</span>`;
+    };
+
+    // Populate table cells
+    document.getElementById('wcrArActual').textContent = fmtCell(arActual);
+    document.getElementById('wcrArIndustry').textContent = fmtCell(arTarget);
+    document.getElementById('wcrArVariance').innerHTML = fmtVar(arVar);
+
+    document.getElementById('wcrInvActual').textContent = fmtCell(invActual);
+    document.getElementById('wcrInvIndustry').textContent = fmtCell(invTarget);
+    document.getElementById('wcrInvVariance').innerHTML = fmtVar(invVar);
+
+    document.getElementById('wcrApActual').textContent = fmtCell(apActual);
+    document.getElementById('wcrApIndustry').textContent = fmtCell(apTarget);
+    document.getElementById('wcrApVariance').innerHTML = fmtVarAP(apVar);
+
+    document.getElementById('wcrTotalActual').textContent = fmtCell(wcrActual);
+    document.getElementById('wcrTotalIndustry').textContent = fmtCell(wcrIndustry);
+    document.getElementById('wcrTotalVariance').innerHTML = fmtVar(wcrVar);
+
+    // Narrative
+    const narrativeEl = document.getElementById('wcrNarrative');
+    if (narrativeEl) {
+        if (Math.abs(wcrVar) < 1) {
+            narrativeEl.textContent = 'Your working capital requirement is in line with industry averages.';
+        } else {
+            // Find the biggest driver
+            const drivers = [
+                { name: 'receivables', val: arVar },
+                { name: 'inventory', val: invVar },
+                { name: 'payables', val: -apVar } // negative apVar means you're paying too fast = cash tied up
+            ];
+            drivers.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
+            const topDriver = drivers[0];
+
+            if (wcrVar > 0) {
+                narrativeEl.textContent = `You have ${currency} ${formatNumber(wcrVar)} more cash tied up in working capital than a typical ${bench.name.toLowerCase()} business. Most of the excess comes from ${topDriver.name}.`;
+            } else {
+                narrativeEl.textContent = `You are running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than the industry average. Your ${topDriver.name} management is tighter than typical.`;
+            }
         }
     }
 }

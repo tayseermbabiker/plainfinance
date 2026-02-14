@@ -518,16 +518,37 @@ async function processUploadedFile() {
     if (extension === '.csv') {
         try {
             const data = await parseCSVTemplate(file);
+
+            // Populate all form fields silently
             populateFormFromCSV(data);
+            updateCalculations();
 
-            // Switch to form mode so user can review
-            inputMethod = 'form';
+            // Check mandatory fields
+            const mandatoryFields = [
+                { id: 'revenue', label: 'Revenue / Sales', group: 'income' },
+                { id: 'cogs', label: 'Cost of Goods Sold', group: 'income' },
+                { id: 'opex', label: 'Operating Expenses', group: 'income' },
+                { id: 'netProfit', label: 'Net Profit', group: 'income' },
+                { id: 'cash', label: 'Cash in Bank', group: 'balance' },
+                { id: 'receivables', label: 'Accounts Receivable', group: 'balance' },
+                { id: 'payables', label: 'Accounts Payable', group: 'balance' }
+            ];
 
-            // Show success message
-            alert('File imported successfully! Please review the numbers and fill in any missing fields.');
+            const missing = mandatoryFields.filter(f => {
+                const el = document.getElementById(f.id);
+                const val = parseFloat(el?.value);
+                return !el || isNaN(val) || val === 0;
+            });
 
-            // Move to step 3 (Current Month data) to review
-            showStep(3);
+            if (missing.length === 0) {
+                // All mandatory fields present — submit directly
+                inputMethod = 'form';
+                submitForm();
+                return true;
+            }
+
+            // Some fields missing — show smart review step
+            showCSVReviewStep(data, missing, mandatoryFields);
             return true;
         } catch (error) {
             alert('Error reading file: ' + error.message);
@@ -540,6 +561,153 @@ async function processUploadedFile() {
         alert('Unsupported file format. Please upload a CSV file using our template.');
         return false;
     }
+}
+
+function showCSVReviewStep(data, missingFields, allMandatory) {
+    const currency = document.getElementById('currency')?.value || 'AED';
+    const fmt = (v) => v != null && v !== 0
+        ? `${currency} ${Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+        : '—';
+
+    // Build summary rows grouped by category
+    const groups = {
+        'Income Statement': [
+            { label: 'Revenue / Sales', current: data.current.revenue, ytd: data.ytd?.ytdRevenue },
+            { label: 'Cost of Goods Sold', current: data.current.cogs, ytd: data.ytd?.ytdCogs },
+            { label: 'Operating Expenses', current: data.current.opex, ytd: data.ytd?.ytdOpex },
+            { label: 'Net Profit', current: data.current.netProfit, ytd: data.ytd?.ytdNetProfit }
+        ],
+        'Balance Sheet': [
+            { label: 'Cash in Bank', current: data.current.cash },
+            { label: 'Accounts Receivable', current: data.current.receivables },
+            { label: 'Inventory', current: data.current.inventory },
+            { label: 'Accounts Payable', current: data.current.payables },
+            { label: 'Short-term Loans', current: data.current.shortTermLoans },
+            { label: 'Other Liabilities', current: data.current.otherLiabilities }
+        ],
+        'Cash Movements': [
+            { label: 'Opening Cash (Start of Year)', current: data.ytd?.startingCash },
+            { label: 'Loan Repayments', current: data.current.loanRepayments },
+            { label: 'Owner Drawings', current: data.current.ownerDrawings },
+            { label: 'Asset Purchases', current: data.current.assetPurchases },
+            { label: 'Planned Supplier Payments', current: data.current.plannedSupplierPayments }
+        ]
+    };
+
+    // Build summary table HTML
+    let summaryHTML = '';
+    for (const [groupName, rows] of Object.entries(groups)) {
+        // Only show rows that have at least one non-zero value
+        const hasData = rows.some(r => (r.current && r.current !== 0) || (r.ytd && r.ytd !== 0));
+        if (!hasData) continue;
+
+        summaryHTML += `<tr class="csv-review-group-header"><td colspan="3">${groupName}</td></tr>`;
+        rows.forEach(r => {
+            if ((r.current && r.current !== 0) || (r.ytd && r.ytd !== 0)) {
+                summaryHTML += `<tr>
+                    <td>${r.label}</td>
+                    <td>${fmt(r.current)}</td>
+                    <td>${r.ytd !== undefined ? fmt(r.ytd) : '—'}</td>
+                </tr>`;
+            }
+        });
+    }
+
+    // Build missing fields HTML
+    const missingInputsHTML = missingFields.map(f => `
+        <div class="form-group">
+            <label for="review_${f.id}">${f.label}</label>
+            <div class="input-with-currency">
+                <span class="currency-prefix">${currency}</span>
+                <input type="number" id="review_${f.id}" placeholder="0" min="0">
+            </div>
+        </div>
+    `).join('');
+
+    // Hide all form steps and show the review
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+
+    // Remove any previous review step
+    const existing = document.getElementById('csvReviewStep');
+    if (existing) existing.remove();
+
+    const reviewStep = document.createElement('div');
+    reviewStep.id = 'csvReviewStep';
+    reviewStep.className = 'form-step active';
+    reviewStep.innerHTML = `
+        <div class="step-header">
+            <h1>Review your uploaded data</h1>
+            <p>We parsed your CSV. A few fields are missing — fill them in below.</p>
+        </div>
+
+        <div class="csv-review-summary">
+            <table class="csv-review-table">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>This Month</th>
+                        <th>YTD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${summaryHTML}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="csv-review-missing">
+            <h3>Missing fields</h3>
+            <p>These are required for your report. Enter them below, or use 0 if not applicable.</p>
+            ${missingInputsHTML}
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="csvReviewBack">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back
+            </button>
+            <button type="button" class="btn btn-primary btn-generate" id="csvReviewSubmit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                Generate My Report
+            </button>
+        </div>
+    `;
+
+    form.appendChild(reviewStep);
+
+    // Update progress bar to show step 3
+    updateProgress(3);
+    currentStep = 3;
+
+    // Wire up Back button
+    reviewStep.querySelector('#csvReviewBack').addEventListener('click', () => {
+        reviewStep.remove();
+        inputMethod = 'upload';
+        showStep(2);
+    });
+
+    // Wire up Generate button
+    reviewStep.querySelector('#csvReviewSubmit').addEventListener('click', () => {
+        // Copy review inputs back into the actual form fields
+        missingFields.forEach(f => {
+            const reviewInput = document.getElementById(`review_${f.id}`);
+            const formInput = document.getElementById(f.id);
+            if (reviewInput && formInput) {
+                formInput.value = reviewInput.value || '0';
+            }
+        });
+        updateCalculations();
+
+        // Remove review step and submit
+        reviewStep.remove();
+        inputMethod = 'form';
+        submitForm();
+    });
 }
 
 // ===== Form Validation =====
@@ -992,6 +1160,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (monthSelect) monthSelect.value = now.getMonth() + 1;
     if (yearSelect) yearSelect.value = now.getFullYear();
+
+    // Sync currency prefix spans with the selected currency
+    const initCurrency = document.getElementById('currency');
+    if (initCurrency) {
+        document.querySelectorAll('.currency-prefix').forEach(prefix => {
+            prefix.textContent = initCurrency.value;
+        });
+    }
 
     updateProgress(1);
 });

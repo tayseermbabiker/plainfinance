@@ -633,6 +633,92 @@
     color: var(--slate-ink);
 }
 
+/* ===== WCR Table ===== */
+
+.wcr-card {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-sm);
+    padding: var(--space-l);
+    margin-bottom: var(--space-l);
+    box-shadow: var(--shadow-soft);
+}
+
+.wcr-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--slate-ink);
+    margin: 0 0 var(--space-m) 0;
+}
+
+.wcr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.wcr-table thead th {
+    padding: var(--space-xs) var(--space-s);
+    text-align: right;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--cloud-gray);
+}
+
+.wcr-table thead th:first-child {
+    text-align: left;
+}
+
+.wcr-table tbody td,
+.wcr-table tfoot td {
+    padding: var(--space-s);
+    text-align: right;
+    color: var(--soft-graphite);
+    border-bottom: 1px solid var(--cloud-gray);
+    font-variant-numeric: tabular-nums;
+}
+
+.wcr-table tbody td:first-child,
+.wcr-table tfoot td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: var(--slate-ink);
+}
+
+.wcr-table tfoot td {
+    font-weight: 700;
+    color: var(--slate-ink);
+    border-bottom: none;
+    border-top: 2px solid var(--slate-ink);
+    padding-top: var(--space-m);
+}
+
+.wcr-over {
+    color: var(--calm-coral);
+    font-weight: 600;
+}
+
+.wcr-under {
+    color: var(--teal-breeze);
+    font-weight: 600;
+}
+
+.wcr-narrative {
+    margin: var(--space-m) 0 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--soft-graphite);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--cloud-gray);
+}
+
+.wcr-narrative:empty {
+    display: none;
+}
+
 .op-cash-movement {
     background: rgba(59, 163, 246, 0.04);
     border-radius: var(--radius-sm);
@@ -1347,6 +1433,11 @@
     .health-metric { align-items: center; }
 
     .op-health-cards { grid-template-columns: 1fr; }
+
+    .wcr-table { font-size: 12px; }
+    .wcr-table thead th,
+    .wcr-table tbody td,
+    .wcr-table tfoot td { padding: var(--space-xs); }
 
     .pl-row {
         flex-wrap: wrap;

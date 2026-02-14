@@ -125,12 +125,7 @@
                         </div>
                         <div class="form-group">
                             <label for="reportYear">&nbsp;</label>
-                            <select id="reportYear" name="reportYear" required>
-                                <option value="">Year</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                            </select>
+                            <input type="number" id="reportYear" name="reportYear" placeholder="e.g., 2026" min="2000" max="2099" required>
                         </div>
                     </div>
 
@@ -322,6 +317,8 @@
                             </a>
                         </div>
                     </div>
+
+                    <p class="csv-note">Make sure all fields in your CSV are filled — use 0 for any that don't apply.</p>
 
                     <div class="upload-zone" id="uploadZone">
                         <div class="upload-icon">
