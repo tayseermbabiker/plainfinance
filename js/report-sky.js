@@ -222,17 +222,21 @@ function signedAmount(val, currency) {
 // ===== Industry Benchmarks =====
 
 function getDefaultBenchmarks(industry) {
+    // Industry benchmarks — DSO/DIO/DPO sourced from CreditPulse 2025, ReadyRatios SEC 2024, PwC Working Capital Study 24/25, Hackett Group 2025
     const b = {
-        'retail':        { name: 'Retail',        grossMargin: { min: 25, max: 50, ideal: 35 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 15, max: 45, ideal: 30 }, dio: { min: 20, max: 50, ideal: 35 }, dpo: { min: 20, max: 45, ideal: 30 } },
-        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 20, max: 45, ideal: 30 }, dio: { min: 25, max: 60, ideal: 40 }, dpo: { min: 20, max: 45, ideal: 30 } },
-        'service':       { name: 'Service',       grossMargin: { min: 40, max: 70, ideal: 55 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 25, max: 60, ideal: 40 }, dio: { min: 0, max: 5, ideal: 0 }, dpo: { min: 15, max: 40, ideal: 25 } },
-        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 20, max: 45, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 5, max: 20, ideal: 10 }, dio: { min: 15, max: 40, ideal: 25 }, dpo: { min: 20, max: 45, ideal: 30 } },
-        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 30, max: 60, ideal: 45 }, dio: { min: 40, max: 90, ideal: 60 }, dpo: { min: 30, max: 60, ideal: 45 } },
-        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 }, dso: { min: 25, max: 50, ideal: 35 }, dio: { min: 20, max: 50, ideal: 35 }, dpo: { min: 25, max: 50, ideal: 35 } },
-        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 55, max: 70, ideal: 62 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 5, max: 15, ideal: 7 }, dio: { min: 3, max: 10, ideal: 5 }, dpo: { min: 10, max: 30, ideal: 15 } },
-        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 45, max: 90, ideal: 60 }, dio: { min: 10, max: 30, ideal: 20 }, dpo: { min: 30, max: 60, ideal: 45 } }
+        'retail':        { name: 'Retail',        grossMargin: { min: 25, max: 50, ideal: 35 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 0, max: 10, industry: 2 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 20, max: 45, industry: 30 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'service':       { name: 'Service',       grossMargin: { min: 40, max: 70, ideal: 55 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 30, max: 60, industry: 45 }, dio: { min: 0, max: 0, industry: 0 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 20, max: 45, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 0, max: 5, industry: 1 }, dio: { min: 20, max: 45, industry: 30 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 45, max: 75, industry: 60 }, dio: { min: 60, max: 120, industry: 90 }, dpo: { min: 30, max: 60, industry: 45 } },
+        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 }, dso: { min: 25, max: 50, industry: 35 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 25, max: 50, industry: 35 } },
+        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 55, max: 70, ideal: 62 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 0, max: 3, industry: 1 }, dio: { min: 3, max: 10, industry: 7 }, dpo: { min: 14, max: 30, industry: 21 } },
+        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 60, max: 120, industry: 90 }, dio: { min: 7, max: 30, industry: 15 }, dpo: { min: 45, max: 90, industry: 60 } }
     };
-    return b[industry?.toLowerCase()] || b['product'];
+    // Map form values to benchmark keys
+    const aliases = { 'food': 'restaurant', 'services': 'service', 'online': 'ecommerce', 'healthcare': 'service', 'other': 'product' };
+    const key = aliases[industry?.toLowerCase()] || industry?.toLowerCase();
+    return b[key] || b['product'];
 }
 
 function benchStatus(value, benchmark, higherIsBetter) {
@@ -258,7 +262,8 @@ function renderBenchBar(containerId, label, value, benchmark, unit, higherIsBett
     const total = extMax - extMin;
 
     const dotPos = Math.max(0, Math.min(100, ((value - extMin) / total) * 100));
-    const idealPos = ((benchmark.ideal - extMin) / total) * 100;
+    const idealVal = benchmark.ideal !== undefined ? benchmark.ideal : benchmark.industry;
+    const idealPos = ((idealVal - extMin) / total) * 100;
     const rangeLeft = ((benchmark.min - extMin) / total) * 100;
     const rangeWidth = (range / total) * 100;
 
@@ -443,21 +448,7 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current)
     let cccStatus = metrics.ccc > 45 ? 'danger' : metrics.ccc > 20 ? 'warning' : 'good';
     cccResult.className = `ccc-result ${cccStatus}`;
 
-    // Operating cash movement
-    const movementEl = document.getElementById('opCashMovement');
-    if (movementEl) {
-        let movementText = '';
-        if (metrics.ccc > 45) {
-            movementText = `Cash is tied up for ${Math.round(metrics.ccc)} days. You're financing customers and inventory while waiting to get paid.`;
-        } else if (metrics.ccc > 20) {
-            movementText = `You pay suppliers in ${Math.round(metrics.dpo)} days but wait ${Math.round(metrics.dso)} days to collect. Stock sits for ${Math.round(metrics.dio)} days. That's ${Math.round(metrics.ccc)} days your money is stuck.`;
-        } else if (metrics.ccc > 0) {
-            movementText = `Cash cycle is healthy at ${Math.round(metrics.ccc)} days. Money moves efficiently through your business.`;
-        } else {
-            movementText = `Negative cash cycle (${Math.round(metrics.ccc)} days) means you collect before you pay. Excellent cash position.`;
-        }
-        movementEl.innerHTML = `<p>${movementText}</p>`;
-    }
+    // CCC insight is now generated in updateWCRTable() with industry-specific advice
 
     // Industry benchmark for DSO
     const bench = getDefaultBenchmarks(industry);
@@ -465,7 +456,7 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current)
 
     // WCR table
     if (current) {
-        updateWCRTable(current, metrics, bench, currency);
+        updateWCRTable(current, metrics, bench, currency, industry);
     }
 
     // Interpretation from AI or generated
@@ -479,7 +470,7 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current)
     }
 }
 
-function updateWCRTable(current, metrics, bench, currency) {
+function updateWCRTable(current, metrics, bench, currency, industry) {
     const periodDays = 30;
     const revenue = current.revenue || 0;
     const cogs = current.cogs || 0;
@@ -490,10 +481,10 @@ function updateWCRTable(current, metrics, bench, currency) {
     const apActual = current.payables || 0;
     const wcrActual = arActual + invActual - apActual;
 
-    // Industry targets using ideal days
-    const arTarget = revenue > 0 ? (bench.dso.ideal / periodDays) * revenue : 0;
-    const invTarget = cogs > 0 ? (bench.dio.ideal / periodDays) * cogs : 0;
-    const apTarget = cogs > 0 ? (bench.dpo.ideal / periodDays) * cogs : 0;
+    // Industry targets using industry average days
+    const arTarget = revenue > 0 ? (bench.dso.industry / periodDays) * revenue : 0;
+    const invTarget = cogs > 0 ? (bench.dio.industry / periodDays) * cogs : 0;
+    const apTarget = cogs > 0 ? (bench.dpo.industry / periodDays) * cogs : 0;
     const wcrIndustry = arTarget + invTarget - apTarget;
 
     // Variance
@@ -532,28 +523,110 @@ function updateWCRTable(current, metrics, bench, currency) {
     document.getElementById('wcrTotalIndustry').textContent = fmtCell(wcrIndustry);
     document.getElementById('wcrTotalVariance').innerHTML = fmtVar(wcrVar);
 
-    // Narrative
+    // Narrative with industry-specific advice
     const narrativeEl = document.getElementById('wcrNarrative');
     if (narrativeEl) {
-        if (Math.abs(wcrVar) < 1) {
-            narrativeEl.textContent = 'Your working capital requirement is in line with industry averages.';
-        } else {
-            // Find the biggest driver
-            const drivers = [
-                { name: 'receivables', val: arVar },
-                { name: 'inventory', val: invVar },
-                { name: 'payables', val: -apVar } // negative apVar means you're paying too fast = cash tied up
-            ];
-            drivers.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
-            const topDriver = drivers[0];
+        const ind = bench.name;
+        let narrative = '';
 
-            if (wcrVar > 0) {
-                narrativeEl.textContent = `You have ${currency} ${formatNumber(wcrVar)} more cash tied up in working capital than a typical ${bench.name.toLowerCase()} business. Most of the excess comes from ${topDriver.name}.`;
-            } else {
-                narrativeEl.textContent = `You are running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than the industry average. Your ${topDriver.name} management is tighter than typical.`;
+        if (Math.abs(wcrVar) < 1) {
+            narrative = 'Your working capital requirement is in line with industry averages.';
+        } else if (wcrVar > 0) {
+            narrative = `If you matched industry averages, you would free up ${currency} ${formatNumber(wcrVar)} in cash. `;
+            // Find biggest driver and give specific advice
+            const highAR = arVar > 0 && arVar >= invVar && arVar >= Math.abs(apVar);
+            const highInv = invVar > 0 && invVar >= arVar && invVar >= Math.abs(apVar);
+            const lowAP = apVar < 0 && Math.abs(apVar) >= arVar && Math.abs(apVar) >= invVar;
+
+            if (highAR) {
+                narrative += getARAdvice(ind);
+            } else if (highInv) {
+                narrative += getInventoryAdvice(ind);
+            } else if (lowAP) {
+                narrative += getAPAdvice(ind);
             }
+        } else {
+            narrative = `You are running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than the industry average — strong working capital management.`;
         }
+
+        narrativeEl.textContent = narrative;
     }
+
+    // CCC insight
+    const ccc = metrics.ccc;
+    const cccInsightEl = document.getElementById('opCashMovement');
+    if (cccInsightEl) {
+        let insight = '';
+        if (ccc < 0) {
+            insight = getCCCNegativeAdvice(bench.name);
+        } else if (ccc > 90) {
+            insight = `Your capital is locked up for ${Math.round(ccc)} days — this is critical. Consider invoice factoring to get 80-90% of your receivables in 24 hours. Halt non-essential purchasing and review slow-paying clients who are draining your liquidity.`;
+        } else if (ccc > 60) {
+            insight = getCCC60Advice(bench.name, ccc);
+        } else if (ccc > 30) {
+            insight = `Your cash cycle is ${Math.round(ccc)} days. You pay suppliers in ${Math.round(metrics.dpo)} days but wait ${Math.round(metrics.dso)} days to collect. That's ${Math.round(ccc)} days your money is stuck in operations.`;
+        } else {
+            insight = `Cash cycle is healthy at ${Math.round(ccc)} days. Money moves efficiently through your business.`;
+        }
+        cccInsightEl.innerHTML = `<p>${insight}</p>`;
+    }
+}
+
+// ===== Industry-Specific Advice =====
+
+function getARAdvice(industry) {
+    const advice = {
+        'Service': 'Require a 50% upfront deposit for new projects and transition to retainers paid on the 1st of the month.',
+        'Wholesale': 'Offer a 2/10 Net 30 discount — the 2% cost is often cheaper than interest on a working capital loan.',
+        'Construction': 'Standardize progress billings and aggressively follow up on retentions, which often get forgotten.',
+        'Manufacturing': 'Implement credit limits for distributors who consistently exceed their payment terms.',
+        'Retail': 'Audit your payment gateway — if funds take more than 3 days to reach your bank, switch providers.',
+        'E-commerce': 'Audit your payment gateway — if funds take more than 3 days to reach your bank, switch providers.',
+        'Restaurant': 'If you have B2B catering accounts, move them to automated credit card billing instead of manual invoicing.',
+        'Product': 'Tighten your collections process — send reminders earlier and consider early payment discounts.'
+    };
+    return advice[industry] || 'Speed up collections by sending reminders earlier and offering small discounts for early payment.';
+}
+
+function getInventoryAdvice(industry) {
+    const advice = {
+        'Retail': 'Run a flash sale on old stock — holding stale items costs more in opportunity cost than the margin loss.',
+        'E-commerce': 'Shift slow-movers to a just-in-time or print-on-demand model to reduce warehouse overhead.',
+        'Manufacturing': 'Your work-in-progress is likely clogged. Streamline your production line to move units to finished goods faster.',
+        'Wholesale': 'Use ABC analysis — stop over-ordering Category C items that only move once a quarter.',
+        'Restaurant': 'Check for waste and portion control. High inventory in food usually means high spoilage and theft risk.',
+        'Construction': 'Stop ordering materials for the whole project at once. Align material delivery with specific project phases.',
+        'Product': 'Order smaller quantities more often. Dead stock on shelves is cash that could be in your bank.',
+        'Service': 'As a service business, you should carry minimal inventory. Review what stock you are holding and why.'
+    };
+    return advice[industry] || 'Order smaller quantities more often to reduce the cash sitting idle on your shelves.';
+}
+
+function getAPAdvice(industry) {
+    const advice = {
+        'Construction': 'Align supplier payments to match your client milestone receipts — stop bridging the gap yourself.',
+        'Retail': 'If you pay early for discounts, check if the discount rate beats your cost of capital. If not, stop.',
+        'Product': 'If you pay early for discounts, check if the discount rate beats your cost of capital. If not, stop.'
+    };
+    return advice[industry] || 'Renegotiate for 30 or 45-day terms. Every day you delay payment is a 0% interest loan from your supplier.';
+}
+
+function getCCCNegativeAdvice(industry) {
+    const advice = {
+        'Restaurant': 'Your business is self-funding — you collect cash before paying suppliers. Use this surplus to reinvest in equipment or marketing rather than letting it sit idle.',
+        'E-commerce': 'Negative cash cycle is a scaling green light — your sales fund your stock before you pay for it. But watch for supplier fragility if you stretch terms too hard.'
+    };
+    return advice[industry] || 'You collect money before you pay it out. This is ideal for growth — but watch supplier relationships if you stretch payment terms too aggressively.';
+}
+
+function getCCC60Advice(industry, ccc) {
+    const advice = {
+        'Manufacturing': `Your cash is locked for ${Math.round(ccc)} days — risk of overtrading. Secure a revolving credit line before accepting large new orders.`,
+        'Service': `Cash cycle of ${Math.round(ccc)} days means unbilled revenue is too high. Shorten billing cycles from monthly to bi-weekly for large projects.`,
+        'Wholesale': `At ${Math.round(ccc)} days, you are carrying the weight for your supply chain. Demand better terms from manufacturers to offset slow-paying retailers.`,
+        'Construction': `${Math.round(ccc)}-day cycle is common in construction but dangerous. Ensure milestone billings are tied to actual costs to avoid funding the gap from your own cash.`
+    };
+    return advice[industry] || `Your cash is trapped in operations for ${Math.round(ccc)} days. Even if profitable, you risk a liquidity crunch if you grow too fast. Consider factoring invoices or negotiating longer supplier terms.`;
 }
 
 // ===== Section 4: Free Cash Flow =====
