@@ -358,16 +358,12 @@ function updateMiniPL(current, metrics, currency, industry) {
     // EBITDA = EBIT = Operating Profit (no D&A to split)
     document.getElementById('plEBITDA').textContent = `${currency} ${formatNumber(operatingProfit)}`;
     document.getElementById('plEBITDAMargin').textContent = `${om}%`;
-    document.getElementById('plEBIT').textContent = `${currency} ${formatNumber(operatingProfit)}`;
-    document.getElementById('plEBITMargin').textContent = `${om}%`;
-
     document.getElementById('plNetIncome').textContent = `${currency} ${formatNumber(netProfit)}`;
     document.getElementById('plNetMargin').textContent = `${nm}%`;
 
     // Color negative values
     setNegativeClass('plGrossProfit', grossProfit);
     setNegativeClass('plEBITDA', operatingProfit);
-    setNegativeClass('plEBIT', operatingProfit);
     setNegativeClass('plNetIncome', netProfit);
 
     // Industry benchmarks
