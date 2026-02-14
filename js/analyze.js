@@ -821,7 +821,7 @@ async function sendToAnalyze(formData) {
             }
 
             // Redirect to report page
-            window.location.href = 'report.html';
+            window.location.href = 'report-sky.html';
         } else {
             throw new Error(result.error || 'Analysis failed');
         }
@@ -1036,7 +1036,7 @@ function showLoginRequired() {
             <p class="login-note">Free accounts get 1 full report. No credit card required.</p>
             <div class="login-sample">
                 <p>Want to see what you will get first?</p>
-                <a href="report.html?sample=true" class="sample-link">View Sample Report</a>
+                <a href="report-sky.html?sample=true" class="sample-link">View Sample Report</a>
             </div>
         </div>
     `;
