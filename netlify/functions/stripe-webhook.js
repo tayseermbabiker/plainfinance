@@ -38,6 +38,38 @@ exports.handler = async (event, context) => {
     // Initialize Supabase client with service key (bypasses RLS)
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+    // Helper: determine plan from price ID
+    function determinePlan(priceId) {
+        const ownerPrices = [process.env.STRIPE_PRICE_OWNER_MONTHLY, process.env.STRIPE_PRICE_OWNER_ANNUAL];
+        const proPrices = [process.env.STRIPE_PRICE_PRO_MONTHLY, process.env.STRIPE_PRICE_PRO_ANNUAL];
+        if (ownerPrices.includes(priceId)) return 'owner';
+        if (proPrices.includes(priceId)) return 'pro';
+        return 'free';
+    }
+
+    // Helper: find user by customer ID or email
+    async function findUser(customerId, customerEmail) {
+        // Try by stripe_customer_id first
+        if (customerId) {
+            const { data } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('stripe_customer_id', customerId)
+                .single();
+            if (data) return data;
+        }
+        // Fall back to email lookup
+        if (customerEmail) {
+            const { data } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('email', customerEmail)
+                .single();
+            if (data) return data;
+        }
+        return null;
+    }
+
     try {
         switch (stripeEvent.type) {
             case 'checkout.session.completed': {
@@ -47,22 +79,10 @@ exports.handler = async (event, context) => {
                 const customerId = session.customer;
 
                 if (userId && subscriptionId) {
-                    // Get subscription details
                     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
                     const priceId = subscription.items.data[0]?.price?.id;
+                    const plan = determinePlan(priceId);
 
-                    // Determine plan based on price ID
-                    let plan = 'free';
-                    const ownerPrices = [process.env.STRIPE_PRICE_OWNER_MONTHLY, process.env.STRIPE_PRICE_OWNER_ANNUAL];
-                    const proPrices = [process.env.STRIPE_PRICE_PRO_MONTHLY, process.env.STRIPE_PRICE_PRO_ANNUAL];
-
-                    if (ownerPrices.includes(priceId)) {
-                        plan = 'owner';
-                    } else if (proPrices.includes(priceId)) {
-                        plan = 'pro';
-                    }
-
-                    // Update user profile
                     await supabase.from('profiles').update({
                         stripe_customer_id: customerId,
                         stripe_subscription_id: subscriptionId,
@@ -70,6 +90,72 @@ exports.handler = async (event, context) => {
                         subscription_status: 'active',
                         subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
                     }).eq('id', userId);
+                }
+                break;
+            }
+
+            case 'customer.subscription.created': {
+                // Handles new subscriptions — finds user by customer email
+                const subscription = stripeEvent.data.object;
+                const customerId = subscription.customer;
+                const priceId = subscription.items.data[0]?.price?.id;
+                const plan = determinePlan(priceId);
+
+                // Get customer email from Stripe
+                const customer = await stripe.customers.retrieve(customerId);
+                const profile = await findUser(customerId, customer.email);
+
+                if (profile) {
+                    await supabase.from('profiles').update({
+                        stripe_customer_id: customerId,
+                        stripe_subscription_id: subscription.id,
+                        subscription_plan: plan,
+                        subscription_status: 'active',
+                        subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
+                    }).eq('id', profile.id);
+                }
+                break;
+            }
+
+            case 'invoice.payment_succeeded': {
+                // Handles renewals and first payments
+                const invoice = stripeEvent.data.object;
+                const customerId = invoice.customer;
+                const subscriptionId = invoice.subscription;
+
+                if (subscriptionId) {
+                    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+                    const priceId = subscription.items.data[0]?.price?.id;
+                    const plan = determinePlan(priceId);
+
+                    const customer = await stripe.customers.retrieve(customerId);
+                    const profile = await findUser(customerId, customer.email);
+
+                    if (profile) {
+                        await supabase.from('profiles').update({
+                            stripe_customer_id: customerId,
+                            stripe_subscription_id: subscriptionId,
+                            subscription_plan: plan,
+                            subscription_status: 'active',
+                            subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
+                        }).eq('id', profile.id);
+                    }
+                }
+                break;
+            }
+
+            case 'invoice.payment_failed': {
+                // Mark subscription as past_due
+                const invoice = stripeEvent.data.object;
+                const customerId = invoice.customer;
+
+                const customer = await stripe.customers.retrieve(customerId);
+                const profile = await findUser(customerId, customer.email);
+
+                if (profile) {
+                    await supabase.from('profiles').update({
+                        subscription_status: 'past_due'
+                    }).eq('id', profile.id);
                 }
                 break;
             }
