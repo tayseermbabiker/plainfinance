@@ -477,7 +477,17 @@ Current Ratio: 1.2
     <section id="pricing" class="pricing">
         <div class="container">
             <h2 class="section-title">Simple Pricing</h2>
-            <p class="section-subtitle">Start free. Upgrade when you need more.</p>
+            <p class="section-subtitle">A single accountant review costs $100+. Get ongoing clarity for a fraction of that.</p>
+
+            <!-- Billing Toggle -->
+            <div class="billing-toggle" id="homeBillingToggle">
+                <span class="toggle-label active" data-billing="monthly">Monthly</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="homeBillingSwitch">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label" data-billing="annual">Annual <span class="save-badge">Save 2 months</span></span>
+            </div>
 
             <div class="pricing-grid">
                 <!-- Free Tier -->
@@ -506,7 +516,7 @@ Current Ratio: 1.2
                     <div class="pricing-name">Owner</div>
                     <div class="pricing-price">
                         <span class="currency">$</span>
-                        <span class="amount">30</span>
+                        <span class="amount" data-monthly="30" data-annual="25">30</span>
                         <span class="period">/month</span>
                     </div>
                     <p class="pricing-desc">Monthly clarity for your business</p>
@@ -529,7 +539,7 @@ Current Ratio: 1.2
                     <div class="pricing-name">Pro</div>
                     <div class="pricing-price">
                         <span class="currency">$</span>
-                        <span class="amount">85</span>
+                        <span class="amount" data-monthly="85" data-annual="71">85</span>
                         <span class="period">/month</span>
                     </div>
                     <p class="pricing-desc">For growing businesses</p>
@@ -546,6 +556,20 @@ Current Ratio: 1.2
                     </ul>
                     <a href="signup.html" class="btn btn-secondary btn-block">Get Started</a>
                     <p class="pricing-note">$850/year (save 2 months)</p>
+                </div>
+            </div>
+
+            <!-- Pay Per Report -->
+            <div class="pricing-addon">
+                <div class="addon-content">
+                    <div class="addon-text">
+                        <h3>Don't want a subscription?</h3>
+                        <p>Pay per report. Same full analysis, no commitment.</p>
+                    </div>
+                    <div class="addon-cta">
+                        <span class="addon-price">$12<small>/report</small></span>
+                        <a href="signup.html?plan=payperreport" class="btn btn-secondary">Buy a Report</a>
+                    </div>
                 </div>
             </div>
 
@@ -655,5 +679,30 @@ Current Ratio: 1.2
 
     <script src="js/i18n.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        // Homepage billing toggle
+        (function() {
+            const toggle = document.getElementById('homeBillingSwitch');
+            if (!toggle) return;
+            let isAnnual = false;
+
+            toggle.addEventListener('change', function() {
+                isAnnual = this.checked;
+                // Update prices
+                document.querySelectorAll('#pricing .pricing-price .amount[data-monthly]').forEach(el => {
+                    el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
+                });
+                // Update notes
+                document.querySelectorAll('#pricing .pricing-note').forEach((note, i) => {
+                    if (i === 0) note.textContent = isAnnual ? 'Billed annually at $300' : '$300/year (save 2 months)';
+                    if (i === 1) note.textContent = isAnnual ? 'Billed annually at $850' : '$850/year (save 2 months)';
+                });
+                // Update toggle labels
+                document.querySelectorAll('#homeBillingToggle .toggle-label').forEach(label => {
+                    label.classList.toggle('active', (label.dataset.billing === 'annual') === isAnnual);
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
