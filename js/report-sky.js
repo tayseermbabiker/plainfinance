@@ -1138,7 +1138,7 @@ async function downloadPDF() {
     if (pdfDate) pdfDate.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const options = {
-        margin: [15, 15, 15, 15],
+        margin: [10, 12, 10, 12],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
@@ -1252,7 +1252,7 @@ async function generateReportPDFBase64() {
     if (pdfDate) pdfDate.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const options = {
-        margin: [15, 15, 15, 15],
+        margin: [10, 12, 10, 12],
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },

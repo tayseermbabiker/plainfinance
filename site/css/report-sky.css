@@ -1266,10 +1266,10 @@
 
 .pdf-header {
     display: none;
-    text-align: center;
-    padding: var(--space-l);
-    border-bottom: 2px solid var(--sky-blue);
-    margin-bottom: var(--space-l);
+    text-align: left;
+    padding: 0 0 var(--space-m) 0;
+    border-bottom: 1.5px solid var(--sky-blue);
+    margin-bottom: var(--space-m);
 }
 
 .pdf-export-mode {
@@ -1290,40 +1290,158 @@
 
 .pdf-export-mode .report-container {
     max-width: 100%;
-    padding: 0;
+    padding: 0 8px;
 }
 
 .pdf-export-mode .pdf-header { display: block; }
 
+/* Hide duplicate report header in PDF — pdf-header already shows company name */
+.pdf-export-mode .report-header { display: none !important; }
+
 .pdf-header h1 {
-    font-size: 24px;
-    color: var(--sky-blue);
-    margin-bottom: 4px;
+    font-size: 22px;
+    color: var(--slate-ink);
+    margin-bottom: 2px;
+    font-weight: 700;
 }
 
-.pdf-header .pdf-period { font-size: 14px; color: var(--muted-gray); }
-.pdf-header .pdf-generated { font-size: 11px; color: #9CA3AF; margin-top: var(--space-xs); }
+.pdf-header .pdf-period { font-size: 13px; color: var(--soft-graphite); }
+.pdf-header .pdf-generated { font-size: 10px; color: #9CA3AF; margin-top: 4px; }
 
+/* Strip card styling — make it a clean document */
 .pdf-export-mode .report-section {
     box-shadow: none;
-    border: 1px solid #E5E7EB;
-    margin-bottom: var(--space-m);
+    border: none;
+    border-bottom: 0.5px solid #E5E7EB;
+    border-radius: 0;
+    padding: var(--space-m) 0;
+    margin-bottom: 0;
     page-break-inside: avoid;
 }
 
-.pdf-export-mode h2 { font-size: 18px; margin-bottom: var(--space-s); }
-.pdf-export-mode .section-subtitle { font-size: 13px; margin-bottom: var(--space-m); }
+.pdf-export-mode .report-section:last-of-type {
+    border-bottom: none;
+}
+
+/* Tighter headings */
+.pdf-export-mode h2 { font-size: 16px; margin-bottom: 4px; }
+.pdf-export-mode .section-subtitle { font-size: 12px; margin-bottom: var(--space-s); }
+
+/* Strip inner card styling */
+.pdf-export-mode .mini-pl,
+.pdf-export-mode .fcf-breakdown,
+.pdf-export-mode .fcff-breakdown,
+.pdf-export-mode .runway-display,
+.pdf-export-mode .wcr-card {
+    box-shadow: none;
+    border: 0.5px solid #E5E7EB;
+    border-radius: 4px;
+    padding: var(--space-s);
+}
+
+.pdf-export-mode .op-card {
+    border-radius: 4px;
+}
+
+/* Tighter spacing */
+.pdf-export-mode .owner-headline {
+    border-radius: 0;
+    padding: var(--space-s) var(--space-m);
+    margin-bottom: var(--space-s);
+}
+
+.pdf-export-mode .top5-summary {
+    box-shadow: none;
+    border: 0.5px solid #E5E7EB;
+    border-radius: 4px;
+    padding: var(--space-s) var(--space-m);
+    margin-bottom: var(--space-s);
+}
+
+.pdf-export-mode .health-strip {
+    box-shadow: none;
+    border-radius: 4px;
+    padding: var(--space-s) var(--space-m);
+    margin-bottom: var(--space-s);
+}
+
+/* Interpretation boxes — lighter in PDF */
+.pdf-export-mode .profit-interpretation,
+.pdf-export-mode .fcf-insight,
+.pdf-export-mode .fcff-insight,
+.pdf-export-mode .op-cash-movement,
+.pdf-export-mode .op-interpretation,
+.pdf-export-mode .runway-interpretation {
+    box-shadow: none;
+    border-radius: 4px;
+    padding: var(--space-s);
+    margin-bottom: var(--space-xs);
+}
+
+/* Action items — cleaner in PDF */
+.pdf-export-mode .action-item {
+    border-radius: 4px;
+    padding: var(--space-s) var(--space-m);
+}
+
+.pdf-export-mode .book-call-cta {
+    border-radius: 4px;
+}
+
+/* Bank summary — lighter */
+.pdf-export-mode .bank-summary-section {
+    background: white;
+}
+
+.pdf-export-mode .bank-summary blockquote {
+    border-radius: 4px;
+}
+
+/* Benchmark bars tighter */
+.pdf-export-mode .bench-bar-row {
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+/* Runway number smaller in PDF */
+.pdf-export-mode .runway-big-number {
+    font-size: 36px;
+}
+
+/* CCC result tighter */
+.pdf-export-mode .ccc-result {
+    border-radius: 4px;
+    padding: var(--space-s);
+}
+
+/* Footer tighter */
+.pdf-export-mode .report-footer {
+    padding: var(--space-m) 0;
+    margin-top: 0;
+}
+
+.pdf-export-mode .disclaimer {
+    font-size: 10px;
+}
+
+/* Better page breaks */
+.pdf-export-mode .actions-section { page-break-before: auto; }
+.pdf-export-mode .bank-summary-section { page-break-inside: avoid; }
+.pdf-export-mode .fcf-section { page-break-inside: avoid; }
+.pdf-export-mode .fcff-section { page-break-inside: avoid; }
+.pdf-export-mode .runway-section { page-break-inside: avoid; }
 
 /* ===== Print Styles ===== */
 
 @media print {
     .nav-report,
     .sample-banner,
-    .modal { display: none !important; }
+    .modal,
+    .view-toggle { display: none !important; }
 
     .report-main { padding-top: 0; background: white; }
     .report-container { max-width: 100%; }
-    .report-section { box-shadow: none; break-inside: avoid; border: 1px solid #E5E7EB; }
+    .report-section { box-shadow: none; break-inside: avoid; border: none; border-bottom: 0.5px solid #E5E7EB; border-radius: 0; }
     .action-list { break-inside: avoid; }
 }
 
