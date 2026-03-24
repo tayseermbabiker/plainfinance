@@ -18,6 +18,11 @@ exports.handler = async (event, context) => {
         return { statusCode: 500, body: 'Webhook not configured' };
     }
 
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+        console.error('Supabase keys not configured');
+        return { statusCode: 500, body: 'Database not configured' };
+    }
+
     const stripe = require('stripe')(STRIPE_SECRET_KEY);
 
     // Verify webhook signature
@@ -49,24 +54,28 @@ exports.handler = async (event, context) => {
 
     // Helper: find user by customer ID or email
     async function findUser(customerId, customerEmail) {
+        console.log('findUser called with:', { customerId, customerEmail });
         // Try by stripe_customer_id first
         if (customerId) {
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from('profiles')
                 .select('id')
                 .eq('stripe_customer_id', customerId)
                 .single();
+            console.log('Lookup by customer_id:', { data, error: error?.message });
             if (data) return data;
         }
         // Fall back to email lookup
         if (customerEmail) {
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from('profiles')
                 .select('id')
                 .eq('email', customerEmail)
                 .single();
+            console.log('Lookup by email:', { data, error: error?.message });
             if (data) return data;
         }
+        console.log('findUser: no user found');
         return null;
     }
 
@@ -100,19 +109,26 @@ exports.handler = async (event, context) => {
                 const customerId = subscription.customer;
                 const priceId = subscription.items.data[0]?.price?.id;
                 const plan = determinePlan(priceId);
+                console.log('subscription.created:', { customerId, priceId, plan });
 
                 // Get customer email from Stripe
                 const customer = await stripe.customers.retrieve(customerId);
+                console.log('Customer email:', customer.email);
                 const profile = await findUser(customerId, customer.email);
 
                 if (profile) {
-                    await supabase.from('profiles').update({
+                    console.log('Updating profile:', profile.id, 'to plan:', plan);
+                    const { error: updateError } = await supabase.from('profiles').update({
                         stripe_customer_id: customerId,
                         stripe_subscription_id: subscription.id,
                         subscription_plan: plan,
                         subscription_status: 'active',
                         subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
                     }).eq('id', profile.id);
+                    if (updateError) console.error('Update error:', updateError);
+                    else console.log('Profile updated successfully');
+                } else {
+                    console.log('No profile found for customer:', customer.email);
                 }
                 break;
             }
