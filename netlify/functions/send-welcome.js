@@ -40,15 +40,18 @@ exports.handler = async (event, context) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`
             },
             body: JSON.stringify({
-                from: 'PlainFinancials <reports@plainfinance.co>',
+                from: 'PlainFinancials <reports@plainfinancials.com>',
                 to: [email],
                 subject: 'Welcome to PlainFinancials',
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1F2937;">
                         <h2 style="color: #1e3a5f;">Welcome to PlainFinancials</h2>
                         <p>Hi ${displayName},</p>
-                        <p>Welcome to PlainFinancials. Whenever you enter new financial data, you'll receive a clear, simple report that shows how your business is really doing &mdash; without jargon or overwhelm.</p>
-                        <p>If you need help or want guidance interpreting your numbers, we're here.</p>
+                        <p>Accountants hide the truth in complexity. We do the opposite.</p>
+                        <p>Every time you enter your numbers, you'll get a clear report that shows how your business is really doing &mdash; no jargon, no overwhelm.</p>
+                        <p style="margin: 28px 0;">
+                            <a href="https://plainfinancials.com/analyze.html" style="background-color: #1e3a5f; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">Run Your First Report &rarr;</a>
+                        </p>
                         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
                         <p style="color: #64748b; font-size: 14px;">
                             Best regards,<br>

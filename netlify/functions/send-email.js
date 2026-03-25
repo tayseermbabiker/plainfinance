@@ -45,7 +45,7 @@ exports.handler = async (event, context) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`
             },
             body: JSON.stringify({
-                from: 'PlainFinancials <reports@plainfinance.co>',
+                from: 'PlainFinancials <reports@plainfinancials.com>',
                 to: [data.email],
                 subject: `Your Financial Report: ${companyName} - ${period}`,
                 html: `
