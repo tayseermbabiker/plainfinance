@@ -43,6 +43,19 @@ exports.handler = async (event, context) => {
     // Initialize Supabase client with service key (bypasses RLS)
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+    // Helper: safe timestamp conversion
+    function safeTimestamp(unixSeconds) {
+        if (!unixSeconds) return null;
+        try {
+            const date = new Date(unixSeconds * 1000);
+            if (isNaN(date.getTime())) return null;
+            return date.toISOString();
+        } catch (e) {
+            console.error('Invalid timestamp:', unixSeconds);
+            return null;
+        }
+    }
+
     // Helper: determine plan from price ID
     function determinePlan(priceId) {
         const ownerPrices = [process.env.STRIPE_PRICE_OWNER_MONTHLY, process.env.STRIPE_PRICE_OWNER_ANNUAL];
@@ -97,7 +110,7 @@ exports.handler = async (event, context) => {
                         stripe_subscription_id: subscriptionId,
                         subscription_plan: plan,
                         subscription_status: 'active',
-                        subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
+                        subscription_ends_at: safeTimestamp(subscription.current_period_end)
                     }).eq('id', userId);
                 }
                 break;
@@ -123,7 +136,7 @@ exports.handler = async (event, context) => {
                         stripe_subscription_id: subscription.id,
                         subscription_plan: plan,
                         subscription_status: 'active',
-                        subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
+                        subscription_ends_at: safeTimestamp(subscription.current_period_end)
                     }).eq('id', profile.id);
                     if (updateError) console.error('Update error:', updateError);
                     else console.log('Profile updated successfully');
@@ -153,7 +166,7 @@ exports.handler = async (event, context) => {
                             stripe_subscription_id: subscriptionId,
                             subscription_plan: plan,
                             subscription_status: 'active',
-                            subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
+                            subscription_ends_at: safeTimestamp(subscription.current_period_end)
                         }).eq('id', profile.id);
                     }
                 }
@@ -202,7 +215,7 @@ exports.handler = async (event, context) => {
                     await supabase.from('profiles').update({
                         subscription_plan: plan,
                         subscription_status: subscription.status,
-                        subscription_ends_at: new Date(subscription.current_period_end * 1000).toISOString()
+                        subscription_ends_at: safeTimestamp(subscription.current_period_end)
                     }).eq('id', profile.id);
                 }
                 break;
