@@ -117,32 +117,30 @@ exports.handler = async (event, context) => {
             }
 
             case 'customer.subscription.created': {
-                // Handles new subscriptions — finds user by customer email
-                const subscription = stripeEvent.data.object;
-                const customerId = subscription.customer;
-                const priceId = subscription.items.data[0]?.price?.id;
-                const plan = determinePlan(priceId);
-                console.log('subscription.created:', { customerId, priceId, plan });
+                const subscription2 = stripeEvent.data.object;
+                const customerId2 = subscription2.customer;
+                const priceId2 = subscription2.items.data[0]?.price?.id;
+                const plan2 = determinePlan(priceId2);
+                const debugInfo = { customerId: customerId2, priceId: priceId2, plan: plan2 };
 
-                // Get customer email from Stripe
-                const customer = await stripe.customers.retrieve(customerId);
-                console.log('Customer email:', customer.email);
-                const profile = await findUser(customerId, customer.email);
+                const customer2 = await stripe.customers.retrieve(customerId2);
+                debugInfo.stripeEmail = customer2.email;
 
-                if (profile) {
-                    console.log('Updating profile:', profile.id, 'to plan:', plan);
-                    const { error: updateError } = await supabase.from('profiles').update({
-                        stripe_customer_id: customerId,
-                        stripe_subscription_id: subscription.id,
-                        subscription_plan: plan,
+                // Try direct email update first — bypass findUser entirely
+                const { data: directUpdate, error: directError } = await supabase
+                    .from('profiles')
+                    .update({
+                        stripe_customer_id: customerId2,
+                        subscription_plan: plan2,
                         subscription_status: 'active',
-                        subscription_ends_at: safeTimestamp(subscription.current_period_end)
-                    }).eq('id', profile.id);
-                    if (updateError) console.error('Update error:', updateError);
-                    else console.log('Profile updated successfully');
-                } else {
-                    console.log('No profile found for customer:', customer.email);
-                }
+                        subscription_ends_at: safeTimestamp(subscription2.current_period_end)
+                    })
+                    .eq('email', customer2.email)
+                    .select();
+
+                debugInfo.directUpdate = directError ? `ERROR: ${directError.message}` : directUpdate;
+                debugInfo.rowsUpdated = directUpdate ? directUpdate.length : 0;
+                global._webhookDebug = debugInfo;
                 break;
             }
 
@@ -246,7 +244,7 @@ exports.handler = async (event, context) => {
                 console.log(`Unhandled event type: ${stripeEvent.type}`);
         }
 
-        return { statusCode: 200, body: JSON.stringify({ received: true }) };
+        return { statusCode: 200, body: JSON.stringify({ received: true, eventType: stripeEvent.type, debug: global._webhookDebug || 'no debug' }) };
 
     } catch (error) {
         console.error('Webhook handler error:', error);
