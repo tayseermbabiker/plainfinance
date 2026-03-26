@@ -416,6 +416,9 @@ function renderBenchBar(containerId, label, value, benchmark, unit, higherIsBett
 
 // ===== Health Strip =====
 
+// Global report tier — shared across all sections for consistent tone
+let globalTier = 'safe';
+
 function updateHealthStrip(metrics) {
     const strip = document.getElementById('healthStrip');
     const runway = metrics.runwayMonths || 0;
@@ -443,6 +446,9 @@ function updateHealthStrip(metrics) {
         reason = profitable ? 'Cash is running out fast' : 'Losing money and cash is running low — read the full report';
     }
 
+    // Set global tier for tone consistency across all sections
+    globalTier = tier;
+
     strip.className = `health-strip ${tier}`;
     document.getElementById('healthStatus').textContent = status;
     document.getElementById('healthReason').textContent = reason;
@@ -463,12 +469,12 @@ function updateHealthStrip(metrics) {
     document.getElementById('healthNetMargin').textContent = `${netMargin.toFixed(1)}%`;
     document.getElementById('healthGrossMargin').textContent = `${grossMargin.toFixed(1)}%`;
 
-    // Sleep test
-    let sleep;
-    if (profitable && runway >= 6) sleep = 'Pass';
-    else if (profitable || runway >= 3) sleep = 'Okay';
-    else sleep = 'Fail';
-    document.getElementById('healthSleep').textContent = sleep;
+    // Overall health score
+    let health;
+    if (profitable && runway >= 6) health = 'Strong';
+    else if (profitable || runway >= 3) health = 'Okay';
+    else health = 'At Risk';
+    document.getElementById('healthSleep').textContent = health;
 }
 
 // ===== Section 1: Mini P&L Snapshot =====
@@ -808,13 +814,26 @@ function updateFCF(current, previous, metrics, currency) {
 
     // Insight
     const insightEl = document.getElementById('fcfInsight');
+    let fcfInsightText = '';
     if (fcf > 0) {
-        insightEl.innerHTML = `<p>Your business generated <strong>${currency} ${formatNumber(fcf)}</strong> in free cash flow. This is real cash available to pay down debt, distribute to owners, or reinvest.</p>`;
+        fcfInsightText = `<p>Your business generated <strong>${currency} ${formatNumber(fcf)}</strong> in free cash flow. This is real cash available to pay down debt, distribute to owners, or reinvest.</p>`;
     } else if (fcf === 0) {
-        insightEl.innerHTML = `<p>Free cash flow is zero. The business generates just enough cash to sustain operations. Growth will need external funding.</p>`;
+        fcfInsightText = `<p>Free cash flow is zero. The business generates just enough cash to sustain operations. Growth will need external funding.</p>`;
     } else {
-        insightEl.innerHTML = `<p>Your business consumed <strong>${currency} ${formatNumber(Math.abs(fcf))}</strong> more cash than it generated. This is funded from reserves.</p>`;
+        fcfInsightText = `<p>Your business consumed <strong>${currency} ${formatNumber(Math.abs(fcf))}</strong> more cash than it generated. This is funded from reserves.</p>`;
     }
+
+    // Flag owner drawings if they're a significant cash drain
+    const ownerDrawings = current.ownerDrawings || 0;
+    const netProfit = current.netProfit || 0;
+    if (ownerDrawings > 0 && netProfit > 0 && ownerDrawings > netProfit * 0.4) {
+        const drawingsPct = Math.round((ownerDrawings / netProfit) * 100);
+        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business this month — that is ${drawingsPct}% of your profit. ${ownerDrawings > fcf ? 'This exceeds your free cash flow, which is why your cash balance dropped despite being profitable.' : 'Keep an eye on this relative to your cash position.'}</p>`;
+    } else if (ownerDrawings > 0 && netProfit <= 0) {
+        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business while making a loss. This directly reduces your cash reserves.</p>`;
+    }
+
+    insightEl.innerHTML = fcfInsightText;
 
     return fcf;
 }
@@ -848,8 +867,11 @@ function updateFCFF(current, currency, fcfValue) {
     const insightEl = document.getElementById('fcffInsight');
     if (surplus > 0) {
         const ratio = fcfValue / loanRepayments;
-        if (ratio >= 2) {
-            insightEl.innerHTML = `<p>Your business generates enough cash to comfortably cover interest and debt. Coverage ratio: <strong>${ratio.toFixed(1)}x</strong> — plenty of breathing room.</p>`;
+        if (ratio >= 2 && globalTier === 'safe') {
+            insightEl.innerHTML = `<p>Debt coverage is strong at <strong>${ratio.toFixed(1)}x</strong>. Your free cash flow comfortably covers loan repayments.</p>`;
+        } else if (ratio >= 2) {
+            // High ratio but overall status is tight/danger — don't say "breathing room"
+            insightEl.innerHTML = `<p>Debt coverage ratio is <strong>${ratio.toFixed(1)}x</strong>, which is adequate. However, your overall cash position needs attention — focus on improving cash runway.</p>`;
         } else {
             insightEl.innerHTML = `<p>Debt is covered, but the buffer is thin at <strong>${ratio.toFixed(1)}x</strong>. A bad month could make this tight. Consider accelerating collections.</p>`;
         }
@@ -973,11 +995,19 @@ function updateWeeklyActions(current, metrics, currency, analysis) {
 
     // Use AI actions if available
     if (analysis && analysis.action1Title) {
-        const actions = [
+        let actions = [
             { title: analysis.action1Title, desc: analysis.action1Desc },
             { title: analysis.action2Title, desc: analysis.action2Desc },
             { title: analysis.action3Title, desc: analysis.action3Desc }
         ].filter(a => a.title && a.desc);
+
+        // Safety filter: fix common AI errors
+        actions = actions.map(a => {
+            // Fix "collect from suppliers" — should be "collect from customers" or "negotiate with suppliers"
+            let title = a.title.replace(/collect.*from.*supplier/i, 'Negotiate extended terms with suppliers');
+            let desc = a.desc.replace(/collect.*from.*supplier/i, 'negotiate payment terms with your suppliers');
+            return { title, desc };
+        });
 
         actionList.innerHTML = actions.map((a, i) => actionCard(i + 1, a.title, a.desc, null)).join('');
         return;
@@ -1001,10 +1031,10 @@ function updateWeeklyActions(current, metrics, currency, analysis) {
         });
     }
 
-    if (metrics.dpo < 20) {
+    if (metrics.dpo < 20 && actions.length < 3) {
         actions.push({
-            title: 'Ask suppliers for 30-day payment terms',
-            desc: `You pay suppliers in ${Math.round(metrics.dpo)} days. Negotiating 30-day terms keeps cash in your account ${30 - Math.round(metrics.dpo)} days longer.`,
+            title: 'Negotiate longer payment terms with suppliers',
+            desc: `You pay suppliers in ${Math.round(metrics.dpo)} days. Ask your top 3 suppliers for 30-day terms. This keeps ${currency} ${formatNumber(current.payables || 0)} in your account ${30 - Math.round(metrics.dpo)} extra days.`,
             impact: Math.round((current.payables || 0) * 0.1)
         });
     }

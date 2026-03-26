@@ -709,6 +709,7 @@ Please provide:
 4. ACTION_1: The most urgent action.
    - Title: 3-6 words, starts with a verb (e.g. "Collect ${currency} 50,000 from customers")
    - Description: One sentence with a verb and a number (e.g. "Call your top 3 late-paying customers and collect ${currency} 50,000 this week.")
+   - IMPORTANT: You COLLECT from customers. You PAY or NEGOTIATE TERMS with suppliers. Never say "collect from suppliers."
 
 5. ACTION_2: Second priority action. Same format as ACTION_1.
 
@@ -741,6 +742,8 @@ ACTION_3_DESC: [description here]
 MEETING_SUMMARY: [your text here]
 
 BENCHMARK_NOTE: [your text here]
+
+TONE CONSISTENCY: ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'The overall status is DANGER. Do NOT use reassuring language like "plenty of breathing room" or "comfortable" anywhere in the report. Every section should reflect urgency.' : metrics.netMargin <= 0 || (metrics.cashRunway >= 0 && metrics.cashRunway < 6) ? 'The overall status is CAUTION. Be honest about risks without being alarmist.' : 'The overall status is HEALTHY. Be encouraging but still flag areas for improvement.'}
 
 IMPORTANT: Put each section on its own line. Do not combine multiple sections on one line.`;
 
