@@ -61,10 +61,11 @@ function showSampleBanner() {
 // ===== View Mode Toggle =====
 
 function setViewMode(mode) {
-    document.querySelectorAll('.view-toggle .toggle-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
+    document.getElementById('plain-mode').style.display = mode === 'plain' ? 'block' : 'none';
+    document.getElementById('technical-mode').style.display = mode === 'technical' ? 'block' : 'none';
+    document.querySelectorAll('.mode-btn, .toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.id === (mode === 'plain' ? 'btn-plain' : 'btn-tech') || btn.dataset.mode === mode);
     });
-    document.body.classList.toggle('technical-mode', mode === 'technical');
 }
 
 // ===== Owner Headline =====
@@ -106,8 +107,16 @@ function updateOwnerHeadline(current, metrics, currency) {
         headline = `Your business made sales but ended the month losing money, and cash is critically low. Read this before anything else.`;
     }
 
-    el.className = `owner-headline plain-only ${tier}`;
+    el.className = `headline ${tier === 'tight' ? 'warn' : tier}`;
     textEl.textContent = headline;
+
+    // Set headline icon based on tier
+    const iconEl = document.getElementById('headlineIcon');
+    if (iconEl) {
+        if (tier === 'safe') iconEl.textContent = '\u2705';
+        else if (tier === 'tight') iconEl.textContent = '\u26A0\uFE0F';
+        else iconEl.textContent = '\uD83D\uDD34';
+    }
 }
 
 // ===== Top 5 Summary =====
@@ -199,7 +208,7 @@ function updateFourPillars(current, metrics, currency, industry) {
         const card = document.getElementById(`pillar${idx}`);
         if (!card) return;
 
-        card.className = `pillar-card pillar-${p.status}`;
+        card.className = `pillar pillar-${p.status}`;
         document.getElementById(`pillar${idx}Label`).textContent = p.label;
         document.getElementById(`pillar${idx}Value`).textContent = p.value;
 
@@ -219,6 +228,25 @@ function updateFourPillars(current, metrics, currency, industry) {
 
         const insightEl = document.getElementById(`pillar${idx}Insight`);
         if (insightEl) insightEl.textContent = p.insight || '';
+
+        // Trend arrow (if previous month data available for this pillar)
+        const arrowEl = document.getElementById(`pillar${idx}Arrow`);
+        if (arrowEl && p.prevValue !== undefined && p.currNumeric !== undefined) {
+            const change = p.prevValue !== 0 ? ((p.currNumeric - p.prevValue) / Math.abs(p.prevValue)) * 100 : 0;
+            if (Math.abs(change) < 1) {
+                arrowEl.className = 'pillar-arrow arrow-flat';
+                arrowEl.textContent = '\u2192 0%';
+            } else if (change > 0) {
+                arrowEl.className = 'pillar-arrow arrow-up';
+                arrowEl.textContent = `\u2191 +${Math.round(change)}%`;
+            } else {
+                arrowEl.className = 'pillar-arrow arrow-down';
+                arrowEl.textContent = `\u2193 ${Math.round(change)}%`;
+            }
+        } else if (arrowEl) {
+            arrowEl.textContent = '';
+            arrowEl.className = 'pillar-arrow';
+        }
     });
 }
 
@@ -249,14 +277,23 @@ function updateCashBridge(current, previous, metrics, currency) {
     document.getElementById('bridgeStartCash').textContent = `${currency} ${formatNumber(startCash)}`;
     document.getElementById('bridgeProfit').textContent = profit >= 0 ? `+ ${currency} ${formatNumber(profit)}` : `- ${currency} ${formatNumber(Math.abs(profit))}`;
 
+    // Collect all absolute values for bar width calculation
+    const allVals = [Math.abs(profit), Math.abs(arChange), Math.abs(invChange), Math.abs(apChange), Math.abs(loanRepay), Math.abs(drawings), Math.abs(capex)];
+    const maxVal = Math.max(...allVals.filter(v => v > 0)) || 1;
+
+    // Profit bar
+    const profitBar = document.getElementById('bridgeProfitBar');
+    if (profitBar) profitBar.style.width = `${(Math.abs(profit) / maxVal) * 100}%`;
+
     // AR change (increase = cash drain)
     const bridgeAR = document.getElementById('bridgeAR');
     const bridgeARRow = document.getElementById('bridgeARRow');
     if (arChange !== 0 && bridgeARRow) {
-        bridgeARRow.style.display = 'flex';
-        bridgeARRow.className = `bridge-row ${arChange > 0 ? 'bridge-minus' : 'bridge-plus'}`;
+        bridgeARRow.style.display = '';
         bridgeAR.textContent = arChange > 0 ? `- ${currency} ${formatNumber(arChange)}` : `+ ${currency} ${formatNumber(Math.abs(arChange))}`;
-        document.querySelector('#bridgeARRow .bridge-label').textContent = arChange > 0 ? 'Receivables increased (cash tied up)' : 'Receivables decreased (cash freed)';
+        bridgeAR.className = arChange > 0 ? 'b-val neg' : 'b-val pos';
+        const arBar = document.getElementById('bridgeARBar');
+        if (arBar) arBar.style.width = `${(Math.abs(arChange) / maxVal) * 100}%`;
     } else if (bridgeARRow) {
         bridgeARRow.style.display = 'none';
     }
@@ -265,10 +302,11 @@ function updateCashBridge(current, previous, metrics, currency) {
     const bridgeInv = document.getElementById('bridgeInventory');
     const bridgeInvRow = document.getElementById('bridgeInvRow');
     if (invChange !== 0 && bridgeInvRow) {
-        bridgeInvRow.style.display = 'flex';
-        bridgeInvRow.className = `bridge-row ${invChange > 0 ? 'bridge-minus' : 'bridge-plus'}`;
+        bridgeInvRow.style.display = '';
         bridgeInv.textContent = invChange > 0 ? `- ${currency} ${formatNumber(invChange)}` : `+ ${currency} ${formatNumber(Math.abs(invChange))}`;
-        document.querySelector('#bridgeInvRow .bridge-label').textContent = invChange > 0 ? 'Inventory increased (cash tied up)' : 'Inventory decreased (cash freed)';
+        bridgeInv.className = invChange > 0 ? 'b-val neg' : 'b-val pos';
+        const invBar = document.getElementById('bridgeInvBar');
+        if (invBar) invBar.style.width = `${(Math.abs(invChange) / maxVal) * 100}%`;
     } else if (bridgeInvRow) {
         bridgeInvRow.style.display = 'none';
     }
@@ -277,10 +315,11 @@ function updateCashBridge(current, previous, metrics, currency) {
     const bridgeAP = document.getElementById('bridgeAP');
     const bridgeAPRow = document.getElementById('bridgeAPRow');
     if (apChange !== 0 && bridgeAPRow) {
-        bridgeAPRow.style.display = 'flex';
-        bridgeAPRow.className = `bridge-row ${apChange > 0 ? 'bridge-plus' : 'bridge-minus'}`;
+        bridgeAPRow.style.display = '';
         bridgeAP.textContent = apChange > 0 ? `+ ${currency} ${formatNumber(apChange)}` : `- ${currency} ${formatNumber(Math.abs(apChange))}`;
-        document.querySelector('#bridgeAPRow .bridge-label').textContent = apChange > 0 ? 'Payables increased (cash retained)' : 'Payables decreased (cash paid out)';
+        bridgeAP.className = apChange > 0 ? 'b-val pos' : 'b-val neg';
+        const apBar = document.getElementById('bridgeAPBar');
+        if (apBar) apBar.style.width = `${(Math.abs(apChange) / maxVal) * 100}%`;
     } else if (bridgeAPRow) {
         bridgeAPRow.style.display = 'none';
     }
@@ -288,22 +327,28 @@ function updateCashBridge(current, previous, metrics, currency) {
     // Loan repayments
     const loanRow = document.getElementById('bridgeLoanRow');
     if (loanRepay > 0 && loanRow) {
-        loanRow.style.display = 'flex';
+        loanRow.style.display = '';
         document.getElementById('bridgeLoanRepay').textContent = `- ${currency} ${formatNumber(loanRepay)}`;
+        const loanBar = document.getElementById('bridgeLoanBar');
+        if (loanBar) loanBar.style.width = `${(Math.abs(loanRepay) / maxVal) * 100}%`;
     }
 
     // Owner drawings
     const drawingsRow = document.getElementById('bridgeDrawingsRow');
     if (drawings > 0 && drawingsRow) {
-        drawingsRow.style.display = 'flex';
+        drawingsRow.style.display = '';
         document.getElementById('bridgeDrawings').textContent = `- ${currency} ${formatNumber(drawings)}`;
+        const drawingsBar = document.getElementById('bridgeDrawingsBar');
+        if (drawingsBar) drawingsBar.style.width = `${(Math.abs(drawings) / maxVal) * 100}%`;
     }
 
     // Capex
     const capexRow = document.getElementById('bridgeCapexRow');
     if (capex > 0 && capexRow) {
-        capexRow.style.display = 'flex';
+        capexRow.style.display = '';
         document.getElementById('bridgeCapex').textContent = `- ${currency} ${formatNumber(capex)}`;
+        const capexBar = document.getElementById('bridgeCapexBar');
+        if (capexBar) capexBar.style.width = `${(Math.abs(capex) / maxVal) * 100}%`;
     }
 
     document.getElementById('bridgeEndCash').textContent = `${currency} ${formatNumber(endCash)}`;
@@ -327,15 +372,61 @@ function updateInvestigationSection(industry) {
     if (!section || !list) return;
 
     const factors = {
-        'food': ['Food waste percentage (target: under 5%)', 'Table turnover rate per service', 'Average check size trend vs last month', 'Menu item profitability — which dishes lose money?', 'Portion control adherence in the kitchen'],
-        'product': ['Shrinkage rate (target: under 2%)', 'Sell-through rate by category', 'Foot traffic vs conversion rate', 'Return rate by product line'],
-        'online': ['Monthly churn rate (target: under 5%)', 'Customer acquisition cost (CAC)', 'LTV/CAC ratio (target: 3x or higher)', 'Conversion rate by traffic source'],
-        'services': ['Team utilization rate (target: 65%+)', 'Realization rate — billed vs quoted', 'Client concentration — is one client more than 40% of revenue?', 'Average project margin by client'],
-        'construction': ['WIP as % of revenue (target: under 30%)', 'Retention amounts held by clients', 'Variation/change order capture rate', 'Subcontractor margin vs direct labour'],
-        'manufacturing': ['Yield rate (target: 95%+)', 'Scrap/waste rate (target: under 2%)', 'Machine utilization rate', 'BOM cost accuracy vs actuals'],
-        'wholesale': ['Order fill rate (target: 90%+)', 'Backorder rate', 'Customer credit risk exposure', 'Freight cost as % of revenue'],
-        'healthcare': ['Provider utilization rate (target: 70%+)', 'Insurance claim denial rate', 'Revenue per patient visit', 'Payer mix breakdown (insurance vs cash)'],
-        'other': ['Customer concentration risk', 'Revenue per employee', 'Repeat purchase / retention rate', 'Customer acquisition cost']
+        'food': [
+            { question: 'Food waste percentage (target: under 5%)', why: 'High waste directly erodes your gross margin and signals portion or ordering issues.' },
+            { question: 'Table turnover rate per service', why: 'More covers per table = more revenue from the same fixed costs.' },
+            { question: 'Average check size trend vs last month', why: 'A declining check size may indicate customers trading down or weak upselling.' },
+            { question: 'Menu item profitability — which dishes lose money?', why: 'Unprofitable items drag margins even when sales look healthy.' },
+            { question: 'Portion control adherence in the kitchen', why: 'Inconsistent portions are the hidden cause of food cost overruns.' }
+        ],
+        'product': [
+            { question: 'Shrinkage rate (target: under 2%)', why: 'Shrinkage is lost inventory from theft, damage, or miscounts — it silently kills margins.' },
+            { question: 'Sell-through rate by category', why: 'Low sell-through means cash is trapped in slow-moving stock.' },
+            { question: 'Foot traffic vs conversion rate', why: 'Helps distinguish a traffic problem from a sales team problem.' },
+            { question: 'Return rate by product line', why: 'High returns erode revenue and signal quality or expectation issues.' }
+        ],
+        'online': [
+            { question: 'Monthly churn rate (target: under 5%)', why: 'Churn is the single biggest threat to recurring revenue growth.' },
+            { question: 'Customer acquisition cost (CAC)', why: 'If CAC exceeds lifetime value, growth actually destroys cash.' },
+            { question: 'LTV/CAC ratio (target: 3x or higher)', why: 'The core unit economics metric — below 3x means unsustainable growth.' },
+            { question: 'Conversion rate by traffic source', why: 'Reveals which channels actually drive paying customers vs vanity traffic.' }
+        ],
+        'services': [
+            { question: 'Team utilization rate (target: 65%+)', why: 'Under-utilized staff is the biggest hidden cost in service businesses.' },
+            { question: 'Realization rate — billed vs quoted', why: 'Scope creep and write-offs reduce effective margins even on profitable-looking projects.' },
+            { question: 'Client concentration — is one client more than 40% of revenue?', why: 'Losing a dominant client can cripple the business overnight.' },
+            { question: 'Average project margin by client', why: 'Some clients are profitable, others cost you money. Know which is which.' }
+        ],
+        'construction': [
+            { question: 'WIP as % of revenue (target: under 30%)', why: 'High WIP means cash is locked in unfinished work that cannot be billed yet.' },
+            { question: 'Retention amounts held by clients', why: 'Retentions are real money owed to you that often gets forgotten.' },
+            { question: 'Variation/change order capture rate', why: 'Uncaptured variations mean you are doing extra work for free.' },
+            { question: 'Subcontractor margin vs direct labour', why: 'Determines whether outsourcing is saving or costing you money.' }
+        ],
+        'manufacturing': [
+            { question: 'Yield rate (target: 95%+)', why: 'Low yield means raw materials are wasted before becoming sellable product.' },
+            { question: 'Scrap/waste rate (target: under 2%)', why: 'Scrap directly increases your effective COGS.' },
+            { question: 'Machine utilization rate', why: 'Idle machines mean fixed costs are spread over fewer units.' },
+            { question: 'BOM cost accuracy vs actuals', why: 'If actual costs exceed the bill of materials, your pricing may be wrong.' }
+        ],
+        'wholesale': [
+            { question: 'Order fill rate (target: 90%+)', why: 'Unfilled orders mean lost revenue and damaged customer relationships.' },
+            { question: 'Backorder rate', why: 'High backorders signal inventory planning failures.' },
+            { question: 'Customer credit risk exposure', why: 'Large outstanding balances from risky customers threaten your cash flow.' },
+            { question: 'Freight cost as % of revenue', why: 'Freight is often the hidden margin killer in distribution.' }
+        ],
+        'healthcare': [
+            { question: 'Provider utilization rate (target: 70%+)', why: 'Empty appointment slots are revenue that can never be recovered.' },
+            { question: 'Insurance claim denial rate', why: 'Denials delay or eliminate revenue you already earned.' },
+            { question: 'Revenue per patient visit', why: 'Tracks whether you are capturing full value from each encounter.' },
+            { question: 'Payer mix breakdown (insurance vs cash)', why: 'Insurance reimbursement rates vary widely — your mix affects margins.' }
+        ],
+        'other': [
+            { question: 'Customer concentration risk', why: 'If one customer is too large, losing them could be catastrophic.' },
+            { question: 'Revenue per employee', why: 'A key productivity metric that shows if your team is driving enough value.' },
+            { question: 'Repeat purchase / retention rate', why: 'Retaining customers is far cheaper than acquiring new ones.' },
+            { question: 'Customer acquisition cost', why: 'Knowing what it costs to win a customer helps set marketing budgets.' }
+        ]
     };
 
     const ind = industry?.toLowerCase();
@@ -344,7 +435,15 @@ function updateInvestigationSection(industry) {
     const items = factors[key] || factors['other'];
 
     section.style.display = 'block';
-    list.innerHTML = items.map(f => `<li>${f}</li>`).join('');
+    list.innerHTML = items.map(item => `
+        <li class="nf-item">
+            <div class="nf-icon">\uD83D\uDD0D</div>
+            <div class="nf-body">
+                <div class="nf-question">${item.question}</div>
+                <div class="nf-why">${item.why}</div>
+            </div>
+        </li>
+    `).join('');
 }
 
 // ===== Populate from API =====
@@ -362,7 +461,7 @@ function populateReportFromAPI(reportData) {
     if (current && metrics) {
         updateOwnerHeadline(current, metrics, currency);
         updateFourPillars(current, metrics, currency, industry);
-        updateHealthStrip(metrics);
+        updateStatusBadge(metrics);
         updateMiniPL(current, metrics, currency, industry);
         updateProfitInterpretation(current, metrics, currency, analysis);
         updateOperationalHealth(metrics, currency, analysis, industry, current, reportData.ytd);
@@ -373,7 +472,11 @@ function populateReportFromAPI(reportData) {
         updateBankMeetingSummary(current, metrics, currency, analysis);
         updateWeeklyActions(current, metrics, currency, analysis);
         updateInvestigationSection(industry);
+        updateTechnicalMode(current, metrics, currency, industry);
     }
+
+    // Default to plain mode
+    setViewMode('plain');
 }
 
 // ===== Populate from legacy data =====
@@ -393,7 +496,7 @@ function populateReport(data) {
 
         updateOwnerHeadline(current, metrics, currency);
         updateFourPillars(current, metrics, currency, industry);
-        updateHealthStrip(metrics);
+        updateStatusBadge(metrics);
         updateMiniPL(current, metrics, currency, industry);
         updateProfitInterpretation(current, metrics, currency, null);
         updateOperationalHealth(metrics, currency, null, industry, current, ytd);
@@ -404,7 +507,11 @@ function populateReport(data) {
         updateBankMeetingSummary(current, metrics, currency, null);
         updateWeeklyActions(current, metrics, currency, null);
         updateInvestigationSection(industry);
+        updateTechnicalMode(current, metrics, currency, industry);
     }
+
+    // Default to plain mode
+    setViewMode('plain');
 }
 
 // ===== Sample Data =====
@@ -459,6 +566,13 @@ function setCompanyInfo(company, currency) {
     if (tagEl && company.industry) {
         tagEl.textContent = INDUSTRY_NAMES[company.industry] || '';
     }
+
+    // Generated date and footer date
+    const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const genDateEl = document.getElementById('generatedDate');
+    if (genDateEl) genDateEl.textContent = dateStr;
+    const footerDateEl = document.getElementById('footerDate');
+    if (footerDateEl) footerDateEl.textContent = dateStr;
 }
 
 function calculateMetrics(current, previous, days, ytd = {}) {
@@ -582,14 +696,17 @@ function renderBenchBar(containerId, label, value, benchmark, unit, higherIsBett
     const displayVal = unit === '%' ? `${value.toFixed(1)}%` : `${Math.round(value)} ${unit}`;
 
     el.innerHTML = `
-        <div class="bench-bar-header">
-            <span class="bench-bar-label">${label} — Industry: ${Math.round(benchmark.min)}${unit}–${Math.round(benchmark.max)}${unit}</span>
-            <span class="bench-bar-you ${status}">You: ${displayVal}</span>
+        <div class="bench-item-top">
+            <span class="bench-item-label">${label}</span>
+            <span class="bench-item-vals">
+                <span class="bench-bar-you ${status}">You: ${displayVal}</span>
+                <span>Industry: ${Math.round(benchmark.min)}${unit}–${Math.round(benchmark.max)}${unit}</span>
+            </span>
         </div>
         <div class="bench-bar-track">
             <div class="bench-bar-range" style="left:${rangeLeft}%;width:${rangeWidth}%"></div>
             <div class="bench-bar-ideal" style="left:${idealPos}%"></div>
-            <div class="bench-bar-dot ${status}" style="left:${dotPos}%"></div>
+            <div class="bench-marker ${status}" style="left:${dotPos}%"></div>
         </div>
         <div class="bench-bar-range-labels">
             <span>${Math.round(extMin)}${unit}</span>
@@ -602,62 +719,35 @@ function renderBenchBar(containerId, label, value, benchmark, unit, higherIsBett
 // Global report tier — shared across all sections for consistent tone
 let globalTier = 'safe';
 
-function updateHealthStrip(metrics) {
-    const strip = document.getElementById('healthStrip');
-    const runway = metrics.runwayMonths || 0;
+function updateStatusBadge(metrics) {
+    const badgeEl = document.getElementById('healthStatus');
+    const runway = metrics.runwayMonths || metrics.cashRunway || 0;
     const netMargin = metrics.netMargin || 0;
-    const grossMargin = metrics.grossMargin || 0;
     const profitable = netMargin > 0;
 
     // Determine status
-    let status, reason, tier;
+    let status, tier;
     if (profitable && runway >= 3) {
         tier = 'safe';
         status = 'Safe';
-        reason = 'Profitable with healthy cash runway';
     } else if (profitable && runway >= 1) {
-        tier = 'tight';
+        tier = 'warn';
         status = 'Tight';
-        reason = 'Profitable but cash runway is short';
     } else if (!profitable && runway >= 3) {
-        tier = 'tight';
+        tier = 'warn';
         status = 'Tight';
-        reason = 'Losing money but cash reserves provide buffer';
     } else {
         tier = 'danger';
         status = 'Danger';
-        reason = profitable ? 'Cash is running out fast' : 'Losing money and cash is running low — read the full report';
     }
 
     // Set global tier for tone consistency across all sections
-    globalTier = tier;
+    globalTier = tier === 'warn' ? 'tight' : tier;
 
-    strip.className = `health-strip ${tier}`;
-    document.getElementById('healthStatus').textContent = status;
-    document.getElementById('healthReason').textContent = reason;
-
-    // Icon SVGs
-    const icons = {
-        safe: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
-        tight: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>',
-        danger: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>'
-    };
-    document.getElementById('healthIcon').innerHTML = icons[tier];
-
-    // Runway display
-    const runwayWeeks = Math.round(runway * 4.33);
-    document.getElementById('healthRunway').textContent = runway >= 1 ? `${runwayWeeks} weeks` : `${Math.round(runway * 30)} days`;
-
-    // Margins
-    document.getElementById('healthNetMargin').textContent = `${netMargin.toFixed(1)}%`;
-    document.getElementById('healthGrossMargin').textContent = `${grossMargin.toFixed(1)}%`;
-
-    // Overall health score
-    let health;
-    if (profitable && runway >= 6) health = 'Strong';
-    else if (profitable || runway >= 3) health = 'Okay';
-    else health = 'At Risk';
-    document.getElementById('healthSleep').textContent = health;
+    if (badgeEl) {
+        badgeEl.className = `status-badge ${tier}`;
+        badgeEl.innerHTML = `<span class="status-dot"></span> ${status}`;
+    }
 }
 
 // ===== Section 1: Mini P&L Snapshot =====
@@ -675,13 +765,24 @@ function updateMiniPL(current, metrics, currency, industry) {
     const nm = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(0) : '0';
 
     document.getElementById('plRevenue').textContent = `${currency} ${formatNumber(revenue)}`;
+
+    // COGS row
+    const cogsLabel = COGS_LABELS[industry] || 'Cost of Goods Sold';
+    const cogsLabelEl = document.getElementById('plCogsLabel');
+    if (cogsLabelEl) cogsLabelEl.textContent = cogsLabel;
+    const cogsEl = document.getElementById('plCogs');
+    if (cogsEl) cogsEl.textContent = `${currency} ${formatNumber(cogs)}`;
+    const cogsPctEl = document.getElementById('plCogsPct');
+    if (cogsPctEl) cogsPctEl.textContent = revenue > 0 ? `${((cogs / revenue) * 100).toFixed(0)}%` : '0%';
+
     document.getElementById('plGrossProfit').textContent = `${currency} ${formatNumber(grossProfit)}`;
     document.getElementById('plGrossMargin').textContent = `${gm}%`;
 
-    // Update Gross Profit subtitle with industry-specific COGS label
-    const cogsLabel = COGS_LABELS[industry] || 'Cost of Goods Sold';
-    const gpSubtitle = document.querySelector('.pl-row.pl-gross .pl-subtitle');
-    if (gpSubtitle) gpSubtitle.textContent = `After ${cogsLabel.toLowerCase()}`;
+    // OPEX row
+    const opexEl = document.getElementById('plOpex');
+    if (opexEl) opexEl.textContent = `${currency} ${formatNumber(opex)}`;
+    const opexPctEl = document.getElementById('plOpexPct');
+    if (opexPctEl) opexPctEl.textContent = revenue > 0 ? `${((opex / revenue) * 100).toFixed(0)}%` : '0%';
 
     // EBITDA = EBIT = Operating Profit (no D&A to split)
     document.getElementById('plEBITDA').textContent = `${currency} ${formatNumber(operatingProfit)}`;
@@ -756,12 +857,51 @@ function updateProfitInterpretation(current, metrics, currency, analysis) {
 // ===== Section 3: Operational Health =====
 
 function updateOperationalHealth(metrics, currency, analysis, industry, current, ytd) {
-    document.getElementById('opDIO').textContent = `${Math.round(metrics.dio)} days`;
-    document.getElementById('opDSO').textContent = `${Math.round(metrics.dso)} days`;
-    document.getElementById('opDPO').textContent = `${Math.round(metrics.dpo)} days`;
+    document.getElementById('opDIO').textContent = `${Math.round(metrics.dio)}`;
+    document.getElementById('opDSO').textContent = `${Math.round(metrics.dso)}`;
+    document.getElementById('opDPO').textContent = `${Math.round(metrics.dpo)}`;
     document.getElementById('opDIOExplain').textContent = `Your stock sits for ${Math.round(metrics.dio)} days`;
     document.getElementById('opDSOExplain').textContent = `Your customers pay you in ${Math.round(metrics.dso)} days`;
     document.getElementById('opDPOExplain').textContent = `You pay suppliers in ${Math.round(metrics.dpo)} days`;
+
+    // Industry benchmark for badges
+    const bench = getDefaultBenchmarks(industry);
+
+    // DSO badge and card
+    const dsoStatus = metrics.dso <= bench.dso.max ? 'ok' : metrics.dso <= bench.dso.max * 1.3 ? 'warn' : 'danger';
+    const dsoCard = document.getElementById('wcDSOCard');
+    if (dsoCard) dsoCard.className = `wc-card ${dsoStatus}`;
+    const dsoBadge = document.getElementById('opDSOBadge');
+    if (dsoBadge) {
+        dsoBadge.className = `wc-badge ${dsoStatus}`;
+        dsoBadge.textContent = dsoStatus === 'ok' ? 'Good' : dsoStatus === 'warn' ? 'Slow' : 'Critical';
+    }
+    const dsoNum = document.getElementById('opDSO');
+    if (dsoNum) dsoNum.className = `wc-number ${dsoStatus}`;
+
+    // DIO badge and card
+    const dioStatus = metrics.dio <= bench.dio.max ? 'ok' : metrics.dio <= bench.dio.max * 1.3 ? 'warn' : 'danger';
+    const dioCard = document.getElementById('wcDIOCard');
+    if (dioCard) dioCard.className = `wc-card ${dioStatus}`;
+    const dioBadge = document.getElementById('opDIOBadge');
+    if (dioBadge) {
+        dioBadge.className = `wc-badge ${dioStatus}`;
+        dioBadge.textContent = dioStatus === 'ok' ? 'Good' : dioStatus === 'warn' ? 'High' : 'Critical';
+    }
+    const dioNum = document.getElementById('opDIO');
+    if (dioNum) dioNum.className = `wc-number ${dioStatus}`;
+
+    // DPO badge and card (higher DPO is generally better, so invert logic)
+    const dpoStatus = metrics.dpo >= bench.dpo.min ? 'ok' : metrics.dpo >= bench.dpo.min * 0.7 ? 'warn' : 'danger';
+    const dpoCard = document.getElementById('wcDPOCard');
+    if (dpoCard) dpoCard.className = `wc-card ${dpoStatus}`;
+    const dpoBadge = document.getElementById('opDPOBadge');
+    if (dpoBadge) {
+        dpoBadge.className = `wc-badge ${dpoStatus}`;
+        dpoBadge.textContent = dpoStatus === 'ok' ? 'Good' : dpoStatus === 'warn' ? 'Fast' : 'Too Fast';
+    }
+    const dpoNum = document.getElementById('opDPO');
+    if (dpoNum) dpoNum.className = `wc-number ${dpoStatus}`;
 
     // CCC
     const cccEl = document.getElementById('cccValue');
@@ -769,12 +909,9 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
 
     const cccResult = document.getElementById('cccResult');
     let cccStatus = metrics.ccc > 45 ? 'danger' : metrics.ccc > 20 ? 'warning' : 'good';
-    cccResult.className = `ccc-result ${cccStatus}`;
-
-    // CCC insight is now generated in updateWCRTable() with industry-specific advice
+    cccResult.className = `ccc-row ${cccStatus}`;
 
     // Industry benchmark for DSO
-    const bench = getDefaultBenchmarks(industry);
     renderBenchBar('benchDSO', 'Days Sales Outstanding', metrics.dso, bench.dso, ' days', false);
 
     // WCR table
@@ -1042,14 +1179,14 @@ function updateFCFF(current, currency, fcfValue) {
     const surplus = fcfValue - loanRepayments;
 
     document.getElementById('fcffFCF').textContent = signedAmount(fcfValue, currency);
-    document.getElementById('fcffFCF').className = `fcff-value ${fcfValue >= 0 ? 'positive' : 'negative'}`;
+    document.getElementById('fcffFCF').className = `debt-card-number ${fcfValue >= 0 ? 'positive' : 'negative'}`;
 
     document.getElementById('fcffLoanRepayments').textContent = `- ${currency} ${formatNumber(loanRepayments)}`;
-    document.getElementById('fcffLoanRepayments').className = 'fcff-value negative';
+    document.getElementById('fcffLoanRepayments').className = 'debt-card-number negative';
 
     const surplusEl = document.getElementById('fcffSurplus');
     surplusEl.textContent = signedAmount(surplus, currency);
-    surplusEl.className = `fcff-value ${surplus >= 0 ? 'positive' : 'negative'}`;
+    surplusEl.className = `debt-card-number ${surplus >= 0 ? 'positive' : 'negative'}`;
 
     const insightEl = document.getElementById('fcffInsight');
     if (surplus > 0) {
@@ -1083,40 +1220,40 @@ function updateCashRunway(metrics, currency, current, industry) {
     }[metrics.runwayMethod] || 'Based on monthly expenses';
 
     if (metrics.cashRunway === -1) {
-        bigValueEl.textContent = 'Cash positive';
-        bigValueEl.className = 'runway-big-number good';
+        bigValueEl.textContent = '\u221E';
+        bigValueEl.className = 'runway-big ok';
         methodEl.textContent = 'Your cash is growing, not burning';
-        if (cashoutEl) cashoutEl.innerHTML = '';
+        if (cashoutEl) cashoutEl.textContent = '';
         if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong> and increasing.</p>`;
         if (interpEl) interpEl.innerHTML = `<p>Your business generates more cash than it uses. This is the healthiest position.</p>`;
     } else if (metrics.cashRunway >= 6) {
-        bigValueEl.textContent = `${metrics.cashRunway.toFixed(1)} months`;
-        bigValueEl.className = 'runway-big-number good';
+        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+        bigValueEl.className = 'runway-big ok';
         methodEl.textContent = methodLabel;
-        if (cashoutEl) cashoutEl.innerHTML = '';
+        if (cashoutEl) cashoutEl.textContent = '';
         if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>. Comfortable buffer for ${Math.floor(metrics.cashRunway)}+ months.</p>`;
         if (interpEl) interpEl.innerHTML = `<p>You have time to plan, invest, and weather surprises.</p>`;
     } else if (metrics.cashRunway >= 3) {
-        bigValueEl.textContent = `${metrics.cashRunway.toFixed(1)} months`;
-        bigValueEl.className = 'runway-big-number warning';
+        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+        bigValueEl.className = 'runway-big warn';
         methodEl.textContent = methodLabel;
         const cashOutDate = getCashOutDate(metrics.cashRunway);
-        if (cashoutEl) cashoutEl.innerHTML = `<p class="cashout-date">Cash runs out around <strong>${cashOutDate}</strong></p>`;
+        if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
         if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
         if (interpEl) interpEl.innerHTML = `<p>Not critical, but start improving cash flow. Collect faster, delay non-essential spending.</p>`;
     } else if (metrics.cashRunway >= 1) {
-        bigValueEl.textContent = `${metrics.cashRunway.toFixed(1)} months`;
-        bigValueEl.className = 'runway-big-number danger';
+        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+        bigValueEl.className = 'runway-big danger';
         methodEl.textContent = methodLabel;
         const cashOutDate = getCashOutDate(metrics.cashRunway);
-        if (cashoutEl) cashoutEl.innerHTML = `<p class="cashout-date danger">Cash runs out around <strong>${cashOutDate}</strong></p>`;
+        if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
         if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
         if (interpEl) interpEl.innerHTML = `<p><strong>Action needed.</strong> Collect receivables urgently, cut non-essential spending, consider short-term credit.</p>`;
     } else {
-        bigValueEl.textContent = `${metrics.cashRunway.toFixed(1)} months`;
-        bigValueEl.className = 'runway-big-number danger';
+        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+        bigValueEl.className = 'runway-big danger';
         methodEl.textContent = methodLabel;
-        if (cashoutEl) cashoutEl.innerHTML = `<p class="cashout-date danger"><strong>Cash runway is critical.</strong></p>`;
+        if (cashoutEl) cashoutEl.textContent = 'Cash runway is critical.';
         if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
         if (interpEl) interpEl.innerHTML = `<p><strong>Your cash is very low</strong> — take action this week. Collect receivables, pause non-essential spending, and talk to your bank about options.</p>`;
     }
@@ -1140,7 +1277,7 @@ function updateBankMeetingSummary(current, metrics, currency, analysis) {
     if (!quoteEl) return;
 
     if (analysis && analysis.meetingSummary) {
-        quoteEl.textContent = `"${analysis.meetingSummary}"`;
+        quoteEl.textContent = analysis.meetingSummary;
         return;
     }
 
@@ -1171,7 +1308,7 @@ function updateBankMeetingSummary(current, metrics, currency, analysis) {
     const cr = metrics.currentRatio >= 1.5 ? 'healthy' : 'adequate';
     const crVal = metrics.currentRatio.toFixed(2);
 
-    quoteEl.textContent = `"${sales}${profit}. ${cash} Current ratio is ${cr} at ${crVal}."`;
+    quoteEl.textContent = `${sales}${profit}. ${cash} Current ratio is ${cr} at ${crVal}.`;
 }
 
 // ===== Section 8: Weekly Actions =====
@@ -1265,17 +1402,19 @@ function updateWeeklyActions(current, metrics, currency, analysis) {
 }
 
 function actionCard(num, title, desc, impact) {
-    const urgency = num === 1 ? 'now' : num === 2 ? 'week' : 'month';
-    const urgencyLabel = num === 1 ? 'Do today' : num === 2 ? 'This week' : 'This month';
-    const impactBadge = impact ? `<span class="cash-impact-badge">${impact}</span>` : '';
+    const urgencyLabel = num === 1 ? 'Do Today' : num === 2 ? 'This Week' : 'This Month';
+    const urgencyClass = num === 1 ? 'u-today' : num === 2 ? 'u-week' : 'u-month';
+    const metricTag = impact ? `<span class="action-metric">${impact}</span>` : '';
     return `
-        <div class="action-item priority-${num}">
-            <div class="action-content">
-                <span class="action-urgency urgency-${urgency}">${urgencyLabel}</span>
-                <h3>${title}${num === 1 ? impactBadge : ''}</h3>
-                <p>${desc}</p>
+        <li class="action-item">
+            <div class="action-num">0${num}</div>
+            <div class="action-body">
+                <span class="urgency-tag ${urgencyClass}">${urgencyLabel}</span>
+                <div class="action-title">${title}</div>
+                <p class="action-desc">${desc}</p>
+                ${metricTag}
             </div>
-        </div>
+        </li>
     `;
 }
 
@@ -1584,6 +1723,114 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeEmail
 document.getElementById('emailModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'emailModal') closeEmailModal();
 });
+
+// ===== Technical Mode =====
+
+function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
+    const bench = benchmarks || getDefaultBenchmarks(industry);
+    const revenue = current.revenue || 0;
+    const cogs = current.cogs || 0;
+    const opex = current.opex || 0;
+    const grossProfit = revenue - cogs;
+    const operatingProfit = grossProfit - opex;
+    const netProfit = current.netProfit || 0;
+    const gm = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+    const nm = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+    const quickAssets = (current.cash || 0) + (current.receivables || 0);
+    const totalCurrentLiabilities = (current.payables || 0) + (current.shortTermLoans || 0) + (current.otherLiabilities || 0);
+    const quickRatio = totalCurrentLiabilities > 0 ? quickAssets / totalCurrentLiabilities : 0;
+    const cashVsAP = (current.payables || 0) > 0 ? (current.cash || 0) / (current.payables || 0) : 0;
+    const overheadPct = revenue > 0 ? (opex / revenue) * 100 : 0;
+    const runwayVal = metrics.cashRunway === -1 ? 'Cash positive' : `${(metrics.cashRunway || 0).toFixed(1)} mo`;
+
+    // Ratio grid
+    const ratioGrid = document.getElementById('techRatioGrid');
+    if (ratioGrid) {
+        const ratios = [
+            { label: 'Gross Margin', value: `${gm.toFixed(1)}%`, status: gm >= bench.grossMargin.min ? 'ok' : 'warn' },
+            { label: 'Net Margin', value: `${nm.toFixed(1)}%`, status: nm >= bench.netMargin.min ? 'ok' : nm >= 0 ? 'warn' : 'danger' },
+            { label: 'Current Ratio', value: `${(metrics.currentRatio || 0).toFixed(2)}x`, status: metrics.currentRatio >= 1.5 ? 'ok' : metrics.currentRatio >= 1 ? 'warn' : 'danger' },
+            { label: 'Quick Ratio', value: `${quickRatio.toFixed(2)}x`, status: quickRatio >= 1 ? 'ok' : quickRatio >= 0.5 ? 'warn' : 'danger' },
+            { label: 'CCC', value: `${Math.round(metrics.ccc || 0)} days`, status: (metrics.ccc || 0) <= 30 ? 'ok' : (metrics.ccc || 0) <= 60 ? 'warn' : 'danger' },
+            { label: 'Cash Runway', value: runwayVal, status: metrics.cashRunway === -1 || metrics.cashRunway >= 6 ? 'ok' : metrics.cashRunway >= 3 ? 'warn' : 'danger' },
+            { label: 'Cash vs AP', value: `${cashVsAP.toFixed(2)}x`, status: cashVsAP >= 1.5 ? 'ok' : cashVsAP >= 1 ? 'warn' : 'danger' },
+            { label: 'Overhead %', value: `${overheadPct.toFixed(1)}%`, status: overheadPct <= 40 ? 'ok' : overheadPct <= 60 ? 'warn' : 'danger' }
+        ];
+        ratioGrid.innerHTML = ratios.map(r => `
+            <div class="ratio-card ${r.status}">
+                <div class="ratio-label">${r.label}</div>
+                <div class="ratio-value">${r.value}</div>
+            </div>
+        `).join('');
+    }
+
+    // Income statement table
+    const incomeBody = document.getElementById('techIncomeBody');
+    const incomeFoot = document.getElementById('techIncomeFoot');
+    if (incomeBody) {
+        const gmBench = bench.grossMargin.ideal || bench.grossMargin.min;
+        const nmBench = bench.netMargin.ideal || bench.netMargin.min;
+        const cogsPct = revenue > 0 ? (cogs / revenue * 100) : 0;
+        const opexPct = revenue > 0 ? (opex / revenue * 100) : 0;
+        const ebitdaPct = revenue > 0 ? (operatingProfit / revenue * 100) : 0;
+        incomeBody.innerHTML = `
+            <tr><td>Revenue</td><td>${currency} ${formatNumber(revenue)}</td><td>100%</td><td>-</td><td>-</td></tr>
+            <tr><td>${COGS_LABELS[industry] || 'COGS'}</td><td>(${currency} ${formatNumber(cogs)})</td><td>${cogsPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
+            <tr class="subtotal"><td>Gross Profit</td><td>${currency} ${formatNumber(grossProfit)}</td><td>${gm.toFixed(1)}%</td><td>${gmBench}%</td><td>${(gm - gmBench).toFixed(1)}%</td></tr>
+            <tr><td>Operating Expenses</td><td>(${currency} ${formatNumber(opex)})</td><td>${opexPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
+            <tr class="subtotal"><td>EBITDA</td><td>${currency} ${formatNumber(operatingProfit)}</td><td>${ebitdaPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
+        `;
+    }
+    if (incomeFoot) {
+        const nmBench = bench.netMargin.ideal || bench.netMargin.min;
+        incomeFoot.innerHTML = `
+            <tr><td>Net Income</td><td>${currency} ${formatNumber(netProfit)}</td><td>${nm.toFixed(1)}%</td><td>${nmBench}%</td><td>${(nm - nmBench).toFixed(1)}%</td></tr>
+        `;
+    }
+
+    // Working capital table
+    const wcBody = document.getElementById('techWCBody');
+    if (wcBody) {
+        const dsoTarget = bench.dso.industry;
+        const dioTarget = bench.dio.industry;
+        const dpoTarget = bench.dpo.industry;
+        const cccTarget = dsoTarget + dioTarget - dpoTarget;
+        const dso = Math.round(metrics.dso || 0);
+        const dio = Math.round(metrics.dio || 0);
+        const dpo = Math.round(metrics.dpo || 0);
+        const ccc = Math.round(metrics.ccc || 0);
+        const statusIcon = (actual, target, lowerBetter) => {
+            if (lowerBetter) return actual <= target ? 'ok' : actual <= target * 1.3 ? 'warn' : 'danger';
+            return actual >= target ? 'ok' : actual >= target * 0.7 ? 'warn' : 'danger';
+        };
+        wcBody.innerHTML = `
+            <tr><td>DSO</td><td>${dso} days</td><td>${dsoTarget} days</td><td class="${statusIcon(dso, bench.dso.max, true)}">${dso <= bench.dso.max ? 'On target' : 'Over'}</td></tr>
+            <tr><td>DIO</td><td>${dio} days</td><td>${dioTarget} days</td><td class="${statusIcon(dio, bench.dio.max, true)}">${dio <= bench.dio.max ? 'On target' : 'Over'}</td></tr>
+            <tr><td>DPO</td><td>${dpo} days</td><td>${dpoTarget} days</td><td class="${statusIcon(dpo, bench.dpo.min, false)}">${dpo >= bench.dpo.min ? 'On target' : 'Under'}</td></tr>
+            <tr class="subtotal"><td>CCC</td><td>${ccc} days</td><td>${cccTarget} days</td><td class="${ccc <= cccTarget ? 'ok' : 'warn'}">${ccc <= cccTarget ? 'On target' : 'Over'}</td></tr>
+        `;
+    }
+
+    // FCF table
+    const fcfBody = document.getElementById('techFCFBody');
+    if (fcfBody) {
+        const loanRepayments = current.loanRepayments || 0;
+        const capex = current.assetPurchases || 0;
+        // Rough FCF calc for display
+        const wcChanges = 0; // simplified — detailed WC changes would need previous data
+        const fcf = netProfit - capex;
+        const surplus = fcf - loanRepayments;
+        fcfBody.innerHTML = `
+            <tr><td>Net Profit</td><td>${currency} ${formatNumber(netProfit)}</td></tr>
+            <tr><td>Capital Expenditure</td><td>(${currency} ${formatNumber(capex)})</td></tr>
+            <tr class="subtotal"><td>Free Cash Flow</td><td>${currency} ${formatNumber(fcf)}</td></tr>
+            ${loanRepayments > 0 ? `
+            <tr><td>Loan Repayments</td><td>(${currency} ${formatNumber(loanRepayments)})</td></tr>
+            <tr class="subtotal"><td>Surplus / Shortfall</td><td>${currency} ${formatNumber(surplus)}</td></tr>
+            ` : ''}
+        `;
+    }
+}
 
 // ===== Blur Strategy (Disabled) =====
 
