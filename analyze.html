@@ -207,7 +207,7 @@
                     <!-- COGS Row -->
                     <div class="dual-column-row">
                         <label>
-                            Cost of Goods Sold
+                            <span id="cogsLabel">Cost of Goods Sold</span>
                             <span class="tooltip" data-tip="What you paid for products sold - materials, manufacturing, direct labor">?</span>
                         </label>
                         <div class="input-with-currency">
@@ -217,6 +217,23 @@
                         <div class="input-with-currency">
                             <span class="currency-prefix">AED</span>
                             <input type="number" id="ytdCogs" name="ytdCogs" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- Labour Cost Row (optional) -->
+                    <div class="dual-column-row">
+                        <label>
+                            Labour / Staff Cost
+                            <span class="tooltip" data-tip="Wages, salaries, and staff costs. Separate from other OPEX. Used for Prime Cost calculation in restaurants.">?</span>
+                            <span style="font-size: 11px; color: #94a3b8; font-weight: 400;">(optional)</span>
+                        </label>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="labourCost" name="labourCost" placeholder="0" min="0" step="any">
+                        </div>
+                        <div class="input-with-currency">
+                            <span class="currency-prefix">AED</span>
+                            <input type="number" id="ytdLabourCost" name="ytdLabourCost" placeholder="0" min="0" step="any">
                         </div>
                     </div>
 

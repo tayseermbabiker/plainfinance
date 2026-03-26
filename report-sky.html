@@ -72,6 +72,7 @@
                 <div class="report-meta">
                     <h1 id="companyName">Atlas Retail Inc</h1>
                     <p class="report-period">Monthly Briefing: <span id="reportPeriod">November 2024</span></p>
+                    <span class="industry-tag" id="industryTag"></span>
                 </div>
                 <div class="report-badge">
                     <span>PlainFinancials Report</span>
@@ -89,12 +90,38 @@
                 <p id="ownerHeadlineText">Your business made sales — but ended the month losing money, and you have almost no cash left.</p>
             </div>
 
-            <!-- Top 5 Summary -->
-            <div class="top5-summary plain-only" id="top5Summary">
-                <h3>Your month at a glance</h3>
-                <ul id="top5List">
-                    <!-- Filled by JS -->
-                </ul>
+            <!-- 4 Pillars Grid -->
+            <div class="four-pillars plain-only" id="fourPillars">
+                <div class="pillars-grid" id="pillarsGrid">
+                    <div class="pillar-card" id="pillar1">
+                        <span class="pillar-label" id="pillar1Label">Revenue</span>
+                        <span class="pillar-value" id="pillar1Value">--</span>
+                        <span class="pillar-sub" id="pillar1Sub"></span>
+                        <span class="pillar-badge" id="pillar1Badge"></span>
+                        <span class="pillar-insight" id="pillar1Insight"></span>
+                    </div>
+                    <div class="pillar-card" id="pillar2">
+                        <span class="pillar-label" id="pillar2Label">--</span>
+                        <span class="pillar-value" id="pillar2Value">--</span>
+                        <span class="pillar-sub" id="pillar2Sub"></span>
+                        <span class="pillar-badge" id="pillar2Badge"></span>
+                        <span class="pillar-insight" id="pillar2Insight"></span>
+                    </div>
+                    <div class="pillar-card" id="pillar3">
+                        <span class="pillar-label" id="pillar3Label">--</span>
+                        <span class="pillar-value" id="pillar3Value">--</span>
+                        <span class="pillar-sub" id="pillar3Sub"></span>
+                        <span class="pillar-badge" id="pillar3Badge"></span>
+                        <span class="pillar-insight" id="pillar3Insight"></span>
+                    </div>
+                    <div class="pillar-card" id="pillar4">
+                        <span class="pillar-label" id="pillar4Label">--</span>
+                        <span class="pillar-value" id="pillar4Value">--</span>
+                        <span class="pillar-sub" id="pillar4Sub"></span>
+                        <span class="pillar-badge" id="pillar4Badge"></span>
+                        <span class="pillar-insight" id="pillar4Insight"></span>
+                    </div>
+                </div>
             </div>
 
             <!-- Health Strip -->
@@ -305,6 +332,51 @@
                 </div>
             </section>
 
+            <!-- Cash Bridge -->
+            <section class="report-section cash-bridge-section plain-only" id="cashBridgeSection" style="display: none;">
+                <h2>Where did your cash go?</h2>
+                <p class="section-subtitle">How cash moved from start to end of the month</p>
+                <div class="cash-bridge" id="cashBridge">
+                    <div class="bridge-row bridge-start">
+                        <span class="bridge-label">Starting Cash</span>
+                        <span class="bridge-value" id="bridgeStartCash">--</span>
+                    </div>
+                    <div class="bridge-row bridge-plus">
+                        <span class="bridge-label">+ Net Profit earned</span>
+                        <span class="bridge-value" id="bridgeProfit">--</span>
+                    </div>
+                    <div class="bridge-row bridge-minus" id="bridgeARRow" style="display:none;">
+                        <span class="bridge-label">Receivables change</span>
+                        <span class="bridge-value" id="bridgeAR">--</span>
+                    </div>
+                    <div class="bridge-row bridge-minus" id="bridgeInvRow" style="display:none;">
+                        <span class="bridge-label">Inventory change</span>
+                        <span class="bridge-value" id="bridgeInventory">--</span>
+                    </div>
+                    <div class="bridge-row bridge-plus" id="bridgeAPRow" style="display:none;">
+                        <span class="bridge-label">Payables change</span>
+                        <span class="bridge-value" id="bridgeAP">--</span>
+                    </div>
+                    <div class="bridge-row bridge-minus" id="bridgeLoanRow" style="display:none;">
+                        <span class="bridge-label">- Loan Repayments</span>
+                        <span class="bridge-value" id="bridgeLoanRepay">--</span>
+                    </div>
+                    <div class="bridge-row bridge-minus" id="bridgeDrawingsRow" style="display:none;">
+                        <span class="bridge-label">- Owner Drawings</span>
+                        <span class="bridge-value" id="bridgeDrawings">--</span>
+                    </div>
+                    <div class="bridge-row bridge-minus" id="bridgeCapexRow" style="display:none;">
+                        <span class="bridge-label">- Asset Purchases</span>
+                        <span class="bridge-value" id="bridgeCapex">--</span>
+                    </div>
+                    <div class="bridge-row bridge-end">
+                        <span class="bridge-label">= Ending Cash</span>
+                        <span class="bridge-value" id="bridgeEndCash">--</span>
+                    </div>
+                </div>
+                <p class="bridge-gap-note" id="bridgeGapNote"></p>
+            </section>
+
             <!-- Section 5: FCFF / Cash After Debt -->
             <section class="report-section fcff-section" id="fcffSection" style="display: none;">
                 <h2 class="plain-only">Can you cover your loan payments?</h2>
@@ -392,6 +464,13 @@
                     <span class="cta-text">Want help implementing these actions?</span>
                     <a href="https://calendly.com/plainfinancials/30min" target="_blank" class="cta-button">Book a Free 30-Min Review</a>
                 </div>
+            </section>
+
+            <!-- Investigation Points -->
+            <section class="report-section investigation-section plain-only" id="investigationSection" style="display: none;">
+                <h2>Non-financial factors to investigate</h2>
+                <p class="section-subtitle">Numbers we cannot calculate from your financials, but are worth tracking</p>
+                <ul id="investigationList"></ul>
             </section>
 
             <!-- Report Footer -->

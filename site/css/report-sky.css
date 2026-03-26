@@ -1841,3 +1841,225 @@ body:not(.technical-mode) .technical-only { display: none !important; }
     color: var(--soft-graphite);
     flex: 1;
 }
+
+/* ===== Industry Tag ===== */
+
+.industry-tag {
+    display: inline-block;
+    background: rgba(59, 163, 246, 0.08);
+    color: var(--sky-blue);
+    padding: 3px 12px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    margin-top: 4px;
+}
+
+.industry-tag:empty { display: none; }
+
+/* ===== 4 Pillars Grid ===== */
+
+.four-pillars {
+    margin-bottom: var(--space-l);
+}
+
+.pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-s);
+}
+
+.pillar-card {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 6px;
+    padding: var(--space-m) var(--space-m) var(--space-s);
+    position: relative;
+    overflow: hidden;
+}
+
+.pillar-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--muted-gray);
+}
+
+.pillar-card.pillar-good::before { background: var(--teal-breeze); }
+.pillar-card.pillar-warning::before { background: var(--warm-amber); }
+.pillar-card.pillar-danger::before { background: var(--calm-coral); }
+
+.pillar-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-gray);
+    font-weight: 600;
+    margin-top: 4px;
+    margin-bottom: 6px;
+}
+
+.pillar-value {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--slate-ink);
+    margin-bottom: 4px;
+}
+
+.pillar-sub {
+    display: block;
+    font-size: 11px;
+    color: var(--muted-gray);
+    margin-bottom: 8px;
+}
+
+.pillar-badge {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+}
+
+.pillar-badge.badge-good { background: var(--teal-breeze); color: white; }
+.pillar-badge.badge-warning { background: var(--warm-amber); color: white; }
+.pillar-badge.badge-danger { background: var(--calm-coral); color: white; }
+.pillar-badge.badge-neutral { background: var(--muted-gray); color: white; }
+
+.pillar-insight {
+    display: block;
+    font-size: 11px;
+    color: var(--soft-graphite);
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .pillars-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .pillars-grid {
+        grid-template-columns: 1fr;
+    }
+    .pillar-value { font-size: 28px; }
+}
+
+/* ===== Cash Bridge ===== */
+
+.cash-bridge {
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.bridge-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px var(--space-m);
+    border-bottom: 1px solid var(--cloud-gray);
+    font-size: 14px;
+}
+
+.bridge-row:last-child { border-bottom: none; }
+
+.bridge-label {
+    color: var(--soft-graphite);
+}
+
+.bridge-value {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--slate-ink);
+}
+
+.bridge-row.bridge-start,
+.bridge-row.bridge-end {
+    background: var(--cloud-gray);
+    font-weight: 700;
+}
+
+.bridge-row.bridge-start .bridge-label,
+.bridge-row.bridge-end .bridge-label {
+    color: var(--slate-ink);
+    font-weight: 700;
+}
+
+.bridge-row.bridge-plus .bridge-value { color: var(--teal-breeze); }
+.bridge-row.bridge-minus .bridge-value { color: var(--calm-coral); }
+
+.bridge-gap-note {
+    font-size: 12px;
+    color: var(--muted-gray);
+    margin-top: var(--space-s);
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.bridge-gap-note:empty { display: none; }
+
+/* ===== Investigation Points ===== */
+
+.investigation-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.investigation-section li {
+    padding: var(--space-s) var(--space-m);
+    background: rgba(244, 199, 108, 0.08);
+    border-left: 3px solid var(--warm-amber);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: var(--soft-graphite);
+    line-height: 1.5;
+}
+
+/* ===== PDF: New sections ===== */
+
+.pdf-export-mode .four-pillars {
+    margin-bottom: var(--space-s);
+}
+
+.pdf-export-mode .pillars-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.pdf-export-mode .pillar-card {
+    border-radius: 4px;
+    padding: var(--space-s);
+}
+
+.pdf-export-mode .pillar-value {
+    font-size: 24px;
+}
+
+.pdf-export-mode .cash-bridge {
+    border-radius: 4px;
+}
+
+.pdf-export-mode .cash-bridge-section {
+    page-break-inside: avoid;
+}
+
+.pdf-export-mode .investigation-section {
+    page-break-inside: avoid;
+}

@@ -3,6 +3,19 @@
 
 const fetch = require('node-fetch');
 
+// Industry-specific COGS labels
+const COGS_LABELS = {
+    'food': 'Food & Beverage Cost', 'restaurant': 'Food & Beverage Cost',
+    'product': 'Cost of Goods', 'retail': 'Cost of Goods',
+    'online': 'Cost of Service', 'ecommerce': 'Product & Shipping Cost',
+    'services': 'Direct Delivery Cost', 'service': 'Direct Delivery Cost',
+    'construction': 'Project Costs',
+    'manufacturing': 'Material & Production Cost',
+    'wholesale': 'Cost of Goods Purchased',
+    'healthcare': 'Clinical / Treatment Cost',
+    'other': 'Cost of Goods Sold'
+};
+
 exports.handler = async (event, context) => {
     // CORS headers for all responses
     const headers = {
@@ -48,8 +61,9 @@ exports.handler = async (event, context) => {
         // Generate plain English analysis using OpenAI
         const analysis = await generateAnalysis(data, metrics, historicalContext);
 
-        // Get industry benchmarks
+        // Get industry benchmarks + add COGS label
         const benchmarks = getIndustryBenchmarks(data.company.industry);
+        benchmarks.cogsLabel = COGS_LABELS[data.company.industry] || 'Cost of Goods Sold';
 
         // Calculate YTD metrics if YTD data provided
         let ytdMetrics = null;
@@ -376,6 +390,17 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
     const hasLoan = shortTermLoans > 0;
     const netCash = cash - shortTermLoans;
 
+    // New industry-adaptive metrics
+    const cogsPercent = revenue > 0 ? (cogs / revenue) * 100 : 0;
+    const overheadRatio = revenue > 0 ? (opex / revenue) * 100 : 0;
+    const cashVsAP = payables > 0 ? cash / payables : (cash > 0 ? 999 : 0);
+    const daysRevenueInBank = revenue > 0 ? cash / (revenue / 30) : 0;
+    const ownerDrawingsAmt = current.ownerDrawings || 0;
+    const ownerDrawingsPercent = (ownerDrawingsAmt > 0 && netProfit > 0) ? (ownerDrawingsAmt / netProfit) * 100 : 0;
+    const labourCost = current.labourCost || 0;
+    const labourCostPercent = revenue > 0 && labourCost > 0 ? (labourCost / revenue) * 100 : 0;
+    const primeCostPercent = revenue > 0 ? ((cogs + labourCost) / revenue) * 100 : 0;
+
     // Changes vs previous
     const revenueChange = previous.revenue ? ((revenue - previous.revenue) / previous.revenue) * 100 : null;
     const profitChange = previous.netProfit !== undefined && previous.netProfit !== 0
@@ -415,7 +440,15 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
         loanBalance: Math.round(shortTermLoans),
         loanToCash: Math.round(loanToCash * 10) / 10,
         loanPressure: loanPressure,
-        netCash: Math.round(netCash)
+        netCash: Math.round(netCash),
+        // Industry-adaptive metrics
+        cogsPercent: Math.round(cogsPercent * 10) / 10,
+        overheadRatio: Math.round(overheadRatio * 10) / 10,
+        cashVsAP: Math.round(cashVsAP * 100) / 100,
+        daysRevenueInBank: Math.round(daysRevenueInBank * 10) / 10,
+        ownerDrawingsPercent: Math.round(ownerDrawingsPercent),
+        labourCostPercent: Math.round(labourCostPercent * 10) / 10,
+        primeCostPercent: Math.round(primeCostPercent * 10) / 10
     };
 }
 
@@ -581,7 +614,34 @@ function buildPrompt(data, metrics, currency, industryType, language = 'en', his
     };
     const industryName = industryNames[industryType] || industryType;
 
+    // Industry-specific vocabulary for the prompt
+    const industryGuidance = {
+        'food': `INDUSTRY CONTEXT: Restaurant / Food & Hospitality. Use restaurant language: food cost, covers, prime cost, portion control, spoilage, menu engineering. Key metric: Food Cost % (target 28-32%). If labour cost provided, Prime Cost = Food + Labour (target <65%). Label COGS as "Food & Beverage Cost".`,
+        'product': `INDUSTRY CONTEXT: Product / Retail. Use retail language: stock turns, markdowns, shrinkage, sell-through. Focus on inventory efficiency and gross margin. Label COGS as "Cost of Goods".`,
+        'online': `INDUSTRY CONTEXT: SaaS / Digital. Use tech language: burn rate, runway, unit economics. Focus on cash runway and cost control. Label COGS as "Cost of Service".`,
+        'services': `INDUSTRY CONTEXT: Services / Consulting. Use consulting language: project margin, scope creep, team productivity. Focus on overhead ratio and margin. Label COGS as "Direct Delivery Cost".`,
+        'construction': `INDUSTRY CONTEXT: Construction / Real Estate. Use construction language: project margin, WIP, progress billing, retentions, milestones. Focus on DSO and cash. Label COGS as "Project Costs".`,
+        'manufacturing': `INDUSTRY CONTEXT: Manufacturing. Use manufacturing language: material cost, yield, batch sizing, production efficiency. Focus on DIO and material cost %. Label COGS as "Material & Production Cost".`,
+        'wholesale': `INDUSTRY CONTEXT: Wholesale / Distribution. Use distribution language: order fill, credit terms, volume pricing. Focus on DSO/DPO spread and thin margins. Label COGS as "Cost of Goods Purchased".`,
+        'healthcare': `INDUSTRY CONTEXT: Healthcare / Wellness. Use healthcare language: patient volume, payer mix, claim processing. Focus on AR days and margin. Label COGS as "Clinical / Treatment Cost".`,
+        'other': `INDUSTRY CONTEXT: General Business. Use standard business language.`
+    };
+
+    const investigationFactors = {
+        'food': 'INVESTIGATION POINTS (mention 1-2 as "things to check" in NARRATIVE): food waste %, table turnover, average check size, menu item profitability, portion control.',
+        'product': 'INVESTIGATION POINTS: shrinkage rate, sell-through rate, foot traffic trends, return rate by product.',
+        'online': 'INVESTIGATION POINTS: churn rate, customer acquisition cost, conversion rate, MRR growth.',
+        'services': 'INVESTIGATION POINTS: team utilization rate, realization rate, client concentration risk.',
+        'construction': 'INVESTIGATION POINTS: WIP as % of revenue, retention amounts held, variation capture rate.',
+        'manufacturing': 'INVESTIGATION POINTS: yield/scrap rate, machine utilization, BOM cost accuracy.',
+        'wholesale': 'INVESTIGATION POINTS: order fill rate, backorder rate, customer credit risk.',
+        'healthcare': 'INVESTIGATION POINTS: provider utilization, claim denial rate, revenue per visit, payer mix.',
+        'other': 'INVESTIGATION POINTS: customer concentration, revenue per employee, repeat purchase rate.'
+    };
+
     let prompt = `Analyze this business's financial data and provide a plain English report.
+
+${industryGuidance[industryType] || industryGuidance['other']}
 
 BUSINESS INFO:
 - Company: ${data.company.name}
@@ -742,6 +802,16 @@ ACTION_3_DESC: [description here]
 MEETING_SUMMARY: [your text here]
 
 BENCHMARK_NOTE: [your text here]
+
+ADDITIONAL METRICS:
+- ${COGS_LABELS[industryType] || 'COGS'} % of Revenue: ${metrics.cogsPercent}%
+- Overhead Ratio (OPEX / Revenue): ${metrics.overheadRatio}%
+- Cash vs Accounts Payable: ${metrics.cashVsAP}x ${metrics.cashVsAP < 1 ? '— you owe suppliers more than you have in cash' : ''}
+- Days of Revenue in Bank: ${metrics.daysRevenueInBank} days
+${current.labourCost > 0 ? `- Labour Cost: ${currency} ${(current.labourCost).toLocaleString()} (${metrics.labourCostPercent}% of revenue)\n- Prime Cost (${COGS_LABELS[industryType] || 'COGS'} + Labour): ${metrics.primeCostPercent}%` : ''}
+${current.ownerDrawings > 0 ? `- Owner Drawings: ${currency} ${(current.ownerDrawings).toLocaleString()} (${metrics.ownerDrawingsPercent}% of net profit)` : ''}
+
+${investigationFactors[industryType] || investigationFactors['other']}
 
 TONE CONSISTENCY: ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'The overall status is DANGER. Do NOT use reassuring language like "plenty of breathing room" or "comfortable" anywhere in the report. Every section should reflect urgency.' : metrics.netMargin <= 0 || (metrics.cashRunway >= 0 && metrics.cashRunway < 6) ? 'The overall status is CAUTION. Be honest about risks without being alarmist.' : 'The overall status is HEALTHY. Be encouraging but still flag areas for improvement.'}
 

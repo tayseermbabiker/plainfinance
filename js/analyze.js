@@ -841,7 +841,8 @@ function collectFormData() {
             loanRepayments: parseFloat(document.getElementById('loanRepayments')?.value) || 0,
             ownerDrawings: parseFloat(document.getElementById('ownerDrawings')?.value) || 0,
             assetPurchases: parseFloat(document.getElementById('assetPurchases')?.value) || 0,
-            plannedSupplierPayments: parseFloat(document.getElementById('plannedSupplierPayments')?.value) || 0
+            plannedSupplierPayments: parseFloat(document.getElementById('plannedSupplierPayments')?.value) || 0,
+            labourCost: parseFloat(document.getElementById('labourCost')?.value) || 0
         };
 
         // YTD data (Year to Date)
@@ -1137,7 +1138,24 @@ function skipActionsReview() {
 
 // ===== Initialize =====
 
+// COGS label mapping for industry-specific form labels
+const COGS_FORM_LABELS = {
+    'food': 'Food & Beverage Cost', 'product': 'Cost of Goods',
+    'online': 'Cost of Service', 'services': 'Direct Delivery Cost',
+    'construction': 'Project Costs', 'manufacturing': 'Material & Production Cost',
+    'healthcare': 'Clinical / Treatment Cost', 'other': 'Cost of Goods Sold'
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Dynamic COGS label based on industry
+    const industrySelect = document.getElementById('industry');
+    const cogsLabel = document.getElementById('cogsLabel');
+    if (industrySelect && cogsLabel) {
+        industrySelect.addEventListener('change', () => {
+            cogsLabel.textContent = COGS_FORM_LABELS[industrySelect.value] || 'Cost of Goods Sold';
+        });
+    }
+
     // Check if user is logged in - signup required to analyze
     const isLoggedIn = await checkUserLoggedIn();
 
