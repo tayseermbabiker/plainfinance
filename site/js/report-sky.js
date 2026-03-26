@@ -1013,7 +1013,6 @@ function updateFCF(current, previous, metrics, currency) {
 
     // Flag owner drawings if they're a significant cash drain
     const ownerDrawings = current.ownerDrawings || 0;
-    const netProfit = current.netProfit || 0;
     if (ownerDrawings > 0 && netProfit > 0 && ownerDrawings > netProfit * 0.4) {
         const drawingsPct = Math.round((ownerDrawings / netProfit) * 100);
         fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business this month — that is ${drawingsPct}% of your profit. ${ownerDrawings > fcf ? 'This exceeds your free cash flow, which is why your cash balance dropped despite being profitable.' : 'Keep an eye on this relative to your cash position.'}</p>`;
