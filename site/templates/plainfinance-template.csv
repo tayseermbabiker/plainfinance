@@ -1,6 +1,7 @@
 Field,This Month,Year to Date,Notes
 Revenue / Sales,500000,2500000,Total sales for the period
 Cost of Goods Sold (COGS),325000,1600000,Direct costs of products/services sold
+Labour / Staff Cost,0,0,Wages and salaries (optional - separate from OPEX for restaurants)
 Operating Expenses (OPEX),120000,650000,Salaries + rent + utilities + marketing etc
 Net Profit,55000,250000,Bottom line after all expenses
 Cash in Bank,45000,,Current bank balance (end of month)

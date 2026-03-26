@@ -376,7 +376,25 @@ function parseCSVTemplate(file) {
                     'asset purchases': 'assetPurchases',
                     'equipment purchases': 'assetPurchases',
                     'planned supplier payments': 'plannedSupplierPayments',
-                    'upcoming supplier payments': 'plannedSupplierPayments'
+                    'upcoming supplier payments': 'plannedSupplierPayments',
+                    // Labour cost (new)
+                    'labour cost': 'labourCost',
+                    'labor cost': 'labourCost',
+                    'labour / staff cost': 'labourCost',
+                    'staff cost': 'labourCost',
+                    'wages': 'labourCost',
+                    'wages and salaries': 'labourCost',
+                    // Industry-specific COGS aliases
+                    'food cost': 'cogs',
+                    'food & beverage cost': 'cogs',
+                    'food and beverage cost': 'cogs',
+                    'material cost': 'cogs',
+                    'material & production cost': 'cogs',
+                    'project costs': 'cogs',
+                    'cost of service': 'cogs',
+                    'direct delivery cost': 'cogs',
+                    'clinical cost': 'cogs',
+                    'clinical / treatment cost': 'cogs'
                 };
 
                 // YTD field mapping
@@ -391,7 +409,13 @@ function parseCSVTemplate(file) {
                     'operating expenses (opex)': 'ytdOpex',
                     'opex': 'ytdOpex',
                     'net profit': 'ytdNetProfit',
-                    'net income': 'ytdNetProfit'
+                    'net income': 'ytdNetProfit',
+                    'labour cost': 'ytdLabourCost',
+                    'labor cost': 'ytdLabourCost',
+                    'labour / staff cost': 'ytdLabourCost',
+                    'staff cost': 'ytdLabourCost',
+                    'wages': 'ytdLabourCost',
+                    'wages and salaries': 'ytdLabourCost'
                 };
 
                 const data = { current: {}, ytd: {} };
