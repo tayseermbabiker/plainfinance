@@ -38,9 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => applyBlurStrategy(), 100);
 
     // Auto-send report email (fire-and-forget, only for real data)
-    if (shouldAutoSend) {
-        setTimeout(() => autoSendReportEmail(), 500);
-    }
+    // TEMPORARILY DISABLED for testing — re-enable when going live
+    // if (shouldAutoSend) {
+    //     setTimeout(() => autoSendReportEmail(), 500);
+    // }
 });
 
 // ===== Sample Banner =====
