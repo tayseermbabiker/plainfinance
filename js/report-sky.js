@@ -162,46 +162,88 @@ function updateFourPillars(current, metrics, currency, industry) {
     const cashVsAP = payables > 0 ? cash / payables : (cash > 0 ? 999 : 0);
     const daysRevInBank = revenue > 0 ? cash / (revenue / 30) : 0;
 
-    // Define 4 pillars per industry
+    // Helpers for pillar construction
+    const cashBadge = cashVsAP < 1 ? 'Critical' : daysRevInBank < 15 ? 'Low' : 'Adequate';
+    const cashStatus = cashVsAP >= 1.5 ? 'good' : cashVsAP >= 1 ? 'warning' : 'danger';
+    const cashInsight = cashVsAP < 1 ? 'You owe more than you have' : '';
+
+    function pillarRevenue(sub) {
+        return { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: sub || 'This month', status: 'neutral', badge: revenue > 0 ? 'Active' : 'No Sales', insight: '' };
+    }
+    function pillarCash() {
+        return { label: 'Cash in Bank', value: `${currency} ${formatNumber(cash)}`, sub: `You owe suppliers ${currency} ${formatNumber(payables)}`, status: cashStatus, badge: cashBadge, insight: cashInsight };
+    }
+    function pillarBottomLine(goodThresh, warnThresh) {
+        const g = goodThresh || 5, w = warnThresh || 0;
+        return { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))} ${netProfit >= 0 ? 'profit' : 'loss'}`, status: metrics.netMargin >= g ? 'good' : metrics.netMargin >= w ? 'warning' : 'danger', badge: metrics.netMargin >= g ? 'Healthy' : metrics.netMargin >= 0 ? 'Thin' : 'Loss', insight: '' };
+    }
+    function pillarKeyCost(label, healthyMax, warnMax) {
+        const s = cogsPercent <= healthyMax ? 'good' : cogsPercent <= warnMax ? 'warning' : 'danger';
+        const b = cogsPercent <= healthyMax ? 'On Target' : cogsPercent <= warnMax ? 'High' : 'Too High';
+        const ins = cogsPercent > healthyMax ? `Every 1% reduction adds ${currency} ${formatNumber(revenue * 0.01)}/month` : '';
+        return { label, value: `${cogsPercent.toFixed(0)}%`, sub: `Target: under ${healthyMax}%`, status: s, badge: b, insight: ins };
+    }
+
+    // Spec v2: P1=Revenue, P2=Key Cost Metric, P3=Cash Position, P4=Bottom Line
     const configs = {
         'food': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month\'s sales', status: 'neutral', badge: revenue > 0 ? 'Active' : 'No Sales', insight: '' },
-            { label: 'Food Cost %', value: `${cogsPercent.toFixed(0)}%`, sub: 'Target: 28-32%', status: cogsPercent <= 32 ? 'good' : cogsPercent <= 36 ? 'warning' : 'danger', badge: cogsPercent <= 32 ? 'On Target' : cogsPercent <= 36 ? 'High' : 'Too High', insight: cogsPercent > 32 ? `Every 1% reduction adds ${currency} ${formatNumber(revenue * 0.01)}/month` : '' },
-            { label: 'Cash in Bank', value: `${currency} ${formatNumber(cash)}`, sub: `You owe suppliers ${currency} ${formatNumber(payables)}`, status: cashVsAP >= 1.5 ? 'good' : cashVsAP >= 1 ? 'warning' : 'danger', badge: cashVsAP < 1 ? 'Critical' : daysRevInBank < 15 ? 'Low' : 'Adequate', insight: cashVsAP < 1 ? 'You owe more than you have' : '' },
-            { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))} ${netProfit >= 0 ? 'profit' : 'loss'}`, status: metrics.netMargin >= 6 ? 'good' : metrics.netMargin >= 3 ? 'warning' : 'danger', badge: metrics.netMargin >= 6 ? 'Healthy' : metrics.netMargin >= 0 ? 'Thin' : 'Loss', insight: '' }
+            pillarRevenue('This month\'s sales'),
+            pillarKeyCost('Food Cost %', 32, 36),
+            pillarCash(),
+            pillarBottomLine(6, 3)
+        ],
+        'product': [
+            pillarRevenue(),
+            pillarKeyCost('COGS %', 45, 55),
+            pillarCash(),
+            pillarBottomLine(5, 2)
         ],
         'online': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month', status: 'neutral', badge: '', insight: '' },
-            { label: 'Gross Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After cost of service', status: metrics.grossMargin >= 60 ? 'good' : metrics.grossMargin >= 40 ? 'warning' : 'danger', badge: metrics.grossMargin >= 60 ? 'Strong' : 'Low', insight: '' },
-            { label: 'Cash Runway', value: runway === -1 ? 'Growing' : `${runway.toFixed(1)} mo`, sub: `Balance: ${currency} ${formatNumber(cash)}`, status: runway === -1 || runway >= 12 ? 'good' : runway >= 6 ? 'warning' : 'danger', badge: runway < 6 ? 'Short' : 'Okay', insight: '' },
-            { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))}`, status: metrics.netMargin >= 10 ? 'good' : metrics.netMargin >= 0 ? 'warning' : 'danger', badge: netProfit >= 0 ? 'Profit' : 'Loss', insight: '' }
-        ],
-        'construction': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'Billed this month', status: 'neutral', badge: '', insight: '' },
-            { label: 'Project Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After project costs', status: metrics.grossMargin >= 15 ? 'good' : metrics.grossMargin >= 10 ? 'warning' : 'danger', badge: metrics.grossMargin >= 15 ? 'Healthy' : 'Thin', insight: '' },
-            { label: 'DSO', value: `${Math.round(metrics.dso)} days`, sub: 'Days to collect', status: metrics.dso <= 45 ? 'good' : metrics.dso <= 75 ? 'warning' : 'danger', badge: metrics.dso > 75 ? 'Slow' : 'Okay', insight: '' },
-            { label: 'Cash vs AP', value: `${cashVsAP.toFixed(1)}x`, sub: `Cash: ${currency} ${formatNumber(cash)}`, status: cashVsAP >= 1.5 ? 'good' : cashVsAP >= 1 ? 'warning' : 'danger', badge: cashVsAP < 1 ? 'At Risk' : 'Covered', insight: '' }
+            pillarRevenue(),
+            pillarKeyCost('Cost of Service %', 30, 40),
+            pillarCash(),
+            pillarBottomLine(10, 5)
         ],
         'services': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month', status: 'neutral', badge: '', insight: '' },
-            { label: 'Gross Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After delivery costs', status: metrics.grossMargin >= 50 ? 'good' : metrics.grossMargin >= 35 ? 'warning' : 'danger', badge: metrics.grossMargin >= 50 ? 'Strong' : 'Tight', insight: '' },
-            { label: 'Overhead', value: `${(revenue > 0 ? ((current.opex || 0) / revenue * 100) : 0).toFixed(0)}%`, sub: 'OPEX as % of revenue', status: (revenue > 0 ? (current.opex || 0) / revenue * 100 : 0) <= 40 ? 'good' : 'warning', badge: '', insight: '' },
-            { label: 'Cash Runway', value: runway === -1 ? 'Growing' : `${runway.toFixed(1)} mo`, sub: `Balance: ${currency} ${formatNumber(cash)}`, status: runway === -1 || runway >= 6 ? 'good' : runway >= 3 ? 'warning' : 'danger', badge: runway < 3 ? 'Short' : '', insight: '' }
+            pillarRevenue(),
+            pillarKeyCost('Direct Cost %', 50, 65),
+            pillarCash(),
+            pillarBottomLine(10, 5)
+        ],
+        'construction': [
+            pillarRevenue('Billed this month'),
+            pillarKeyCost('Project Cost %', 80, 85),
+            pillarCash(),
+            pillarBottomLine(5, 3)
+        ],
+        'manufacturing': [
+            pillarRevenue(),
+            pillarKeyCost('Material Cost %', 70, 80),
+            pillarCash(),
+            pillarBottomLine(5, 3)
+        ],
+        'healthcare': [
+            pillarRevenue(),
+            pillarKeyCost('Clinical Cost %', 60, 75),
+            pillarCash(),
+            pillarBottomLine(10, 5)
+        ],
+        'other': [
+            pillarRevenue(),
+            pillarKeyCost('COGS %', 60, 75),
+            pillarCash(),
+            pillarBottomLine(5, 2)
         ]
     };
 
-    // Default config for industries without specific pillars
-    const defaultConfig = [
-        { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month', status: 'neutral', badge: '', insight: '' },
-        { label: 'Gross Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After direct costs', status: metrics.grossMargin >= 35 ? 'good' : metrics.grossMargin >= 20 ? 'warning' : 'danger', badge: metrics.grossMargin >= 35 ? 'Healthy' : 'Low', insight: '' },
-        { label: 'Cash Runway', value: runway === -1 ? 'Growing' : `${runway.toFixed(1)} mo`, sub: `Balance: ${currency} ${formatNumber(cash)}`, status: runway === -1 || runway >= 6 ? 'good' : runway >= 3 ? 'warning' : 'danger', badge: runway < 3 ? 'Low' : '', insight: '' },
-        { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))} ${netProfit >= 0 ? 'profit' : 'loss'}`, status: metrics.netMargin >= 5 ? 'good' : metrics.netMargin >= 0 ? 'warning' : 'danger', badge: netProfit >= 0 ? 'Profit' : 'Loss', insight: '' }
-    ];
-
     const ind = industry?.toLowerCase();
-    const aliases = { 'food': 'food', 'restaurant': 'food', 'service': 'services', 'ecommerce': 'online' };
+    const aliases = { 'restaurant': 'food', 'service': 'services', 'ecommerce': 'online', 'retail': 'product', 'wholesale': 'product' };
     const key = aliases[ind] || ind;
-    const config = configs[key] || defaultConfig;
+    const config = configs[key] || configs['other'];
+
+    // Set pillars hint
+    const hintEl = document.getElementById('pillarsHint');
+    if (hintEl) hintEl.textContent = 'Revenue, key cost, cash, and bottom line at a glance';
 
     config.forEach((p, i) => {
         const idx = i + 1;
@@ -651,17 +693,19 @@ function signedAmount(val, currency) {
 function getDefaultBenchmarks(industry) {
     // Industry benchmarks — DSO/DIO/DPO sourced from CreditPulse 2025, ReadyRatios SEC 2024, PwC Working Capital Study 24/25, Hackett Group 2025
     const b = {
-        'retail':        { name: 'Retail',        grossMargin: { min: 25, max: 50, ideal: 35 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 0, max: 10, industry: 2 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 20, max: 45, industry: 30 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'service':       { name: 'Service',       grossMargin: { min: 40, max: 70, ideal: 55 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 30, max: 60, industry: 45 }, dio: { min: 0, max: 0, industry: 0 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 20, max: 45, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 0, max: 5, industry: 1 }, dio: { min: 20, max: 45, industry: 30 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 45, max: 75, industry: 60 }, dio: { min: 60, max: 120, industry: 90 }, dpo: { min: 30, max: 60, industry: 45 } },
-        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 }, dso: { min: 25, max: 50, industry: 35 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 25, max: 50, industry: 35 } },
-        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 55, max: 70, ideal: 62 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 0, max: 3, industry: 1 }, dio: { min: 3, max: 10, industry: 7 }, dpo: { min: 14, max: 30, industry: 21 } },
-        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 60, max: 120, industry: 90 }, dio: { min: 7, max: 30, industry: 15 }, dpo: { min: 45, max: 90, industry: 60 } }
+        'retail':        { name: 'Retail',        grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 2, max: 8, ideal: 5 },  dso: { min: 0, max: 10, industry: 5 },  dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 2, max: 8, ideal: 5 },  dso: { min: 0, max: 10, industry: 5 },  dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'service':       { name: 'Service',       grossMargin: { min: 50, max: 70, ideal: 60 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 20, max: 60, industry: 40 }, dio: { min: 0, max: 0, industry: 0 },  dpo: { min: 15, max: 45, industry: 30 } },
+        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 30, max: 50, ideal: 40 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 0, max: 5, industry: 2 },  dio: { min: 20, max: 45, industry: 30 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 20, max: 60, industry: 40 }, dio: { min: 30, max: 90, industry: 60 }, dpo: { min: 30, max: 60, industry: 45 } },
+        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 },  dso: { min: 20, max: 45, industry: 35 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 25, max: 50, industry: 35 } },
+        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 60, max: 80, ideal: 70 }, netMargin: { min: 3, max: 9, ideal: 6 },  dso: { min: 0, max: 5, industry: 2 },  dio: { min: 5, max: 15, industry: 10 }, dpo: { min: 10, max: 30, industry: 20 } },
+        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 30, max: 90, industry: 60 }, dio: { min: 7, max: 30, industry: 15 }, dpo: { min: 30, max: 90, industry: 60 } },
+        'healthcare':    { name: 'Healthcare',    grossMargin: { min: 40, max: 60, ideal: 50 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 10, max: 60, industry: 35 }, dio: { min: 5, max: 30, industry: 15 }, dpo: { min: 15, max: 45, industry: 30 } },
+        'general':       { name: 'General',       grossMargin: { min: 30, max: 60, ideal: 45 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 15, max: 60, industry: 35 }, dio: { min: 10, max: 60, industry: 30 }, dpo: { min: 20, max: 60, industry: 35 } }
     };
     // Map form values to benchmark keys
-    const aliases = { 'food': 'restaurant', 'services': 'service', 'online': 'ecommerce', 'healthcare': 'service', 'other': 'product' };
+    const aliases = { 'food': 'restaurant', 'services': 'service', 'online': 'ecommerce', 'other': 'general' };
     const key = aliases[industry?.toLowerCase()] || industry?.toLowerCase();
     return b[key] || b['product'];
 }
@@ -1213,6 +1257,7 @@ function updateFCFF(current, currency, fcfValue) {
 
 function updateCashRunway(metrics, currency, current, industry) {
     const bigValueEl = document.getElementById('runwayBigValue');
+    const unitEl = document.querySelector('.runway-unit');
     const methodEl = document.getElementById('runwayMethodDisplay');
     const cashoutEl = document.getElementById('runwayCashout');
     const driversEl = document.getElementById('runwayDrivers');
@@ -1224,48 +1269,70 @@ function updateCashRunway(metrics, currency, current, industry) {
         'opex': 'Based on monthly expenses'
     }[metrics.runwayMethod] || 'Based on monthly expenses';
 
-    if (metrics.cashRunway === -1) {
+    // Spec v2: Restaurant/Retail show days of revenue, others show months
+    const ind = industry?.toLowerCase();
+    const useDays = ['food', 'restaurant', 'product', 'retail'].includes(ind);
+    const revenue = current.revenue || 0;
+    const cash = current.cash || 0;
+    const daysOfRevenue = revenue > 0 ? Math.round(cash / (revenue / 30)) : 0;
+
+    // Thresholds in months (converted to days for daily industries)
+    const runway = metrics.cashRunway;
+    const displayVal = useDays ? daysOfRevenue : runway;
+    const displayUnit = useDays ? 'days of revenue' : 'months';
+    // For daily industries: 30 days ~ 1 month, so safe=180d, warn=90d, danger<90d
+    const safeThresh = useDays ? 180 : 6;
+    const warnThresh = useDays ? 90 : 3;
+    const lowThresh = useDays ? 30 : 1;
+
+    if (unitEl) unitEl.textContent = displayUnit;
+
+    if (runway === -1) {
         bigValueEl.textContent = '\u221E';
         bigValueEl.className = 'runway-big ok';
         methodEl.textContent = 'Your cash is growing, not burning';
         if (cashoutEl) cashoutEl.textContent = '';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong> and increasing.</p>`;
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong> and increasing.</p>`;
         if (interpEl) interpEl.innerHTML = `<p>Your business generates more cash than it uses. This is the healthiest position.</p>`;
-    } else if (metrics.cashRunway >= 6) {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+    } else if (displayVal >= safeThresh) {
+        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
         bigValueEl.className = 'runway-big ok';
-        methodEl.textContent = methodLabel;
+        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
         if (cashoutEl) cashoutEl.textContent = '';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>. Comfortable buffer for ${Math.floor(metrics.cashRunway)}+ months.</p>`;
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>. Comfortable buffer.</p>`;
         if (interpEl) interpEl.innerHTML = `<p>You have time to plan, invest, and weather surprises.</p>`;
-    } else if (metrics.cashRunway >= 3) {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+    } else if (displayVal >= warnThresh) {
+        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
         bigValueEl.className = 'runway-big warn';
-        methodEl.textContent = methodLabel;
-        const cashOutDate = getCashOutDate(metrics.cashRunway);
+        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
+        const cashOutDate = getCashOutDate(useDays ? displayVal / 30 : displayVal);
         if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
         if (interpEl) interpEl.innerHTML = `<p>Not critical, but start improving cash flow. Collect faster, delay non-essential spending.</p>`;
-    } else if (metrics.cashRunway >= 1) {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+    } else if (displayVal >= lowThresh) {
+        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
         bigValueEl.className = 'runway-big danger';
-        methodEl.textContent = methodLabel;
-        const cashOutDate = getCashOutDate(metrics.cashRunway);
+        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
+        const cashOutDate = getCashOutDate(useDays ? displayVal / 30 : displayVal);
         if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
         if (interpEl) interpEl.innerHTML = `<p><strong>Action needed.</strong> Collect receivables urgently, cut non-essential spending, consider short-term credit.</p>`;
     } else {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
+        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
         bigValueEl.className = 'runway-big danger';
-        methodEl.textContent = methodLabel;
+        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
         if (cashoutEl) cashoutEl.textContent = 'Cash runway is critical.';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
         if (interpEl) interpEl.innerHTML = `<p><strong>Your cash is very low</strong> — take action this week. Collect receivables, pause non-essential spending, and talk to your bank about options.</p>`;
     }
 
-    // Industry benchmark for runway
-    const runwayMonths = metrics.cashRunway === -1 ? 12 : metrics.cashRunway;
-    renderBenchBar('benchRunway', 'Cash Runway', runwayMonths, { min: 3, max: 6, ideal: 6 }, ' months', true);
+    // Industry benchmark bar
+    if (useDays) {
+        renderBenchBar('benchRunway', 'Cash Runway', daysOfRevenue, { min: 30, max: 90, ideal: 60 }, ' days', true);
+    } else {
+        const runwayMonths = runway === -1 ? 12 : runway;
+        renderBenchBar('benchRunway', 'Cash Runway', runwayMonths, { min: 3, max: 6, ideal: 6 }, ' months', true);
+    }
 }
 
 function getCashOutDate(months) {
