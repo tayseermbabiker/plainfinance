@@ -342,7 +342,7 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
     // Net Burn = (Opening Cash - Closing Cash) / Months
     // This automatically includes all cash flows: OPEX, COGS, AP payments, loan principals, etc.
     // Sources: Wall Street Prep, CFI, Perplexity research [1][2][3][5][6][7]
-    const openingCash = current.openingCash || 0;
+    const openingCash = current.openingCash || (ytd && ytd.startingCash) || 0;
     let cashRunway, avgMonthlyBurn, runwaySource;
 
     if (ytd && ytd.monthsElapsed > 0 && openingCash > 0) {
@@ -757,7 +757,7 @@ Use these metrics in your analysis. If any metric is notably above or below the 
 
 Please provide:
 
-1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept 11 fils."
+1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision — always express as a decimal of the main currency unit.
 
 2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with "Good:", "Risk:", or "Watch:" as appropriate. Be specific with numbers.
 

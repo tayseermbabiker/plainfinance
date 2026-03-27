@@ -252,15 +252,15 @@ function updateFourPillars(current, metrics, currency, industry) {
 
 // ===== Cash Bridge =====
 
-function updateCashBridge(current, previous, metrics, currency) {
+function updateCashBridge(current, previous, metrics, currency, ytd) {
     const section = document.getElementById('cashBridgeSection');
     if (!section) return;
 
-    const startCash = previous?.cash || current.openingCash || 0;
+    const startCash = previous?.cash || current.openingCash || (ytd && ytd.startingCash) || 0;
     const endCash = current.cash || 0;
 
-    // Need starting cash to show the bridge
-    if (startCash === 0 && !previous?.cash) {
+    // Need starting cash OR ending cash to show something useful
+    if (startCash === 0 && endCash === 0) {
         section.style.display = 'none';
         return;
     }
@@ -466,12 +466,13 @@ function populateReportFromAPI(reportData) {
         updateProfitInterpretation(current, metrics, currency, analysis);
         updateOperationalHealth(metrics, currency, analysis, industry, current, reportData.ytd);
         const fcfValue = updateFCF(current, previous, metrics, currency);
-        updateCashBridge(current, previous, metrics, currency);
+        updateCashBridge(current, previous, metrics, currency, reportData.ytd);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
         updateBankMeetingSummary(current, metrics, currency, analysis);
         updateWeeklyActions(current, metrics, currency, analysis);
         updateInvestigationSection(industry);
+        updateTechnicalMode(current, metrics, currency, industry, null);
         updateTechnicalMode(current, metrics, currency, industry);
     }
 
@@ -501,13 +502,13 @@ function populateReport(data) {
         updateProfitInterpretation(current, metrics, currency, null);
         updateOperationalHealth(metrics, currency, null, industry, current, ytd);
         const fcfValue = updateFCF(current, previous, metrics, currency);
-        updateCashBridge(current, previous, metrics, currency);
+        updateCashBridge(current, previous, metrics, currency, ytd);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
         updateBankMeetingSummary(current, metrics, currency, null);
         updateWeeklyActions(current, metrics, currency, null);
         updateInvestigationSection(industry);
-        updateTechnicalMode(current, metrics, currency, industry);
+        updateTechnicalMode(current, metrics, currency, industry, null);
     }
 
     // Default to plain mode
@@ -1034,7 +1035,11 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
         } else if (ccc > 30) {
             insight = `Your cash cycle is ${Math.round(ccc)} days. You pay suppliers in ${Math.round(metrics.dpo)} days but wait ${Math.round(metrics.dso)} days to collect. That's ${Math.round(ccc)} days your money is stuck in operations.`;
         } else {
-            insight = `Cash cycle is healthy at ${Math.round(ccc)} days. Money moves efficiently through your business.`;
+            if (globalTier === 'danger') {
+                insight = `Cash cycle is ${Math.round(ccc)} days. While the cycle itself is short, your overall cash position is critical — focus on the cash runway and liquidity issues above.`;
+            } else {
+                insight = `Cash cycle is ${Math.round(ccc)} days — cash moves through your business at a reasonable pace.`;
+            }
         }
         cccInsightEl.innerHTML = `<p>${insight}</p>`;
     }
