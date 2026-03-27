@@ -1135,19 +1135,48 @@ function updateProfitInterpretation(current, metrics, currency, analysis, indust
 // ===== Section 3: Operational Health =====
 
 function updateOperationalHealth(metrics, currency, analysis, industry, current, ytd) {
-    document.getElementById('opDIO').textContent = `${Math.round(metrics.dio)}`;
-    document.getElementById('opDSO').textContent = `${Math.round(metrics.dso)}`;
-    document.getElementById('opDPO').textContent = `${Math.round(metrics.dpo)}`;
-    document.getElementById('opDIOExplain').textContent = `Your stock sits for ${Math.round(metrics.dio)} days`;
-    document.getElementById('opDSOExplain').textContent = `Your customers pay you in ${Math.round(metrics.dso)} days`;
-    document.getElementById('opDPOExplain').textContent = `You pay suppliers in ${Math.round(metrics.dpo)} days`;
-
-    // Industry benchmark for badges
+    const ind = industry?.toLowerCase() || 'other';
     const bench = getDefaultBenchmarks(industry);
+    const dso = Math.round(metrics.dso);
+    const dio = Math.round(metrics.dio);
+    const dpo = Math.round(metrics.dpo);
+    const ccc = Math.round(metrics.ccc);
 
-    // DSO badge and card
-    const dsoStatus = metrics.dso <= bench.dso.max ? 'ok' : metrics.dso <= bench.dso.max * 1.3 ? 'warn' : 'danger';
+    // Industry-specific CCC thresholds
+    const cccThresholds = {
+        'food': { good: 10, warn: 20 }, 'restaurant': { good: 10, warn: 20 },
+        'product': { good: 20, warn: 45 }, 'retail': { good: 20, warn: 45 },
+        'online': { good: 10, warn: 25 }, 'ecommerce': { good: 10, warn: 25 },
+        'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
+        'construction': { good: 45, warn: 75 },
+        'manufacturing': { good: 40, warn: 70 },
+        'healthcare': { good: 25, warn: 50 },
+        'other': { good: 30, warn: 60 }
+    };
+    const cccT = cccThresholds[ind] || cccThresholds['other'];
+
+    // Hide irrelevant cards per industry
+    const hideInventory = ['online', 'services', 'service'].includes(ind);
+    const hideAR = ind === 'food' || ind === 'restaurant';
     const dsoCard = document.getElementById('wcDSOCard');
+    const dioCard = document.getElementById('wcDIOCard');
+    const wcrInvRow = document.getElementById('wcrInvRow');
+    const wcrArRow = document.getElementById('wcrArRow');
+
+    if (dioCard) dioCard.style.display = hideInventory ? 'none' : '';
+    if (wcrInvRow) wcrInvRow.style.display = hideInventory ? 'none' : '';
+    // Only hide DSO/AR for food if AR is actually 0
+    const arIsZero = hideAR && (current?.receivables || 0) === 0;
+    if (dsoCard) dsoCard.style.display = arIsZero ? 'none' : '';
+    if (wcrArRow) wcrArRow.style.display = arIsZero ? 'none' : '';
+
+    // Populate card numbers
+    document.getElementById('opDSO').textContent = `${dso}`;
+    document.getElementById('opDIO').textContent = `${dio}`;
+    document.getElementById('opDPO').textContent = `${dpo}`;
+
+    // DSO badge
+    const dsoStatus = metrics.dso <= bench.dso.max ? 'ok' : metrics.dso <= bench.dso.max * 1.3 ? 'warn' : 'danger';
     if (dsoCard) dsoCard.className = `wc-card ${dsoStatus}`;
     const dsoBadge = document.getElementById('opDSOBadge');
     if (dsoBadge) {
@@ -1157,19 +1186,20 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
     const dsoNum = document.getElementById('opDSO');
     if (dsoNum) dsoNum.className = `wc-number ${dsoStatus}`;
 
-    // DIO badge and card
-    const dioStatus = metrics.dio <= bench.dio.max ? 'ok' : metrics.dio <= bench.dio.max * 1.3 ? 'warn' : 'danger';
-    const dioCard = document.getElementById('wcDIOCard');
-    if (dioCard) dioCard.className = `wc-card ${dioStatus}`;
-    const dioBadge = document.getElementById('opDIOBadge');
-    if (dioBadge) {
-        dioBadge.className = `wc-badge ${dioStatus}`;
-        dioBadge.textContent = dioStatus === 'ok' ? 'Good' : dioStatus === 'warn' ? 'High' : 'Critical';
+    // DIO badge
+    if (!hideInventory) {
+        const dioStatus = metrics.dio <= bench.dio.max ? 'ok' : metrics.dio <= bench.dio.max * 1.3 ? 'warn' : 'danger';
+        if (dioCard) dioCard.className = `wc-card ${dioStatus}`;
+        const dioBadge = document.getElementById('opDIOBadge');
+        if (dioBadge) {
+            dioBadge.className = `wc-badge ${dioStatus}`;
+            dioBadge.textContent = dioStatus === 'ok' ? 'Good' : dioStatus === 'warn' ? 'High' : 'Critical';
+        }
+        const dioNum = document.getElementById('opDIO');
+        if (dioNum) dioNum.className = `wc-number ${dioStatus}`;
     }
-    const dioNum = document.getElementById('opDIO');
-    if (dioNum) dioNum.className = `wc-number ${dioStatus}`;
 
-    // DPO badge and card (higher DPO is generally better, so invert logic)
+    // DPO badge (higher DPO = better, so inverted)
     const dpoStatus = metrics.dpo >= bench.dpo.min ? 'ok' : metrics.dpo >= bench.dpo.min * 0.7 ? 'warn' : 'danger';
     const dpoCard = document.getElementById('wcDPOCard');
     if (dpoCard) dpoCard.className = `wc-card ${dpoStatus}`;
@@ -1181,16 +1211,42 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
     const dpoNum = document.getElementById('opDPO');
     if (dpoNum) dpoNum.className = `wc-number ${dpoStatus}`;
 
-    // CCC
+    // CCC — industry-specific thresholds
     const cccEl = document.getElementById('cccValue');
-    cccEl.textContent = `${Math.round(metrics.ccc)} days`;
-
+    if (cccEl) cccEl.textContent = `${ccc} days`;
     const cccResult = document.getElementById('cccResult');
-    let cccStatus = metrics.ccc > 45 ? 'danger' : metrics.ccc > 20 ? 'warning' : 'good';
-    cccResult.className = `ccc-row ${cccStatus}`;
+    const cccStatus = ccc >= cccT.warn ? 'danger' : ccc >= cccT.good ? 'warning' : 'good';
+    if (cccResult) cccResult.className = `ccc-row ${cccStatus}`;
 
-    // Industry benchmark for DSO
-    renderBenchBar('benchDSO', 'Days Sales Outstanding', metrics.dso, bench.dso, ' days', false);
+    // Summary sentence — lead with the story
+    const summaryEl = document.getElementById('wcSummary');
+    if (summaryEl) {
+        let summary = '';
+        if (ccc < 0) {
+            summary = `Your cash cycle is ${Math.abs(ccc)} days negative — you collect money before you need to pay it out. This is an excellent position.`;
+        } else if (cccStatus === 'good') {
+            summary = `Your cash takes ${ccc} days to flow through the business — that's healthy for your industry.`;
+        } else if (cccStatus === 'warning') {
+            summary = `Your cash takes ${ccc} days to flow through the business — that's slower than ideal. Here's what's causing it.`;
+        } else {
+            summary = `Your cash is tied up for ${ccc} days before it comes back — this is too long and puts pressure on your bank balance.`;
+        }
+
+        // Name the villain
+        if (ccc > cccT.good) {
+            if (dsoStatus !== 'ok' && dso >= dio && dso >= dpo) {
+                summary += ` Slow customer payments are the main issue.`;
+            } else if (!hideInventory && metrics.dio > bench.dio.max) {
+                summary += ` Stock is sitting too long before selling.`;
+            } else if (dpoStatus !== 'ok') {
+                summary += ` You're paying suppliers faster than you need to.`;
+            }
+        }
+        summaryEl.textContent = summary;
+    }
+
+    // Benchmark bar for DSO
+    renderBenchBar('benchDSO', 'How fast customers pay you (DSO)', metrics.dso, bench.dso, ' days', false);
 
     // WCR table
     if (current) {
@@ -1298,24 +1354,39 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
         narrativeEl.textContent = narrative;
     }
 
-    // CCC insight
-    const ccc = metrics.ccc;
+    // CCC insight — industry-specific thresholds
     const cccInsightEl = document.getElementById('opCashMovement');
     if (cccInsightEl) {
+        const ind2 = industry?.toLowerCase() || 'other';
+        const cccThresh = {
+            'food': { good: 10, warn: 20 }, 'restaurant': { good: 10, warn: 20 },
+            'product': { good: 20, warn: 45 }, 'retail': { good: 20, warn: 45 },
+            'online': { good: 10, warn: 25 }, 'ecommerce': { good: 10, warn: 25 },
+            'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
+            'construction': { good: 45, warn: 75 },
+            'manufacturing': { good: 40, warn: 70 },
+            'healthcare': { good: 25, warn: 50 },
+            'other': { good: 30, warn: 60 }
+        };
+        const ct = cccThresh[ind2] || cccThresh['other'];
+        const roundCCC = Math.round(ccc);
+        const roundDSO = Math.round(metrics.dso);
+        const roundDPO = Math.round(metrics.dpo);
+
         let insight = '';
         if (ccc < 0) {
             insight = getCCCNegativeAdvice(bench.name);
-        } else if (ccc > 90) {
-            insight = `Your capital is locked up for ${Math.round(ccc)} days — this is critical. Consider invoice factoring to get 80-90% of your receivables in 24 hours. Halt non-essential purchasing and review slow-paying clients who are draining your liquidity.`;
-        } else if (ccc > 60) {
-            insight = getCCC60Advice(bench.name, ccc);
-        } else if (ccc > 30) {
-            insight = `Your cash cycle is ${Math.round(ccc)} days. You pay suppliers in ${Math.round(metrics.dpo)} days but wait ${Math.round(metrics.dso)} days to collect. That's ${Math.round(ccc)} days your money is stuck in operations.`;
+        } else if (roundCCC >= ct.warn * 1.5) {
+            insight = `Your capital is locked up for ${roundCCC} days — this is critical for your industry. Consider invoice factoring to collect receivables quickly. Review slow-paying clients and halt non-essential purchasing.`;
+        } else if (roundCCC >= ct.warn) {
+            insight = getCCC60Advice(bench.name, roundCCC);
+        } else if (roundCCC >= ct.good) {
+            insight = `Your cash cycle is ${roundCCC} days. You pay suppliers in ${roundDPO} days but wait ${roundDSO} days to collect. That's ${roundCCC} days your money is stuck in operations.`;
         } else {
             if (globalTier === 'danger') {
-                insight = `Cash cycle is ${Math.round(ccc)} days. While the cycle itself is short, your overall cash position is critical — focus on the cash runway and liquidity issues above.`;
+                insight = `Cash cycle is ${roundCCC} days — short for your industry. But your overall cash position is critical — focus on the cash runway and liquidity issues above.`;
             } else {
-                insight = `Cash cycle is ${Math.round(ccc)} days — cash moves through your business at a reasonable pace.`;
+                insight = `Cash cycle is ${roundCCC} days — cash moves through your business at a healthy pace.`;
             }
         }
         cccInsightEl.innerHTML = `<p>${insight}</p>`;

@@ -300,39 +300,40 @@
                         <span class="section-hint">How fast cash flows through the business</span>
                     </div>
 
+                    <!-- Plain-English summary (lead with the story) -->
+                    <p class="wc-summary" id="wcSummary"></p>
+
                     <div class="wc-cards">
                         <div class="wc-card" id="wcDSOCard">
-                            <div class="wc-card-label">Days Sales Outstanding</div>
-                            <div class="wc-card-abbr">DSO</div>
+                            <div class="wc-card-label">How fast customers pay you</div>
+                            <div class="wc-card-abbr">DSO — Days Sales Outstanding</div>
                             <div class="wc-number" id="opDSO">--</div>
                             <div class="wc-unit">days to collect</div>
                             <span class="wc-badge" id="opDSOBadge"></span>
                         </div>
                         <div class="wc-card" id="wcDIOCard">
-                            <div class="wc-card-label">Days Inventory Outstanding</div>
-                            <div class="wc-card-abbr">DIO</div>
+                            <div class="wc-card-label">How long stock sits unsold</div>
+                            <div class="wc-card-abbr">DIO — Days Inventory Outstanding</div>
                             <div class="wc-number" id="opDIO">--</div>
                             <div class="wc-unit">days in stock</div>
                             <span class="wc-badge" id="opDIOBadge"></span>
                         </div>
                         <div class="wc-card" id="wcDPOCard">
-                            <div class="wc-card-label">Days Payable Outstanding</div>
-                            <div class="wc-card-abbr">DPO</div>
+                            <div class="wc-card-label">How fast you pay suppliers</div>
+                            <div class="wc-card-abbr">DPO — Days Payable Outstanding</div>
                             <div class="wc-number" id="opDPO">--</div>
-                            <div class="wc-unit">days to pay suppliers</div>
+                            <div class="wc-unit">days to pay</div>
                             <span class="wc-badge" id="opDPOBadge"></span>
                         </div>
                     </div>
 
                     <div class="ccc-row" id="cccResult">
-                        <span style="font-size:11px;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;">Cash Conversion Cycle</span>
+                        <div>
+                            <span class="ccc-label">How long your money is tied up</span>
+                            <span class="ccc-sublabel">Cash Conversion Cycle (CCC)</span>
+                        </div>
                         <span class="ccc-total" id="cccValue">-- days</span>
                     </div>
-
-                    <!-- Explain text (hidden, populated by JS) -->
-                    <span style="display:none" id="opDSOExplain"></span>
-                    <span style="display:none" id="opDIOExplain"></span>
-                    <span style="display:none" id="opDPOExplain"></span>
 
                     <!-- Benchmark bars -->
                     <div class="bench-bar-section" id="opBenchmarks">
@@ -343,27 +344,27 @@
                     <table class="wcr-table" style="margin-top:1.25rem">
                         <thead>
                             <tr>
-                                <th>Component</th>
-                                <th>Actual</th>
+                                <th></th>
+                                <th>Your Business</th>
                                 <th>Industry Target</th>
-                                <th>Variance</th>
+                                <th>Difference</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Accounts Receivable</td>
+                            <tr id="wcrArRow">
+                                <td>What customers owe you</td>
                                 <td id="wcrArActual">--</td>
                                 <td id="wcrArIndustry">--</td>
                                 <td id="wcrArVariance">--</td>
                             </tr>
-                            <tr>
-                                <td>Inventory</td>
+                            <tr id="wcrInvRow">
+                                <td>Stock on hand</td>
                                 <td id="wcrInvActual">--</td>
                                 <td id="wcrInvIndustry">--</td>
                                 <td id="wcrInvVariance">--</td>
                             </tr>
                             <tr>
-                                <td>Accounts Payable</td>
+                                <td>What you owe suppliers</td>
                                 <td id="wcrApActual">--</td>
                                 <td id="wcrApIndustry">--</td>
                                 <td id="wcrApVariance">--</td>
@@ -371,7 +372,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td>Working Capital Required</td>
+                                <td>Cash tied up in the business</td>
                                 <td id="wcrTotalActual">--</td>
                                 <td id="wcrTotalIndustry">--</td>
                                 <td id="wcrTotalVariance">--</td>

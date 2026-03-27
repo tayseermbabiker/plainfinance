@@ -1092,10 +1092,29 @@ body {
   line-height: 1.4;
 }
 
+.wc-summary {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+}
+.ccc-label {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.ccc-sublabel {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-light);
+  margin-top: 1px;
+}
 .ccc-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 6px;
   margin: 1rem 0 1.25rem;
   font-size: 13px;
