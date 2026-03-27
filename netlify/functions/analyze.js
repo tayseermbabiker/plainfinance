@@ -10,7 +10,7 @@ const COGS_LABELS = {
     'online': 'Cost of Service', 'ecommerce': 'Product & Shipping Cost',
     'services': 'Direct Delivery Cost', 'service': 'Direct Delivery Cost',
     'construction': 'Project Costs',
-    'manufacturing': 'Material & Production Cost',
+    'manufacturing': 'Production Cost',
     'wholesale': 'Cost of Goods Purchased',
     'healthcare': 'Clinical / Treatment Cost',
     'other': 'Cost of Goods Sold'
@@ -361,8 +361,12 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
         }
     } else {
         // Fallback: No opening cash provided, use P&L approximation
+        // Net burn = total cash outflows - revenue = -netProfit + loanRepayments + ownerDrawings + capex
+        // (netProfit already = revenue - cogs - opex, so -netProfit = cogs + opex - revenue)
         const loanRepayments = current.loanRepayments || 0;
-        const monthlyBurn = cogs + opex - netProfit + loanRepayments;
+        const ownerDrawings = current.ownerDrawings || 0;
+        const capex = current.assetPurchases || 0;
+        const monthlyBurn = -netProfit + loanRepayments + ownerDrawings + capex;
 
         if (monthlyBurn > 0) {
             cashRunway = cash / monthlyBurn;
@@ -621,7 +625,7 @@ function buildPrompt(data, metrics, currency, industryType, language = 'en', his
         'online': `INDUSTRY CONTEXT: SaaS / Digital. Use tech language: burn rate, runway, unit economics. Focus on cash runway and cost control. Label COGS as "Cost of Service".`,
         'services': `INDUSTRY CONTEXT: Services / Consulting. Use consulting language: project margin, scope creep, team productivity. Focus on overhead ratio and margin. Label COGS as "Direct Delivery Cost".`,
         'construction': `INDUSTRY CONTEXT: Construction / Real Estate. Use construction language: project margin, WIP, progress billing, retentions, milestones. Focus on DSO and cash. Label COGS as "Project Costs".`,
-        'manufacturing': `INDUSTRY CONTEXT: Manufacturing. Use manufacturing language: material cost, yield, batch sizing, production efficiency. Focus on DIO and material cost %. Label COGS as "Material & Production Cost".`,
+        'manufacturing': `INDUSTRY CONTEXT: Manufacturing. Use manufacturing language: material cost, yield, batch sizing, production efficiency. Focus on DIO and material cost %. Label COGS as "Production Cost".`,
         'wholesale': `INDUSTRY CONTEXT: Wholesale / Distribution. Use distribution language: order fill, credit terms, volume pricing. Focus on DSO/DPO spread and thin margins. Label COGS as "Cost of Goods Purchased".`,
         'healthcare': `INDUSTRY CONTEXT: Healthcare / Wellness. Use healthcare language: patient volume, payer mix, claim processing. Focus on AR days and margin. Label COGS as "Clinical / Treatment Cost".`,
         'other': `INDUSTRY CONTEXT: General Business. Use standard business language.`
@@ -759,7 +763,11 @@ Please provide:
 
 1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision — always express as a decimal of the main currency unit.
 
-2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with "Good:", "Risk:", or "Watch:" as appropriate. Be specific with numbers.
+2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with a tag. Be specific with numbers.
+   TAG RULES based on tone:
+   - HEALTHY tone: use "Good:" and "Watch:" tags only
+   - CAUTION tone: use "Watch:" and "Risk:" tags only
+   - DANGER tone: use "Risk:" tags only — NEVER use "Good:" in a danger scenario
 
 3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only.
    - First sentence: How many days cash is tied up and whether this is good, normal, or risky.

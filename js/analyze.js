@@ -363,8 +363,14 @@ function parseCSVTemplate(file) {
                     'other liabilities': 'otherLiabilities',
                     'vat collected': 'vatCollected',
                     'output vat': 'vatCollected',
+                    'tax collected': 'vatCollected',
+                    'tax collected from customers': 'vatCollected',
+                    'sales tax collected': 'vatCollected',
                     'vat paid': 'vatPaid',
                     'input vat': 'vatPaid',
+                    'tax paid': 'vatPaid',
+                    'tax paid on purchases': 'vatPaid',
+                    'sales tax paid': 'vatPaid',
                     'opening cash': 'ytdStartingCash',
                     'opening cash (start of year)': 'ytdStartingCash',
                     'cash at start of year': 'ytdStartingCash',
@@ -564,15 +570,32 @@ async function processUploadedFile() {
                 return !el || isNaN(val) || val === 0;
             });
 
-            if (missing.length === 0) {
-                // All mandatory fields present — submit directly
+            // Check optional-but-impactful fields that are blank/zero
+            const optionalFields = [
+                { id: 'ytdStartingCash', label: 'Opening Cash (Start of Year)', hint: 'Needed for cash bridge and runway accuracy' },
+                { id: 'shortTermLoans', label: 'Short-term Loans', hint: 'Affects current ratio and debt section' },
+                { id: 'otherLiabilities', label: 'Other Liabilities', hint: 'Credit cards, accrued expenses' },
+                { id: 'loanRepayments', label: 'Loan Repayments', hint: 'Needed for debt coverage analysis' },
+                { id: 'ownerDrawings', label: 'Owner Drawings', hint: 'Affects free cash flow analysis' },
+                { id: 'assetPurchases', label: 'Asset Purchases', hint: 'Affects free cash flow analysis' },
+                { id: 'inventory', label: 'Inventory', hint: 'Needed for DIO and working capital' }
+            ];
+
+            const blankOptional = optionalFields.filter(f => {
+                const el = document.getElementById(f.id);
+                const val = parseFloat(el?.value);
+                return !el || isNaN(val) || val === 0;
+            });
+
+            if (missing.length === 0 && blankOptional.length === 0) {
+                // Everything filled — submit directly
                 inputMethod = 'form';
                 submitForm();
                 return true;
             }
 
-            // Some fields missing — show smart review step
-            showCSVReviewStep(data, missing, mandatoryFields);
+            // Show review step with missing mandatory + blank optional fields
+            showCSVReviewStep(data, missing, mandatoryFields, blankOptional);
             return true;
         } catch (error) {
             alert('Error reading file: ' + error.message);
@@ -587,7 +610,7 @@ async function processUploadedFile() {
     }
 }
 
-function showCSVReviewStep(data, missingFields, allMandatory) {
+function showCSVReviewStep(data, missingFields, allMandatory, blankOptional = []) {
     const currency = document.getElementById('currency')?.value || 'AED';
     const fmt = (v) => v != null && v !== 0
         ? `${currency} ${Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
@@ -637,7 +660,7 @@ function showCSVReviewStep(data, missingFields, allMandatory) {
         });
     }
 
-    // Build missing fields HTML
+    // Build missing mandatory fields HTML
     const missingInputsHTML = missingFields.map(f => `
         <div class="form-group">
             <label for="review_${f.id}">${f.label}</label>
@@ -647,6 +670,25 @@ function showCSVReviewStep(data, missingFields, allMandatory) {
             </div>
         </div>
     `).join('');
+
+    // Build blank optional fields HTML
+    const blankOptionalHTML = blankOptional.map(f => `
+        <div class="form-group">
+            <label for="review_${f.id}">${f.label}</label>
+            <div class="input-with-currency">
+                <span class="currency-prefix">${currency}</span>
+                <input type="number" id="review_${f.id}" value="0" min="0">
+            </div>
+            <small class="field-hint">${f.hint}</small>
+        </div>
+    `).join('');
+
+    // Determine header text based on what's missing
+    const hasMissing = missingFields.length > 0;
+    const hasBlankOptional = blankOptional.length > 0;
+    const headerText = hasMissing
+        ? 'We parsed your CSV. A few fields need your input.'
+        : 'We parsed your CSV. Some fields were left blank — confirm or fill them in.';
 
     // Hide all form steps and show the review
     document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
@@ -661,7 +703,7 @@ function showCSVReviewStep(data, missingFields, allMandatory) {
     reviewStep.innerHTML = `
         <div class="step-header">
             <h1>Review your uploaded data</h1>
-            <p>We parsed your CSV. A few fields are missing — fill them in below.</p>
+            <p>${headerText}</p>
         </div>
 
         <div class="csv-review-summary">
@@ -679,11 +721,21 @@ function showCSVReviewStep(data, missingFields, allMandatory) {
             </table>
         </div>
 
+        ${hasMissing ? `
         <div class="csv-review-missing">
-            <h3>Missing fields</h3>
-            <p>These are required for your report. Enter them below, or use 0 if not applicable.</p>
+            <h3>Required fields</h3>
+            <p>These are needed for your report.</p>
             ${missingInputsHTML}
         </div>
+        ` : ''}
+
+        ${hasBlankOptional ? `
+        <div class="csv-review-blank">
+            <h3>These were left blank</h3>
+            <p>We will treat them as zero. If you have the data, fill them in now for a more accurate report.</p>
+            ${blankOptionalHTML}
+        </div>
+        ` : ''}
 
         <div class="form-actions">
             <button type="button" class="btn btn-secondary" id="csvReviewBack">
@@ -717,8 +769,8 @@ function showCSVReviewStep(data, missingFields, allMandatory) {
 
     // Wire up Generate button
     reviewStep.querySelector('#csvReviewSubmit').addEventListener('click', () => {
-        // Copy review inputs back into the actual form fields
-        missingFields.forEach(f => {
+        // Copy review inputs back into the actual form fields (mandatory + optional)
+        [...missingFields, ...blankOptional].forEach(f => {
             const reviewInput = document.getElementById(`review_${f.id}`);
             const formInput = document.getElementById(f.id);
             if (reviewInput && formInput) {

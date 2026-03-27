@@ -627,7 +627,9 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.pl-value.negative { color: var(--red); }
+.pl-value.negative, .pl-val.negative { color: var(--red); }
+.pl-asterisk { font-size: 11px; color: var(--ink-light); vertical-align: super; }
+.pl-footnote { font-size: 11px; color: var(--ink-light); margin-top: 12px; line-height: 1.4; }
 
 .mini-pl-section .pl-pct {
   font-size: 12px;
@@ -938,6 +940,74 @@ body {
   font-style: italic;
 }
 .bridge-gap-note:empty { display: none; }
+
+.bridge-tax-note {
+  font-size: 12px;
+  color: var(--red);
+  margin-top: var(--space-xs);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.bridge-summary {
+  font-size: 13px;
+  color: var(--ink);
+  margin-top: var(--space-s);
+  line-height: 1.5;
+}
+.bridge-summary:empty { display: none; }
+
+.bridge-kpis {
+  display: flex;
+  gap: 16px;
+  margin-top: var(--space-s);
+}
+.bridge-kpi {
+  flex: 1;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.bridge-kpi-label {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.bridge-kpi-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.bridge-kpi-value.kpi-good { color: var(--green); }
+.bridge-kpi-value.kpi-warn { color: var(--amber); }
+.bridge-kpi-value.kpi-danger { color: var(--red); }
+
+/* ─── CASH DRIVERS FALLBACK ─── */
+.cash-drivers { margin-bottom: var(--space-s); }
+.driver-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.driver-row small {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-light);
+}
+.driver-label { font-size: 13px; color: var(--ink); }
+.driver-value { font-size: 14px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.cash-drivers-note {
+  font-size: 12px;
+  color: var(--ink-light);
+  line-height: 1.5;
+  margin-top: var(--space-xs);
+  font-style: italic;
+}
 
 /* ─── WORKING CAPITAL ─── */
 .wc-cards,

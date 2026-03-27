@@ -178,12 +178,12 @@
                         <div class="pl-pct" id="plGrossMargin">--</div>
                     </div>
                     <div class="pl-row indent">
-                        <div class="pl-name">Operating Expenses <small>Rent, wages, admin</small></div>
+                        <div class="pl-name">Operating Expenses <small>Rent, salaries, admin, marketing</small></div>
                         <div class="pl-val" id="plOpex" style="color:var(--ink-mid)">--</div>
                         <div class="pl-pct" id="plOpexPct">--</div>
                     </div>
                     <div class="pl-row subtotal">
-                        <div class="pl-name">EBITDA</div>
+                        <div class="pl-name">EBITDA<span class="pl-asterisk">*</span></div>
                         <div class="pl-val" id="plEBITDA">--</div>
                         <div class="pl-pct" id="plEBITDAMargin">--</div>
                     </div>
@@ -198,6 +198,7 @@
                         <div class="bench-item" id="benchGrossMargin"></div>
                         <div class="bench-item" id="benchNetMargin"></div>
                     </div>
+                    <p class="pl-footnote">*Calculated as Operating Profit (Revenue - COGS - OPEX). Equals EBITDA when no depreciation/amortization is reported.</p>
                 </div>
 
                 <!-- AI Insight -->
@@ -217,7 +218,7 @@
                     <div class="section-header">
                         <span class="section-num">04</span>
                         <span class="section-title">Where Did Your Cash Go?</span>
-                        <span class="section-hint">Start to end of month</span>
+                        <span class="section-hint" id="bridgeHint">Start to end of month</span>
                     </div>
                     <div class="bridge-container" id="cashBridge">
                         <div class="bridge-row">
@@ -231,12 +232,12 @@
                             <div class="b-val pos" id="bridgeProfit">--</div>
                         </div>
                         <div class="bridge-row" id="bridgeARRow" style="display:none;">
-                            <div class="b-label">Receivables change<small>Customers still owe you</small></div>
+                            <div class="b-label" id="bridgeARLabel">Receivables change<small>Customers still owe you</small></div>
                             <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" id="bridgeARBar" style="width:0"></div></div></div>
                             <div class="b-val" id="bridgeAR">--</div>
                         </div>
                         <div class="bridge-row" id="bridgeInvRow" style="display:none;">
-                            <div class="b-label">Inventory change<small>Stock sitting in storage</small></div>
+                            <div class="b-label" id="bridgeInvLabel">Inventory change<small>Stock sitting in storage</small></div>
                             <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" id="bridgeInvBar" style="width:0"></div></div></div>
                             <div class="b-val" id="bridgeInventory">--</div>
                         </div>
@@ -244,6 +245,11 @@
                             <div class="b-label">Payables change<small>You owe suppliers more</small></div>
                             <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar pos" id="bridgeAPBar" style="width:0"></div></div></div>
                             <div class="b-val" id="bridgeAP">--</div>
+                        </div>
+                        <div class="bridge-row" id="bridgeTaxRow" style="display:none;">
+                            <div class="b-label">Tax collected (not yours)<small>Sales tax liability</small></div>
+                            <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" id="bridgeTaxBar" style="width:0"></div></div></div>
+                            <div class="b-val neg" id="bridgeTax">--</div>
                         </div>
                         <div class="bridge-row" id="bridgeLoanRow" style="display:none;">
                             <div class="b-label">- Loan Repayments</div>
@@ -267,6 +273,23 @@
                         </div>
                     </div>
                     <p class="bridge-gap-note" id="bridgeGapNote"></p>
+                    <p class="bridge-tax-note" id="bridgeTaxNote" style="display:none;"></p>
+                    <p class="bridge-summary" id="bridgeSummary"></p>
+                    <div class="bridge-kpis" id="bridgeKPIs" style="display:none;">
+                        <div class="bridge-kpi"><span class="bridge-kpi-label">Cash from Profit</span><span class="bridge-kpi-value" id="kpiCashConversion">--</span></div>
+                        <div class="bridge-kpi"><span class="bridge-kpi-label">Working Capital Impact</span><span class="bridge-kpi-value" id="kpiWCAbsorption">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Cash Drivers (fallback when no bridge data) -->
+                <div class="section plain-only" id="cashDriversSection" style="display: none;">
+                    <div class="section-header">
+                        <span class="section-num">04</span>
+                        <span class="section-title">Cash Drivers</span>
+                        <span class="section-hint">What's affecting your cash</span>
+                    </div>
+                    <div class="cash-drivers" id="cashDriversList"></div>
+                    <p class="cash-drivers-note">These balances affect your cash, but we need last month's data to show the exact movement. Upload previous month data to unlock the full Cash Bridge.</p>
                 </div>
 
                 <!-- Working Capital Health -->
