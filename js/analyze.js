@@ -247,9 +247,10 @@ function initFileUpload() {
             handleFiles(e.dataTransfer.files);
         });
 
-        // File input change
+        // File input change — reset value after handling so re-uploading same file works
         fileInput.addEventListener('change', () => {
             handleFiles(fileInput.files);
+            fileInput.value = '';
         });
     }
 }
@@ -984,14 +985,21 @@ function collectFormData() {
         }
 
         if (includeComparison) {
-            data.previous = {
-                revenue: parseFloat(document.getElementById('prevRevenue')?.value) || 0,
-                netProfit: parseFloat(document.getElementById('prevNetProfit')?.value) || 0,
-                cash: parseFloat(document.getElementById('prevCash')?.value) || 0,
-                receivables: parseFloat(document.getElementById('prevReceivables')?.value) || 0,
-                inventory: parseFloat(document.getElementById('prevInventory')?.value) || 0,
-                payables: parseFloat(document.getElementById('prevPayables')?.value) || 0
+            // Only include previous fields that have actual values (not empty/zero)
+            // Zero means "not provided" for previous month — we don't know if they had zero revenue
+            const prev = {};
+            const prevFields = {
+                revenue: 'prevRevenue', netProfit: 'prevNetProfit', cash: 'prevCash',
+                receivables: 'prevReceivables', inventory: 'prevInventory', payables: 'prevPayables'
             };
+            for (const [key, fieldId] of Object.entries(prevFields)) {
+                const val = parseFloat(document.getElementById(fieldId)?.value);
+                if (val && val !== 0) prev[key] = val;
+            }
+            // Only include previous data if at least one field was actually filled
+            if (Object.keys(prev).length > 0) {
+                data.previous = prev;
+            }
         }
     } else {
         data.files = uploadedFiles.map(f => f.name);

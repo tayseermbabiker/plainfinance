@@ -1710,6 +1710,7 @@ function updateCashRunway(metrics, currency, current, industry) {
     if (tier === 'positive') {
         bigValueEl.textContent = 'Cash Positive';
         bigValueEl.className = 'runway-big ok runway-text';
+        if (unitEl) unitEl.textContent = ''; // hide "days"/"months" for cash-positive
         if (methodEl) methodEl.textContent = '';
         if (cashoutEl) cashoutEl.textContent = '';
         if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong> and increasing.</p>`;
@@ -1823,6 +1824,15 @@ function updateWeeklyActions(current, metrics, currency, analysis, industry) {
     const actionList = document.getElementById('actionList');
     if (!actionList) return;
 
+    // Determine urgency tier (used by both AI and auto-generated paths)
+    const runwaySafe = metrics.cashRunway === -1 || metrics.cashRunway >= 6;
+    const runwayDanger = metrics.cashRunway >= 0 && metrics.cashRunway < 3;
+    const urgencyMap = runwayDanger
+        ? ['Do Today', 'This Week', 'This Week']
+        : runwaySafe
+        ? ['This Month', 'This Month', 'This Month']
+        : ['This Week', 'This Week', 'This Month'];
+
     // Use AI actions if available
     if (analysis && analysis.action1Title) {
         let actions = [
@@ -1833,21 +1843,20 @@ function updateWeeklyActions(current, metrics, currency, analysis, industry) {
 
         // Safety filter: fix common AI errors
         actions = actions.map(a => {
-            // Fix "collect from suppliers" — should be "collect from customers" or "negotiate with suppliers"
             let title = a.title.replace(/collect.*from.*supplier/i, 'Negotiate extended terms with suppliers');
             let desc = a.desc.replace(/collect.*from.*supplier/i, 'negotiate payment terms with your suppliers');
             return { title, desc };
         });
 
-        actionList.innerHTML = actions.map((a, i) => actionCard(i + 1, a.title, a.desc, null)).join('');
+        actionList.innerHTML = actions.map((a, i) =>
+            actionCard(i + 1, a.title, a.desc, null, urgencyMap[i])
+        ).join('');
         return;
     }
 
     // Auto-generate actions — industry-aware with dynamic urgency
     const actions = [];
     const bench = getDefaultBenchmarks(industry);
-    const runwaySafe = metrics.cashRunway === -1 || metrics.cashRunway >= 6;
-    const runwayDanger = metrics.cashRunway >= 0 && metrics.cashRunway < 3;
 
     // Danger/Watch: urgent cash actions
     if (runwayDanger) {
@@ -1929,13 +1938,6 @@ function updateWeeklyActions(current, metrics, currency, analysis, industry) {
         actions.push(fallbacks[fi % fallbacks.length]);
         fi++;
     }
-
-    // Dynamic urgency based on business health
-    const urgencyMap = runwayDanger
-        ? ['Do Today', 'This Week', 'This Week']
-        : runwaySafe
-        ? ['This Month', 'This Month', 'This Month']
-        : ['This Week', 'This Week', 'This Month'];
 
     actionList.innerHTML = actions.slice(0, 3).map((a, i) =>
         actionCard(i + 1, a.title, a.desc,
@@ -2369,7 +2371,7 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
             <tr><td>DSO</td><td>${dso} days</td><td>${dsoTarget} days</td><td class="${statusIcon(dso, bench.dso.max, true)}">${dso <= bench.dso.max ? 'On target' : 'Over'}</td></tr>
             <tr><td>DIO</td><td>${dio} days</td><td>${dioTarget} days</td><td class="${statusIcon(dio, bench.dio.max, true)}">${dio <= bench.dio.max ? 'On target' : 'Over'}</td></tr>
             <tr><td>DPO</td><td>${dpo} days</td><td>${dpoTarget} days</td><td class="${statusIcon(dpo, bench.dpo.min, false)}">${dpo >= bench.dpo.min ? 'On target' : 'Under'}</td></tr>
-            <tr class="subtotal"><td>CCC</td><td>${ccc} days</td><td>${cccTarget} days</td><td class="${ccc <= cccTarget ? 'ok' : 'warn'}">${ccc <= cccTarget ? 'On target' : 'Over'}</td></tr>
+            <tr class="subtotal"><td>CCC</td><td>${ccc} days</td><td>${Math.max(cccTarget, 0)} days</td><td class="${ccc <= Math.max(cccTarget, cccT.good) ? 'ok' : ccc <= cccT.warn ? 'warn' : 'danger'}">${ccc <= Math.max(cccTarget, cccT.good) ? 'On target' : 'Over'}</td></tr>
         `;
     }
 
