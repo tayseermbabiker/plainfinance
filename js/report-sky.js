@@ -1406,12 +1406,12 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
             'other': { good: 30, warn: 60 }
         };
         const ct = cccThresh[ind2] || cccThresh['other'];
-        const roundCCC = Math.round(ccc);
+        const roundCCC = Math.round(metrics.ccc);
         const roundDSO = Math.round(metrics.dso);
         const roundDPO = Math.round(metrics.dpo);
 
         let insight = '';
-        if (ccc < 0) {
+        if (metrics.ccc < 0) {
             insight = getCCCNegativeAdvice(bench.name);
         } else if (roundCCC >= ct.warn * 1.5) {
             insight = `Your capital is locked up for ${roundCCC} days — this is critical for your industry. Consider invoice factoring to collect receivables quickly. Review slow-paying clients and halt non-essential purchasing.`;
