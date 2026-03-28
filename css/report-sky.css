@@ -1444,6 +1444,17 @@ body {
 .runway-big.danger { color: var(--red); }
 .runway-big.warn   { color: var(--gold); }
 .runway-big.ok     { color: var(--teal); }
+.runway-big.runway-text { font-size: 36px; letter-spacing: -0.5px; }
+.runway-booster {
+  font-size: 13px;
+  color: var(--ink);
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: var(--space-s);
+  line-height: 1.5;
+}
 
 .runway-big-number {
   font-family: 'Barlow Condensed', sans-serif;

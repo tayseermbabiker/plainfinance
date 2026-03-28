@@ -1567,76 +1567,162 @@ function updateCashRunway(metrics, currency, current, industry) {
     const cashoutEl = document.getElementById('runwayCashout');
     const driversEl = document.getElementById('runwayDrivers');
     const interpEl = document.getElementById('runwayInterpretation');
+    const boosterEl = document.getElementById('runwayBooster');
 
-    const methodLabel = {
-        'ytd': 'Based on YTD average burn',
-        'monthly': 'Based on last month burn',
-        'opex': 'Based on monthly expenses'
-    }[metrics.runwayMethod] || 'Based on monthly expenses';
-
-    // Spec v2: Restaurant/Retail show days of revenue, others show months
-    const ind = industry?.toLowerCase();
-    const useDays = ['food', 'restaurant', 'product', 'retail'].includes(ind);
-    const revenue = current.revenue || 0;
+    const ind = industry?.toLowerCase() || 'other';
     const cash = current.cash || 0;
-    const daysOfRevenue = revenue > 0 ? Math.round(cash / (revenue / 30)) : 0;
+    const revenue = current.revenue || 0;
+    const runway = metrics.cashRunway; // months, or -1 for cash-positive
 
-    // Thresholds in months (converted to days for daily industries)
-    const runway = metrics.cashRunway;
-    const displayVal = useDays ? daysOfRevenue : runway;
-    const displayUnit = useDays ? 'days of revenue' : 'months';
-    // For daily industries: 30 days ~ 1 month, so safe=180d, warn=90d, danger<90d
-    const safeThresh = useDays ? 180 : 6;
-    const warnThresh = useDays ? 90 : 3;
-    const lowThresh = useDays ? 30 : 1;
+    // Method tooltip (hidden from UI, shown on hover)
+    const methodTooltip = {
+        'ytd': 'Calculated from your year-to-date cash movement',
+        'monthly': 'Calculated from last month\'s cash change',
+        'opex': 'Estimated from your monthly expenses'
+    }[metrics.runwayMethod] || 'Estimated from your monthly expenses';
+    if (methodEl) methodEl.title = methodTooltip;
+
+    // Industry-specific thresholds (all in months — converted to days for display-only industries)
+    const thresholds = {
+        'food': { safe: 6, warn: 3, useDays: true },
+        'restaurant': { safe: 6, warn: 3, useDays: true },
+        'product': { safe: 6, warn: 3, useDays: true },
+        'retail': { safe: 6, warn: 3, useDays: true },
+        'ecommerce': { safe: 6, warn: 3, useDays: true },
+        'online': { safe: 12, warn: 6, useDays: false },
+        'services': { safe: 6, warn: 3, useDays: false },
+        'service': { safe: 6, warn: 3, useDays: false },
+        'construction': { safe: 9, warn: 4, useDays: false },
+        'manufacturing': { safe: 6, warn: 3, useDays: false },
+        'healthcare': { safe: 6, warn: 3, useDays: false },
+        'other': { safe: 6, warn: 3, useDays: false }
+    };
+    const t = thresholds[ind] || thresholds['other'];
+    const useDays = t.useDays;
+
+    // Always calculate runway in months first (burn-based), then convert to days for display
+    const runwayMonths = runway === -1 ? 999 : runway;
+    const daysDisplay = useDays && revenue > 0 ? Math.round(cash / (revenue / 30)) : 0;
+
+    // ALWAYS determine tier from months (burn-based) to avoid contradictions
+    let tier;
+    if (runway === -1) tier = 'positive';
+    else if (runwayMonths >= t.safe) tier = 'safe';
+    else if (runwayMonths >= t.warn) tier = 'warn';
+    else if (runwayMonths >= 1) tier = 'low';
+    else tier = 'critical';
+
+    // For daily industries: show days only when both metrics agree on the tier
+    // If burn-based runway is safe but days-of-revenue looks bad, show months instead
+    const daysAgree = daysDisplay >= t.warn * 30; // days also look at least OK
+    const effectiveUseDays = useDays && (daysAgree || tier === 'low' || tier === 'critical');
+    const displayVal = effectiveUseDays ? daysDisplay : runwayMonths;
+    const displayUnit = effectiveUseDays ? 'days' : 'months';
 
     if (unitEl) unitEl.textContent = displayUnit;
 
-    if (runway === -1) {
-        bigValueEl.textContent = '\u221E';
-        bigValueEl.className = 'runway-big ok';
-        methodEl.textContent = 'Your cash is growing, not burning';
-        if (cashoutEl) cashoutEl.textContent = '';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong> and increasing.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p>Your business generates more cash than it uses. This is the healthiest position.</p>`;
-    } else if (displayVal >= safeThresh) {
-        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
-        bigValueEl.className = 'runway-big ok';
-        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
-        if (cashoutEl) cashoutEl.textContent = '';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>. Comfortable buffer.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p>You have time to plan, invest, and weather surprises.</p>`;
-    } else if (displayVal >= warnThresh) {
-        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
-        bigValueEl.className = 'runway-big warn';
-        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
-        const cashOutDate = getCashOutDate(useDays ? displayVal / 30 : displayVal);
-        if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p>Not critical, but start improving cash flow. Collect faster, delay non-essential spending.</p>`;
-    } else if (displayVal >= lowThresh) {
-        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
-        bigValueEl.className = 'runway-big danger';
-        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
-        const cashOutDate = getCashOutDate(useDays ? displayVal / 30 : displayVal);
-        if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p><strong>Action needed.</strong> Collect receivables urgently, cut non-essential spending, consider short-term credit.</p>`;
-    } else {
-        bigValueEl.textContent = useDays ? Math.round(displayVal) : displayVal.toFixed(1);
-        bigValueEl.className = 'runway-big danger';
-        methodEl.textContent = useDays ? 'Based on daily revenue rate' : methodLabel;
-        if (cashoutEl) cashoutEl.textContent = 'Cash runway is critical.';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p><strong>Your cash is very low</strong> — take action this week. Collect receivables, pause non-essential spending, and talk to your bank about options.</p>`;
+    // Industry-specific interpretation
+    const interpTexts = {
+        positive: {
+            'food': 'Your restaurant generates more cash than it uses. Reinvest in equipment, marketing, or staff development.',
+            'online': 'Your business is cash-positive. Consider investing in product development or customer acquisition.',
+            'construction': 'Cash is growing — use this buffer for project delays or equipment investment.',
+            'services': 'You generate more cash than you spend. Consider hiring, marketing, or building reserves.',
+            '_default': 'Your business generates more cash than it uses. You can invest, hire, or build reserves.'
+        },
+        safe: {
+            'food': `At this pace, you have enough cash to cover about ${useDays ? Math.round(daysDisplay / 7) + ' weeks' : Math.floor(runwayMonths) + ' months'} of food, labor, and overhead costs.`,
+            'online': `At your current burn rate, you have ${Math.floor(runwayMonths)} months of runway. This gives you time to grow or optimize before needing funding.`,
+            'construction': `This covers approximately ${Math.floor(runwayMonths)} months of overhead between projects. Comfortable buffer for project delays.`,
+            'manufacturing': `You have ${Math.floor(runwayMonths)} months of cash to cover production costs and overhead. Solid position for planning.`,
+            '_default': `You have time to plan, invest, and weather surprises. Cash balance: ${currency} ${formatNumber(cash)}.`
+        },
+        warn: {
+            'food': `Cash covers about ${useDays ? Math.round(daysDisplay / 7) + ' weeks' : runwayMonths.toFixed(1) + ' months'} of expenses. Start tightening — reduce waste, speed up catering collections.`,
+            'online': `${runwayMonths.toFixed(1)} months of runway. If not yet profitable, start planning your next funding round or path to breakeven.`,
+            'construction': `${runwayMonths.toFixed(1)} months of overhead coverage. Chase outstanding progress billings and delay non-critical equipment purchases.`,
+            '_default': `Not critical yet, but start improving cash flow. Collect receivables faster and delay non-essential spending.`
+        },
+        low: {
+            'food': `Cash is dangerously low — only ${useDays ? daysDisplay + ' days' : runwayMonths.toFixed(1) + ' months'} left. Negotiate supplier terms, reduce portions or menu items, collect catering invoices immediately.`,
+            'online': `Only ${runwayMonths.toFixed(1)} months of runway left. Cut non-essential costs immediately and accelerate revenue.`,
+            'construction': `${runwayMonths.toFixed(1)} months left. Demand milestone payments on active projects and pause new commitments until cash improves.`,
+            '_default': `Action needed. Collect receivables urgently, cut non-essential spending, and consider short-term credit.`
+        },
+        critical: {
+            'food': `Your cash is nearly gone. Contact suppliers about extended terms today. Collect every outstanding invoice this week.`,
+            'online': `Cash will run out within weeks. Cut all non-essential expenses immediately and focus on revenue.`,
+            'construction': `Cash is critical. Do not start new projects. Collect all outstanding billings and retention money immediately.`,
+            '_default': `Your cash is very low — take action this week. Collect receivables, pause spending, and talk to your bank.`
+        }
+    };
+
+    function getInterp(tier) {
+        const tierTexts = interpTexts[tier];
+        return tierTexts[ind] || tierTexts['_default'];
     }
 
-    // Industry benchmark bar
-    if (useDays) {
-        renderBenchBar('benchRunway', 'Cash Runway', daysOfRevenue, { min: 30, max: 90, ideal: 60 }, ' days', true);
+    // Render based on tier
+    if (tier === 'positive') {
+        bigValueEl.textContent = 'Cash Positive';
+        bigValueEl.className = 'runway-big ok runway-text';
+        if (methodEl) methodEl.textContent = '';
+        if (cashoutEl) cashoutEl.textContent = '';
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong> and increasing.</p>`;
+        if (interpEl) interpEl.innerHTML = `<p>${getInterp('positive')}</p>`;
     } else {
-        const runwayMonths = runway === -1 ? 12 : runway;
-        renderBenchBar('benchRunway', 'Cash Runway', runwayMonths, { min: 3, max: 6, ideal: 6 }, ' months', true);
+        bigValueEl.textContent = effectiveUseDays ? Math.round(displayVal) : displayVal.toFixed(1);
+        bigValueEl.className = `runway-big ${tier === 'safe' ? 'ok' : tier === 'warn' ? 'warn' : 'danger'}`;
+        if (methodEl) methodEl.textContent = '';
+
+        // Cash-out date: only for warn/low/critical
+        if (tier !== 'safe' && cashoutEl) {
+            const cashOutDate = getCashOutDate(runwayMonths);
+            cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
+        } else if (cashoutEl) {
+            cashoutEl.textContent = '';
+        }
+
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
+        if (interpEl) interpEl.innerHTML = `<p>${getInterp(tier)}</p>`;
+    }
+
+    // Runway Booster insight — show what would extend runway
+    if (boosterEl && tier !== 'positive' && tier !== 'safe') {
+        const ar = current.receivables || 0;
+        const inv = current.inventory || 0;
+        const drawings = current.ownerDrawings || 0;
+        const monthlyBurn = runwayMonths > 0 ? cash / runwayMonths : 0;
+        let booster = '';
+
+        if (ar > 0 && monthlyBurn > 0) {
+            const arBoost = (ar * 0.5) / monthlyBurn;
+            booster = `If you collected 50% of receivables (${currency} ${formatNumber(Math.round(ar * 0.5))}), runway extends to ${(runwayMonths + arBoost).toFixed(1)} months.`;
+        } else if (inv > 0 && monthlyBurn > 0) {
+            const invBoost = (inv * 0.2) / monthlyBurn;
+            booster = `Reducing inventory by 20% (${currency} ${formatNumber(Math.round(inv * 0.2))}) adds ${invBoost.toFixed(1)} months of runway.`;
+        } else if (drawings > 0 && monthlyBurn > 0) {
+            const drawBoost = (drawings * 0.5) / monthlyBurn;
+            booster = `Cutting drawings by half adds ${drawBoost.toFixed(1)} months of runway.`;
+        }
+
+        if (booster) {
+            boosterEl.style.display = '';
+            boosterEl.textContent = booster;
+        } else {
+            boosterEl.style.display = 'none';
+        }
+    } else if (boosterEl) {
+        boosterEl.style.display = 'none';
+    }
+
+    // Industry benchmark bar (uses display units)
+    if (effectiveUseDays) {
+        const benchDays = runway === -1 ? t.safe * 30 : daysDisplay;
+        renderBenchBar('benchRunway', 'How long your cash will last', benchDays, { min: t.warn * 30, max: t.safe * 30, ideal: t.safe * 30 }, ' days', true);
+    } else {
+        const benchMonths = runway === -1 ? t.safe : runwayMonths;
+        renderBenchBar('benchRunway', 'How long your cash will last', benchMonths, { min: t.warn, max: t.safe, ideal: t.safe }, ' months', true);
     }
 }
 
