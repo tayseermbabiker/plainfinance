@@ -829,7 +829,7 @@ ${current.ownerDrawings > 0 ? `- Owner Drawings: ${currency} ${(current.ownerDra
 
 ${investigationFactors[industryType] || investigationFactors['other']}
 
-TONE CONSISTENCY: ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'The overall status is DANGER. Do NOT use reassuring language like "plenty of breathing room" or "comfortable" anywhere in the report. Every section should reflect urgency.' : metrics.netMargin <= 0 || (metrics.cashRunway >= 0 && metrics.cashRunway < 6) ? 'The overall status is CAUTION. Be honest about risks without being alarmist.' : 'The overall status is HEALTHY. Be encouraging but still flag areas for improvement.'}
+TONE CONSISTENCY: ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'The overall status is DANGER. Do NOT use reassuring language like "plenty of breathing room", "comfortable", "solid cushion", or "strong position" anywhere in the report. Every section should reflect urgency.' : metrics.netMargin <= 0 ? 'The overall status is LOSS-MAKING. The business is losing money. Do NOT use positive language like "solid cushion", "strong position", or "comfortable". Be honest: the business is losing money and needs to fix it. In the MEETING_SUMMARY, mention the loss and what is being done about it.' : (metrics.cashRunway >= 0 && metrics.cashRunway < 6) ? 'The overall status is CAUTION. Be honest about risks without being alarmist. Do not say "solid cushion" or "strong position" if margins are thin.' : 'The overall status is HEALTHY. Be encouraging but still flag areas for improvement.'}
 
 IMPORTANT: Put each section on its own line. Do not combine multiple sections on one line.`;
 

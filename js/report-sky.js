@@ -1846,8 +1846,10 @@ function updateWeeklyActions(current, metrics, currency, analysis, industry) {
     if (!actionList) return;
 
     // Determine urgency tier (used by both AI and auto-generated paths)
-    const runwaySafe = metrics.cashRunway === -1 || metrics.cashRunway >= 6;
-    const runwayDanger = metrics.cashRunway >= 0 && metrics.cashRunway < 3;
+    // Loss-making businesses need urgency even if runway looks OK
+    const isLosing = (current.netProfit || 0) < 0;
+    const runwaySafe = !isLosing && (metrics.cashRunway === -1 || metrics.cashRunway >= 6);
+    const runwayDanger = (metrics.cashRunway >= 0 && metrics.cashRunway < 3) || (isLosing && metrics.cashRunway >= 0 && metrics.cashRunway < 6);
     const urgencyMap = runwayDanger
         ? ['Do Today', 'This Week', 'This Week']
         : runwaySafe
@@ -2361,15 +2363,15 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
         incomeBody.innerHTML = `
             <tr><td>Revenue</td><td>${currency} ${formatNumber(revenue)}</td><td>100%</td><td>-</td><td>-</td></tr>
             <tr><td>${COGS_LABELS[industry] || 'COGS'}</td><td>(${currency} ${formatNumber(cogs)})</td><td>${cogsPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
-            <tr class="subtotal"><td>Gross Profit</td><td>${currency} ${formatNumber(grossProfit)}</td><td>${gm.toFixed(1)}%</td><td>${gmBench}%</td><td>${(gm - gmBench).toFixed(1)}%</td></tr>
+            <tr class="subtotal"><td>Gross Profit</td><td>${grossProfit < 0 ? '-' : ''}${currency} ${formatNumber(grossProfit)}</td><td>${gm.toFixed(1)}%</td><td>${gmBench}%</td><td>${(gm - gmBench).toFixed(1)}%</td></tr>
             <tr><td>Operating Expenses</td><td>(${currency} ${formatNumber(opex)})</td><td>${opexPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
-            <tr class="subtotal"><td>Operating Profit (EBITDA*)</td><td>${currency} ${formatNumber(operatingProfit)}</td><td>${ebitdaPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
+            <tr class="subtotal"><td>Operating Profit (EBITDA*)</td><td>${operatingProfit < 0 ? '-' : ''}${currency} ${formatNumber(operatingProfit)}</td><td>${ebitdaPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
         `;
     }
     if (incomeFoot) {
         const nmBench = bench.netMargin.ideal || bench.netMargin.min;
         incomeFoot.innerHTML = `
-            <tr><td>Net Income</td><td>${currency} ${formatNumber(netProfit)}</td><td>${nm.toFixed(1)}%</td><td>${nmBench}%</td><td>${(nm - nmBench).toFixed(1)}%</td></tr>
+            <tr><td>Net Income</td><td>${netProfit < 0 ? '-' : ''}${currency} ${formatNumber(netProfit)}</td><td>${nm.toFixed(1)}%</td><td>${nmBench}%</td><td>${(nm - nmBench).toFixed(1)}%</td></tr>
         `;
     }
 
