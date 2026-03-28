@@ -952,7 +952,8 @@ let globalTier = 'safe';
 
 function updateStatusBadge(metrics) {
     const badgeEl = document.getElementById('healthStatus');
-    const runway = metrics.runwayMonths || metrics.cashRunway || 0;
+    const rawRunway = metrics.runwayMonths || metrics.cashRunway || 0;
+    const runway = rawRunway === -1 ? 999 : rawRunway; // -1 = cash positive = best case
     const netMargin = metrics.netMargin || 0;
     const profitable = netMargin > 0;
 
@@ -2002,7 +2003,7 @@ async function downloadInvestorPDF() {
     profitEl.textContent = `${currency} ${formatNumber(current.netProfit)}`;
     profitEl.style.color = current.netProfit >= 0 ? '#059669' : '#dc2626';
     document.getElementById('inv-cash').textContent = `${currency} ${formatNumber(current.cash)}`;
-    document.getElementById('inv-runway').textContent = `${metrics.cashRunway || 0} mo`;
+    document.getElementById('inv-runway').textContent = metrics.cashRunway === -1 ? 'Cash positive' : `${(metrics.cashRunway || 0).toFixed(1)} mo`;
 
     document.getElementById('inv-gross-margin').textContent = `${metrics.grossMargin || 0}%`;
     document.getElementById('inv-net-margin').textContent = `${metrics.netMargin || 0}%`;

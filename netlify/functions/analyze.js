@@ -882,14 +882,14 @@ function getDefaultAnalysis(data, metrics) {
     return {
         heroSummary: `You ${profitStatus} of ${currency} ${Math.abs(current.netProfit).toLocaleString()} this month. From every ${currency} 1 of sales, you kept ${currency} ${marginPerUnit} as profit.`,
 
-        narrative: `This month you generated ${currency} ${current.revenue.toLocaleString()} in revenue. Your gross margin is ${metrics.grossMargin}%, which means you keep ${currency} ${(metrics.grossMargin / 100).toFixed(2)} from each ${currency} 1 of sales after product costs.\n\nYour cash position is ${currency} ${current.cash.toLocaleString()}, which gives you about ${metrics.cashRunway} months of runway at current spending levels.${metrics.cashRunway < 3 ? ' This is below the safe level of 3 months.' : ''}`,
+        narrative: `This month you generated ${currency} ${current.revenue.toLocaleString()} in revenue. Your gross margin is ${metrics.grossMargin}%, which means you keep ${currency} ${(metrics.grossMargin / 100).toFixed(2)} from each ${currency} 1 of sales after product costs.\n\nYour cash position is ${currency} ${current.cash.toLocaleString()}${metrics.cashRunway === -1 ? ', and your cash is growing — you generate more than you spend.' : `, which gives you about ${metrics.cashRunway} months of runway at current spending levels.${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? ' This is below the safe level of 3 months.' : ''}`}`,
 
         cashCycleExplanation: `Your cash is tied up for ${metrics.ccc} days. Stock sits in your warehouse for ${metrics.dio} days, then customers take ${metrics.dso} days to pay you, but you pay suppliers in ${metrics.dpo} days. ${metrics.ccc > 30 ? 'This cycle is longer than ideal, meaning you need more working capital to keep the business running.' : 'This is a reasonable cycle for your type of business.'}`,
 
-        action1Title: metrics.cashRunway < 3
+        action1Title: metrics.cashRunway >= 0 && metrics.cashRunway < 3
             ? `Collect ${currency} ${Math.round(current.receivables * 0.3).toLocaleString()} from customers`
             : 'Review your pricing strategy',
-        action1Desc: metrics.cashRunway < 3
+        action1Desc: metrics.cashRunway >= 0 && metrics.cashRunway < 3
             ? `You have ${currency} ${current.receivables.toLocaleString()} in receivables. Contact your top 3 customers this week and agree on payment dates.`
             : `Your margins could be improved. Review if your prices reflect your true costs and value.`,
 
@@ -907,6 +907,6 @@ function getDefaultAnalysis(data, metrics) {
             ? `Stock sits for ${metrics.dio} days. Order smaller quantities more frequently to free up cash.`
             : `Aim to have at least 3 months of expenses in cash reserves for safety.`,
 
-        meetingSummary: `Our revenue is ${currency} ${current.revenue.toLocaleString()} with a net margin of ${metrics.netMargin}%. We are ${current.netProfit >= 0 ? 'profitable' : 'working to return to profitability'} and focused on ${metrics.cashRunway < 3 ? 'improving our cash position' : 'maintaining healthy cash flow'}. Current ratio is ${metrics.currentRatio}.`
+        meetingSummary: `Our revenue is ${currency} ${current.revenue.toLocaleString()} with a net margin of ${metrics.netMargin}%. We are ${current.netProfit >= 0 ? 'profitable' : 'working to return to profitability'} and focused on ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'improving our cash position' : 'maintaining healthy cash flow'}. Current ratio is ${metrics.currentRatio}.`
     };
 }
