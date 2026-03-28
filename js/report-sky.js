@@ -354,15 +354,17 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
     bridgeSection.style.display = 'block';
     if (driversSection) driversSection.style.display = 'none';
 
-    const profit = current.netProfit || 0;
+    // Use YTD values when bridge spans YTD, single-month when spans 1 month
+    const useYTD = bridgeSpan === 'ytd' && ytd;
+    const profit = useYTD && ytd.netProfit ? ytd.netProfit : (current.netProfit || 0);
     const arChange = hasPrevWC ? ((current.receivables || 0) - (previous.receivables || 0)) : 0;
     const invChange = hasPrevWC ? ((current.inventory || 0) - (previous.inventory || 0)) : 0;
     const apChange = hasPrevWC ? ((current.payables || 0) - (previous.payables || 0)) : 0;
-    const loanRepay = current.loanRepayments || 0;
-    const drawings = current.ownerDrawings || 0;
-    const capex = current.assetPurchases || 0;
-    const taxCollected = current.vatCollected || 0;
-    const taxPaid = current.vatPaid || 0;
+    const loanRepay = useYTD && ytd.loanRepayments ? ytd.loanRepayments : (current.loanRepayments || 0);
+    const drawings = useYTD && ytd.ownerDrawings ? ytd.ownerDrawings : (current.ownerDrawings || 0);
+    const capex = useYTD && ytd.assetPurchases ? ytd.assetPurchases : (current.assetPurchases || 0);
+    const taxCollected = useYTD && ytd.taxCollected ? ytd.taxCollected : (current.vatCollected || 0);
+    const taxPaid = useYTD && ytd.taxPaid ? ytd.taxPaid : (current.vatPaid || 0);
     const taxNet = taxCollected - taxPaid;
     const revenue = current.revenue || 0;
 

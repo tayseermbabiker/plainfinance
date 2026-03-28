@@ -11,8 +11,8 @@ Inventory,210000,185000,,Value of stock on hand (0 if services)
 Accounts Payable (AP),98000,88000,,Money you owe suppliers
 Short-term Loans,50000,,,Loans due within 12 months
 Other Liabilities,0,,,Credit cards + accrued expenses etc
-Loan Repayments,5000,,,Principal paid this month (not interest)
-Owner Drawings,10000,,,Money taken out for personal use
-Asset Purchases,0,,,Equipment or assets bought this month
-Tax Collected from Customers,25000,,,Sales tax or VAT charged to customers
-Tax Paid on Purchases,16250,,,Sales tax or VAT paid on business expenses
+Loan Repayments,5000,,15000,Principal paid this month (not interest)
+Owner Drawings,10000,,30000,Money taken out for personal use
+Asset Purchases,0,,5000,Equipment or assets bought this month
+Tax Collected from Customers,25000,,75000,Sales tax or VAT charged to customers
+Tax Paid on Purchases,16250,,48750,Sales tax or VAT paid on business expenses

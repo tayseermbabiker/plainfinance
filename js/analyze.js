@@ -419,7 +419,16 @@ function parseCSVTemplate(file) {
                     'labour / staff cost': 'ytdLabourCost',
                     'staff cost': 'ytdLabourCost',
                     'wages': 'ytdLabourCost',
-                    'wages and salaries': 'ytdLabourCost'
+                    'wages and salaries': 'ytdLabourCost',
+                    'loan repayments': 'ytdLoanRepayments',
+                    'owner drawings': 'ytdOwnerDrawings',
+                    'asset purchases': 'ytdAssetPurchases',
+                    'tax collected from customers': 'ytdTaxCollected',
+                    'tax collected': 'ytdTaxCollected',
+                    'vat collected': 'ytdTaxCollected',
+                    'tax paid on purchases': 'ytdTaxPaid',
+                    'tax paid': 'ytdTaxPaid',
+                    'vat paid': 'ytdTaxPaid'
                 };
 
                 const data = { current: {}, previous: {}, ytd: {} };
@@ -568,7 +577,14 @@ function populateFormFromCSV(data) {
 
     // Populate YTD fields if present
     // Map ytd data keys to actual form field IDs
-    const ytdFieldIdMap = { 'startingCash': 'ytdStartingCash' };
+    const ytdFieldIdMap = {
+        'startingCash': 'ytdStartingCash',
+        'loanRepayments': 'ytdLoanRepayments',
+        'ownerDrawings': 'ytdOwnerDrawings',
+        'assetPurchases': 'ytdAssetPurchases',
+        'taxCollected': 'ytdTaxCollected',
+        'taxPaid': 'ytdTaxPaid'
+    };
     if (data.ytd && Object.keys(data.ytd).length > 0) {
         Object.keys(data.ytd).forEach(fieldId => {
             const actualId = ytdFieldIdMap[fieldId] || fieldId;
@@ -980,7 +996,12 @@ function collectFormData() {
                 cogs: parseFloat(document.getElementById('ytdCogs')?.value) || 0,
                 opex: parseFloat(document.getElementById('ytdOpex')?.value) || 0,
                 netProfit: parseFloat(document.getElementById('ytdNetProfit')?.value) || 0,
-                startingCash: ytdStartingCash
+                startingCash: ytdStartingCash,
+                loanRepayments: parseFloat(document.getElementById('ytdLoanRepayments')?.value) || 0,
+                ownerDrawings: parseFloat(document.getElementById('ytdOwnerDrawings')?.value) || 0,
+                assetPurchases: parseFloat(document.getElementById('ytdAssetPurchases')?.value) || 0,
+                taxCollected: parseFloat(document.getElementById('ytdTaxCollected')?.value) || 0,
+                taxPaid: parseFloat(document.getElementById('ytdTaxPaid')?.value) || 0
             };
             // Calculate months elapsed (current month number)
             const currentMonth = parseInt(document.getElementById('reportMonth')?.value) || 1;
