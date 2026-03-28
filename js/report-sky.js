@@ -84,15 +84,26 @@ function updateOwnerHeadline(current, metrics, currency) {
     const cash = current.cash || 0;
     const revenue = current.revenue || 0;
 
+    // Check for operational stress even when cash/profit look safe
+    const hasOperationalStress = (metrics.netMargin < 5 && metrics.netMargin > 0)
+        || metrics.ccc > 20
+        || (metrics.grossMargin < 40 && metrics.grossMargin > 0);
+
     let headline = '';
     let tier = 'danger';
 
-    if (profitable && cashPositive) {
+    if (profitable && cashPositive && !hasOperationalStress) {
         tier = 'safe';
         headline = `Good month. Your business is profitable and generating cash. You're in a strong position — focus on growth and reinvestment.`;
-    } else if (profitable && runwayMonths >= 6) {
+    } else if (profitable && cashPositive && hasOperationalStress) {
+        tier = 'safe';
+        headline = `Profitable and cash is growing, but watch your costs — margins are thin and some operational metrics need attention. Read the details below.`;
+    } else if (profitable && runwayMonths >= 6 && !hasOperationalStress) {
         tier = 'safe';
         headline = `Good month. Your business is profitable and you have ${runwayMonths.toFixed(1)} months of cash runway. Keep doing what you're doing.`;
+    } else if (profitable && runwayMonths >= 6 && hasOperationalStress) {
+        tier = 'safe';
+        headline = `Profitable with ${runwayMonths.toFixed(1)} months of runway, but margins are tight and some numbers need your attention. You have time to fix them.`;
     } else if (profitable && runwayMonths >= 3) {
         tier = 'safe';
         headline = `Profitable month, but cash runway is ${runwayMonths.toFixed(1)} months. You have time, but start tightening collections.`;
