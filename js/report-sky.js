@@ -316,13 +316,19 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
 
     // Determine starting cash:
     // 1. Previous month cash (best — bridge spans 1 month)
-    // 2. Opening cash / YTD starting cash (only for January — otherwise spans too many months)
+    // 2. Opening cash / YTD starting cash (spans multiple months — hint adjusts)
     let startCash = 0;
+    let bridgeSpan = 'month';
     if (hasPrevious && previous.cash > 0) {
         startCash = previous.cash;
-    } else if (reportMonth === 1) {
+    } else {
         startCash = current.openingCash || (ytd && ytd.startingCash) || 0;
+        if (startCash > 0 && reportMonth > 1) bridgeSpan = 'ytd';
     }
+
+    // Update hint based on span
+    const hintEl = document.getElementById('bridgeHint');
+    if (hintEl) hintEl.textContent = bridgeSpan === 'ytd' ? 'January to end of month (year to date)' : 'Start to end of month';
 
     const endCash = current.cash || 0;
     const hasPrevWC = previous && previous.receivables !== undefined;
