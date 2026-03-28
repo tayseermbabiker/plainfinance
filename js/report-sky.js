@@ -2278,16 +2278,35 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
     const overheadPct = revenue > 0 ? (opex / revenue) * 100 : 0;
     const runwayVal = metrics.cashRunway === -1 ? 'Cash positive' : `${(metrics.cashRunway || 0).toFixed(1)} mo`;
 
+    // Industry-specific CCC and runway thresholds for technical view
+    const ind = industry?.toLowerCase() || 'other';
+    const cccT = {
+        'food': { good: 10, warn: 20 }, 'restaurant': { good: 10, warn: 20 },
+        'product': { good: 20, warn: 45 }, 'retail': { good: 20, warn: 45 },
+        'online': { good: 10, warn: 25 }, 'ecommerce': { good: 10, warn: 25 },
+        'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
+        'construction': { good: 45, warn: 75 },
+        'manufacturing': { good: 40, warn: 70 },
+        'healthcare': { good: 25, warn: 50 },
+        'other': { good: 30, warn: 60 }
+    }[ind] || { good: 30, warn: 60 };
+    const runT = {
+        'online': { safe: 12, warn: 6 },
+        'construction': { safe: 9, warn: 4 },
+        '_default': { safe: 6, warn: 3 }
+    }[ind] || { safe: 6, warn: 3 };
+
     // Ratio grid
     const ratioGrid = document.getElementById('techRatioGrid');
     if (ratioGrid) {
+        const cccVal = Math.round(metrics.ccc || 0);
         const ratios = [
             { label: 'Gross Margin', value: `${gm.toFixed(1)}%`, status: gm >= bench.grossMargin.min ? 'ok' : 'warn' },
             { label: 'Net Margin', value: `${nm.toFixed(1)}%`, status: nm >= bench.netMargin.min ? 'ok' : nm >= 0 ? 'warn' : 'danger' },
             { label: 'Current Ratio', value: `${(metrics.currentRatio || 0).toFixed(2)}x`, status: metrics.currentRatio >= 1.5 ? 'ok' : metrics.currentRatio >= 1 ? 'warn' : 'danger' },
             { label: 'Quick Ratio', value: `${quickRatio.toFixed(2)}x`, status: quickRatio >= 1 ? 'ok' : quickRatio >= 0.5 ? 'warn' : 'danger' },
-            { label: 'CCC', value: `${Math.round(metrics.ccc || 0)} days`, status: (metrics.ccc || 0) <= 30 ? 'ok' : (metrics.ccc || 0) <= 60 ? 'warn' : 'danger' },
-            { label: 'Cash Runway', value: runwayVal, status: metrics.cashRunway === -1 || metrics.cashRunway >= 6 ? 'ok' : metrics.cashRunway >= 3 ? 'warn' : 'danger' },
+            { label: 'CCC', value: `${cccVal} days`, status: cccVal < cccT.good ? 'ok' : cccVal < cccT.warn ? 'warn' : 'danger' },
+            { label: 'Cash Runway', value: runwayVal, status: metrics.cashRunway === -1 || metrics.cashRunway >= runT.safe ? 'ok' : metrics.cashRunway >= runT.warn ? 'warn' : 'danger' },
             { label: 'Cash vs AP', value: `${cashVsAP.toFixed(2)}x`, status: cashVsAP >= 1.5 ? 'ok' : cashVsAP >= 1 ? 'warn' : 'danger' },
             { label: 'Overhead %', value: `${overheadPct.toFixed(1)}%`, status: overheadPct <= 40 ? 'ok' : overheadPct <= 60 ? 'warn' : 'danger' }
         ];
@@ -2313,7 +2332,7 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
             <tr><td>${COGS_LABELS[industry] || 'COGS'}</td><td>(${currency} ${formatNumber(cogs)})</td><td>${cogsPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
             <tr class="subtotal"><td>Gross Profit</td><td>${currency} ${formatNumber(grossProfit)}</td><td>${gm.toFixed(1)}%</td><td>${gmBench}%</td><td>${(gm - gmBench).toFixed(1)}%</td></tr>
             <tr><td>Operating Expenses</td><td>(${currency} ${formatNumber(opex)})</td><td>${opexPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
-            <tr class="subtotal"><td>EBITDA</td><td>${currency} ${formatNumber(operatingProfit)}</td><td>${ebitdaPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
+            <tr class="subtotal"><td>Operating Profit (EBITDA*)</td><td>${currency} ${formatNumber(operatingProfit)}</td><td>${ebitdaPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
         `;
     }
     if (incomeFoot) {
@@ -2357,11 +2376,11 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
         const surplus = fcf - loanRepayments;
         fcfBody.innerHTML = `
             <tr><td>Net Profit</td><td>${currency} ${formatNumber(netProfit)}</td></tr>
-            <tr><td>Capital Expenditure</td><td>(${currency} ${formatNumber(capex)})</td></tr>
-            <tr class="subtotal"><td>Free Cash Flow</td><td>${currency} ${formatNumber(fcf)}</td></tr>
+            <tr><td>Equipment & asset purchases</td><td>(${currency} ${formatNumber(capex)})</td></tr>
+            <tr class="subtotal"><td>Cash Generated (FCF)</td><td>${currency} ${formatNumber(fcf)}</td></tr>
             ${loanRepayments > 0 ? `
-            <tr><td>Loan Repayments</td><td>(${currency} ${formatNumber(loanRepayments)})</td></tr>
-            <tr class="subtotal"><td>Surplus / Shortfall</td><td>${currency} ${formatNumber(surplus)}</td></tr>
+            <tr><td>Loan payments</td><td>(${currency} ${formatNumber(loanRepayments)})</td></tr>
+            <tr class="subtotal"><td>Cash after loan payments</td><td>${currency} ${formatNumber(surplus)}</td></tr>
             ` : ''}
         `;
     }
