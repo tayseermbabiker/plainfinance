@@ -1910,12 +1910,16 @@ function updateWeeklyActions(current, metrics, currency, analysis, industry) {
         }
     }
 
-    // Fallback
+    // Fallback — varied generic actions
+    const fallbacks = [
+        { title: 'Review operating expenses', desc: 'Look for subscriptions, services, or costs that can be renegotiated or eliminated.' },
+        { title: 'Set up a weekly cash check', desc: 'Spend 10 minutes every Monday reviewing your bank balance and outstanding invoices.' },
+        { title: 'Talk to your accountant', desc: 'Share this report and ask for their top recommendation based on your numbers.' }
+    ];
+    let fi = 0;
     while (actions.length < 3) {
-        actions.push({
-            title: 'Review operating expenses',
-            desc: 'Look for subscriptions, services, or costs that can be renegotiated or eliminated.'
-        });
+        actions.push(fallbacks[fi % fallbacks.length]);
+        fi++;
     }
 
     // Dynamic urgency based on business health
