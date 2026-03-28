@@ -376,6 +376,12 @@ function parseCSVTemplate(file) {
                     'cash at start of year': 'ytdStartingCash',
                     'ytd starting cash': 'ytdStartingCash',
                     'starting cash (ytd)': 'ytdStartingCash',
+                    'opening ar': 'ytdOpeningAR',
+                    'opening ar (start of year)': 'ytdOpeningAR',
+                    'opening inventory': 'ytdOpeningInventory',
+                    'opening inventory (start of year)': 'ytdOpeningInventory',
+                    'opening ap': 'ytdOpeningAP',
+                    'opening ap (start of year)': 'ytdOpeningAP',
                     'loan repayments': 'loanRepayments',
                     'owner drawings': 'ownerDrawings',
                     'drawings': 'ownerDrawings',
@@ -464,8 +470,15 @@ function parseCSVTemplate(file) {
                     // Map to current month fields
                     if (fieldMap[fieldName]) {
                         const targetField = fieldMap[fieldName];
+                        // Opening balance fields go into ytd object
                         if (targetField === 'ytdStartingCash') {
                             data.ytd.startingCash = thisMonthValue;
+                        } else if (targetField === 'ytdOpeningAR') {
+                            data.ytd.openingAR = thisMonthValue;
+                        } else if (targetField === 'ytdOpeningInventory') {
+                            data.ytd.openingInventory = thisMonthValue;
+                        } else if (targetField === 'ytdOpeningAP') {
+                            data.ytd.openingAP = thisMonthValue;
                         } else {
                             data.current[targetField] = thisMonthValue;
                         }
@@ -579,6 +592,9 @@ function populateFormFromCSV(data) {
     // Map ytd data keys to actual form field IDs
     const ytdFieldIdMap = {
         'startingCash': 'ytdStartingCash',
+        'openingAR': 'ytdOpeningAR',
+        'openingInventory': 'ytdOpeningInventory',
+        'openingAP': 'ytdOpeningAP',
         'loanRepayments': 'ytdLoanRepayments',
         'ownerDrawings': 'ytdOwnerDrawings',
         'assetPurchases': 'ytdAssetPurchases',

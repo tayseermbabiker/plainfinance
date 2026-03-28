@@ -357,9 +357,20 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
     // Use YTD values when bridge spans YTD, single-month when spans 1 month
     const useYTD = bridgeSpan === 'ytd' && ytd;
     const profit = useYTD && ytd.netProfit ? ytd.netProfit : (current.netProfit || 0);
-    const arChange = hasPrevWC ? ((current.receivables || 0) - (previous.receivables || 0)) : 0;
-    const invChange = hasPrevWC ? ((current.inventory || 0) - (previous.inventory || 0)) : 0;
-    const apChange = hasPrevWC ? ((current.payables || 0) - (previous.payables || 0)) : 0;
+    // WC changes: use opening balances for YTD bridge, previous month for 1-month bridge
+    const hasOpeningWC = useYTD && ytd && (ytd.openingAR || ytd.openingInventory || ytd.openingAP);
+    let arChange = 0, invChange = 0, apChange = 0;
+    if (hasOpeningWC) {
+        // YTD: current balance - Jan 1 balance
+        arChange = (current.receivables || 0) - (ytd.openingAR || 0);
+        invChange = (current.inventory || 0) - (ytd.openingInventory || 0);
+        apChange = (current.payables || 0) - (ytd.openingAP || 0);
+    } else if (hasPrevWC) {
+        // 1-month: current - previous month
+        arChange = (current.receivables || 0) - (previous.receivables || 0);
+        invChange = (current.inventory || 0) - (previous.inventory || 0);
+        apChange = (current.payables || 0) - (previous.payables || 0);
+    }
     const loanRepay = useYTD && ytd.loanRepayments ? ytd.loanRepayments : (current.loanRepayments || 0);
     const drawings = useYTD && ytd.ownerDrawings ? ytd.ownerDrawings : (current.ownerDrawings || 0);
     const capex = useYTD && ytd.assetPurchases ? ytd.assetPurchases : (current.assetPurchases || 0);
