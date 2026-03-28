@@ -421,27 +421,49 @@ function parseCSVTemplate(file) {
                     'wages and salaries': 'ytdLabourCost'
                 };
 
-                const data = { current: {}, ytd: {} };
+                const data = { current: {}, previous: {}, ytd: {} };
+
+                // Detect column layout from header
+                const header = parseCSVRow(lines[0]);
+                const headerLower = header.map(h => h.toLowerCase().trim());
+                const hasPrevCol = headerLower.includes('previous month') || headerLower.includes('last month');
+                // Column indices: Field=0, This Month=1, Previous Month=2 (if present), YTD=next, Notes=last
+                const prevColIdx = hasPrevCol ? 2 : -1;
+                const ytdColIdx = hasPrevCol ? 3 : 2;
+
+                // Previous month field mapping (balance sheet + revenue/profit)
+                const prevFieldMap = {
+                    'revenue': 'revenue', 'revenue / sales': 'revenue', 'sales': 'revenue', 'sales / revenue': 'revenue',
+                    'net profit': 'netProfit', 'net income': 'netProfit',
+                    'cash in bank': 'cash', 'cash': 'cash', 'bank balance': 'cash',
+                    'accounts receivable': 'receivables', 'accounts receivable (ar)': 'receivables', 'receivables': 'receivables',
+                    'inventory': 'inventory',
+                    'accounts payable': 'payables', 'accounts payable (ap)': 'payables', 'payables': 'payables'
+                };
 
                 // Skip header row, parse data rows
                 for (let i = 1; i < lines.length; i++) {
-                    // Handle CSV parsing (account for commas in values)
                     const row = parseCSVRow(lines[i]);
                     if (row.length < 2) continue;
 
                     const fieldName = row[0].toLowerCase().trim();
                     const thisMonthValue = parseNumber(row[1]);
-                    const ytdValue = row.length > 2 ? parseNumber(row[2]) : null;
+                    const prevValue = prevColIdx > 0 && row.length > prevColIdx ? parseNumber(row[prevColIdx]) : null;
+                    const ytdValue = row.length > ytdColIdx ? parseNumber(row[ytdColIdx]) : null;
 
                     // Map to current month fields
                     if (fieldMap[fieldName]) {
                         const targetField = fieldMap[fieldName];
-                        // ytdStartingCash goes to ytd object, not current
                         if (targetField === 'ytdStartingCash') {
                             data.ytd.startingCash = thisMonthValue;
                         } else {
                             data.current[targetField] = thisMonthValue;
                         }
+                    }
+
+                    // Map to previous month fields
+                    if (prevFieldMap[fieldName] && prevValue !== null && prevValue !== 0) {
+                        data.previous[prevFieldMap[fieldName]] = prevValue;
                     }
 
                     // Map to YTD fields
@@ -513,6 +535,34 @@ function populateFormFromCSV(data) {
             field.value = data.current[fieldId];
         }
     });
+
+    // Populate previous month fields if present
+    if (data.previous && Object.keys(data.previous).length > 0) {
+        const prevFieldMap = {
+            'revenue': 'prevRevenue',
+            'netProfit': 'prevNetProfit',
+            'cash': 'prevCash',
+            'receivables': 'prevReceivables',
+            'inventory': 'prevInventory',
+            'payables': 'prevPayables'
+        };
+        Object.keys(data.previous).forEach(key => {
+            const fieldId = prevFieldMap[key];
+            const field = fieldId ? document.getElementById(fieldId) : null;
+            if (field && data.previous[key]) {
+                field.value = data.previous[key];
+            }
+        });
+
+        // Enable comparison section
+        const comparisonFields = document.getElementById('comparisonFields');
+        if (comparisonFields) comparisonFields.style.display = 'block';
+        const compareBtn = document.querySelector('[data-compare="yes"]');
+        if (compareBtn) {
+            document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+            compareBtn.classList.add('selected');
+        }
+    }
 
     // Populate YTD fields if present
     if (data.ytd && Object.keys(data.ytd).length > 0) {
