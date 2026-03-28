@@ -1225,6 +1225,43 @@ body {
 }
 .wcr-narrative:empty { display: none; }
 
+.wc-opportunity {
+  margin-top: var(--space-m);
+  padding: 20px 24px;
+  border-radius: 12px;
+  border-left: 4px solid;
+}
+.wc-opportunity.opp-positive {
+  background: #fef3c7;
+  border-color: #f59e0b;
+}
+.wc-opportunity.opp-negative {
+  background: #ecfdf5;
+  border-color: #10b981;
+}
+.wc-opportunity-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.opp-positive .wc-opportunity-label { color: #92400e; }
+.opp-negative .wc-opportunity-label { color: #065f46; }
+.wc-opportunity-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.wc-opportunity-amount {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 8px;
+  display: block;
+}
+.opp-positive .wc-opportunity-amount { color: #b45309; }
+.opp-negative .wc-opportunity-amount { color: #059669; }
+
 .op-cash-movement {
   padding: 1rem 1.2rem;
   border-radius: 4px;

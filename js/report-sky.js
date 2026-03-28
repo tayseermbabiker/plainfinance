@@ -1406,7 +1406,57 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
             narrative = `You are running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than the industry average — strong working capital management.`;
         }
 
+        // DPO context — when paying suppliers too fast
+        const dpoStatus = metrics.dpo >= bench.dpo.min ? 'ok' : metrics.dpo >= bench.dpo.min * 0.7 ? 'warn' : 'danger';
+        if (dpoStatus !== 'ok' && bench.dpo.min > 0) {
+            const daysGivingAway = Math.round(bench.dpo.min - metrics.dpo);
+            const dailyCOGSApprox = cogsBase / periodDays;
+            const cashGivingAway = Math.round(daysGivingAway * dailyCOGSApprox);
+            if (daysGivingAway > 0) {
+                narrative += ` You're also paying suppliers in ${Math.round(metrics.dpo)} days when most ${bench.name.toLowerCase()} businesses take ${bench.dpo.min}+. That's ${daysGivingAway} days of cash you're giving away early.`;
+            }
+        }
+
         narrativeEl.textContent = narrative;
+    }
+
+    // Biggest Opportunity card — when WCR variance is significant (>5000)
+    const oppEl = document.getElementById('wcOpportunity');
+    if (oppEl) {
+        if (wcrVar > 5000) {
+            // Money tied up — opportunity to free cash
+            const indName = bench.name.toLowerCase();
+            const oppText = {
+                'restaurant': `without selling a single extra meal`,
+                'retail': `without making a single extra sale`,
+                'product': `without making a single extra sale`,
+                'e-commerce': `without a single extra order`,
+                'service': `without winning a single new client`,
+                'construction': `without completing a single extra project`,
+                'manufacturing': `without producing a single extra unit`,
+                'healthcare': `without seeing a single extra patient`,
+                'general': `without generating any extra revenue`
+            };
+            const hook = oppText[indName] || oppText['general'];
+            oppEl.style.display = '';
+            oppEl.className = 'wc-opportunity plain-only opp-positive';
+            oppEl.innerHTML = `
+                <div class="wc-opportunity-label">Biggest Opportunity</div>
+                <div class="wc-opportunity-text">If you matched industry averages, you'd free up</div>
+                <span class="wc-opportunity-amount">${currency} ${formatNumber(wcrVar)}</span>
+                <div class="wc-opportunity-text">in cash — right now, ${hook}.</div>
+            `;
+        } else if (wcrVar < -5000) {
+            // Running lean — celebrate
+            oppEl.style.display = '';
+            oppEl.className = 'wc-opportunity plain-only opp-negative';
+            oppEl.innerHTML = `
+                <div class="wc-opportunity-label">Strong Position</div>
+                <div class="wc-opportunity-text">You're running <strong>${currency} ${formatNumber(Math.abs(wcrVar))}</strong> leaner than the industry average. Your working capital management is excellent.</div>
+            `;
+        } else {
+            oppEl.style.display = 'none';
+        }
     }
 
     // CCC insight — industry-specific thresholds
