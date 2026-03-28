@@ -198,12 +198,12 @@
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 16px 18px;
-    border: 1px solid #e2e8f0;
+    padding: 12px 14px;
+    border: 1.5px solid #e2e8f0;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 15px;
     font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     background: #f8fafc;
     color: #0f172a;
     box-sizing: border-box;
@@ -227,8 +227,8 @@
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
     background: white;
 }
 
@@ -398,15 +398,15 @@
 
 .currency-prefix {
     position: absolute;
-    left: 16px;
-    color: #64748b;
+    left: 14px;
+    color: #94a3b8;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13px;
     pointer-events: none;
 }
 
 .input-with-currency input {
-    padding-left: 54px;
+    padding-left: 50px;
 }
 
 /* ===== Calculated Fields ===== */
@@ -515,13 +515,13 @@
 /* ===== Upload Zone ===== */
 
 .upload-zone {
-    border: 1px dashed #cbd5e1;
-    border-radius: 16px;
-    padding: 48px 24px;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 28px 24px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    background: white;
+    background: #f8fafc;
 }
 
 .upload-zone:hover,
@@ -536,7 +536,7 @@
 }
 
 .upload-zone h3 {
-    font-size: 18px;
+    font-size: 15px;
     color: #334155;
     margin-bottom: 4px;
 }
