@@ -658,13 +658,13 @@ Use examples and wording that fit this business type. If it is product based, ta
 
 CURRENT MONTH NUMBERS:
 - Revenue: ${currency} ${current.revenue.toLocaleString()}
-- Cost of Goods Sold: ${currency} ${current.cogs.toLocaleString()}
+- ${COGS_LABELS[industryType] || 'Cost of Goods Sold'}: ${currency} ${current.cogs.toLocaleString()}
 - Operating Expenses: ${currency} ${current.opex.toLocaleString()}
 - Net Profit: ${currency} ${current.netProfit.toLocaleString()}
 - Cash in Bank: ${currency} ${current.cash.toLocaleString()}
-- Accounts Receivable: ${currency} ${current.receivables.toLocaleString()}
-- Inventory: ${currency} ${current.inventory.toLocaleString()}
-- Accounts Payable: ${currency} ${current.payables.toLocaleString()}
+- What customers owe (AR): ${currency} ${current.receivables.toLocaleString()}
+- Inventory / stock on hand: ${currency} ${current.inventory.toLocaleString()}
+- What we owe suppliers (AP): ${currency} ${current.payables.toLocaleString()}
 `;
 
     if (data.previous && data.previous.revenue) {
@@ -763,27 +763,28 @@ Please provide:
 
 1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision — always express as a decimal of the main currency unit.
 
-2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with a tag. Be specific with numbers.
+2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with a tag. Be specific with numbers. Write for a non-accountant — no jargon.
    TAG RULES based on tone:
    - HEALTHY tone: use "Good:" and "Watch:" tags only
    - CAUTION tone: use "Watch:" and "Risk:" tags only
    - DANGER tone: use "Risk:" tags only — NEVER use "Good:" in a danger scenario
 
-3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only.
-   - First sentence: How many days cash is tied up and whether this is good, normal, or risky.
-   - Second sentence: What would improve it, with a specific number.
-   - Example: "Cash is tied up for 21 days, which is normal. Move supplier payments from 9 to 30 days to free up cash."
+3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only. Write for someone who has never heard of "cash conversion cycle."
+   - First sentence: How many days your money is tied up before it comes back, and whether this is good, normal, or risky for your industry.
+   - Second sentence: One specific thing to do to improve it, with a number.
+   - Example: "Your money is tied up for 21 days before coming back — that's normal for your industry. Asking suppliers for 30-day payment terms instead of 9 would free up cash faster."
 
-4. ACTION_1: The most urgent action.
+4. ACTION_1: The most urgent action. Must be specific, physical, and actionable this week.
    - Title: 3-6 words, starts with a verb (e.g. "Collect ${currency} 50,000 from customers")
-   - Description: One sentence with a verb and a number (e.g. "Call your top 3 late-paying customers and collect ${currency} 50,000 this week.")
+   - Description: One sentence with a specific action, a specific person/role to contact, and a number.
    - IMPORTANT: You COLLECT from customers. You PAY or NEGOTIATE TERMS with suppliers. Never say "collect from suppliers."
+   - Use industry language (e.g., restaurants: "food cost", construction: "progress billings", SaaS: "churn").
 
 5. ACTION_2: Second priority action. Same format as ACTION_1.
 
-6. ACTION_3: Third action. Same format as ACTION_1.
+6. ACTION_3: Third action. Same format as ACTION_1. For healthy businesses, suggest growth/optimization actions, not survival actions.
 
-7. MEETING_SUMMARY: 2-3 sentences an owner can say when asked "How is your business doing?" Include revenue, profit margin, and one key focus area.
+7. MEETING_SUMMARY: 2-3 sentences an owner can say when a bank, partner, or accountant asks "How is your business doing?" Include: revenue (with trend if available), profit margin, and cash position in plain dollars. Do NOT use jargon like "current ratio" or "EBITDA" — use plain language like "cash in bank" and "profit margin."
 
 8. BENCHMARK_NOTE: One sentence comparing a key metric to industry peers. Format: "Based on data from 100+ businesses, your [metric] is [above/below/in line with] the typical range for [industry type]." Pick the most notable metric (good or bad).
 
@@ -884,7 +885,7 @@ function getDefaultAnalysis(data, metrics) {
 
         narrative: `This month you generated ${currency} ${current.revenue.toLocaleString()} in revenue. Your gross margin is ${metrics.grossMargin}%, which means you keep ${currency} ${(metrics.grossMargin / 100).toFixed(2)} from each ${currency} 1 of sales after product costs.\n\nYour cash position is ${currency} ${current.cash.toLocaleString()}${metrics.cashRunway === -1 ? ', and your cash is growing — you generate more than you spend.' : `, which gives you about ${metrics.cashRunway} months of runway at current spending levels.${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? ' This is below the safe level of 3 months.' : ''}`}`,
 
-        cashCycleExplanation: `Your cash is tied up for ${metrics.ccc} days. Stock sits in your warehouse for ${metrics.dio} days, then customers take ${metrics.dso} days to pay you, but you pay suppliers in ${metrics.dpo} days. ${metrics.ccc > 30 ? 'This cycle is longer than ideal, meaning you need more working capital to keep the business running.' : 'This is a reasonable cycle for your type of business.'}`,
+        cashCycleExplanation: `Your money is tied up for ${metrics.ccc} days before it comes back to you. ${metrics.ccc > 30 ? 'That\'s longer than ideal — speeding up customer payments or stretching supplier terms would help.' : 'That\'s a reasonable pace for your type of business.'}`,
 
         action1Title: metrics.cashRunway >= 0 && metrics.cashRunway < 3
             ? `Collect ${currency} ${Math.round(current.receivables * 0.3).toLocaleString()} from customers`
@@ -907,6 +908,6 @@ function getDefaultAnalysis(data, metrics) {
             ? `Stock sits for ${metrics.dio} days. Order smaller quantities more frequently to free up cash.`
             : `Aim to have at least 3 months of expenses in cash reserves for safety.`,
 
-        meetingSummary: `Our revenue is ${currency} ${current.revenue.toLocaleString()} with a net margin of ${metrics.netMargin}%. We are ${current.netProfit >= 0 ? 'profitable' : 'working to return to profitability'} and focused on ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'improving our cash position' : 'maintaining healthy cash flow'}. Current ratio is ${metrics.currentRatio}.`
+        meetingSummary: `Revenue is ${currency} ${current.revenue.toLocaleString()} with a ${metrics.netMargin}% profit margin. We are ${current.netProfit >= 0 ? 'profitable' : 'working to return to profitability'} with ${currency} ${current.cash.toLocaleString()} in the bank. We're focused on ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'strengthening our cash position' : 'maintaining healthy cash flow and growing the business'}.`
     };
 }
