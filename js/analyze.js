@@ -555,6 +555,7 @@ function populateFormFromCSV(data) {
         });
 
         // Enable comparison section
+        includeComparison = true;
         const comparisonFields = document.getElementById('comparisonFields');
         if (comparisonFields) comparisonFields.style.display = 'block';
         const compareBtn = document.querySelector('[data-compare="yes"]');

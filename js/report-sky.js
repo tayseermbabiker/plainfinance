@@ -1512,20 +1512,28 @@ function updateFCF(current, previous, metrics, currency) {
 
     // Display
     const npEl = document.getElementById('fcfNetProfit');
-    npEl.textContent = signedAmount(netProfit, currency);
-    npEl.className = `fcf-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
+    if (npEl) {
+        npEl.textContent = signedAmount(netProfit, currency);
+        npEl.className = `fcf-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
+    }
 
     const wcEl = document.getElementById('fcfWCChanges');
-    wcEl.textContent = wcChanges >= 0 ? `- ${currency} ${formatNumber(wcChanges)}` : `+ ${currency} ${formatNumber(Math.abs(wcChanges))}`;
-    wcEl.className = `fcf-value ${wcChanges >= 0 ? 'negative' : 'positive'}`;
+    if (wcEl) {
+        wcEl.textContent = wcChanges >= 0 ? `- ${currency} ${formatNumber(wcChanges)}` : `+ ${currency} ${formatNumber(Math.abs(wcChanges))}`;
+        wcEl.className = `fcf-value ${wcChanges >= 0 ? 'negative' : 'positive'}`;
+    }
 
     const capexEl = document.getElementById('fcfCapex');
-    capexEl.textContent = capex > 0 ? `- ${currency} ${formatNumber(capex)}` : `${currency} 0`;
-    capexEl.className = `fcf-value ${capex > 0 ? 'negative' : ''}`;
+    if (capexEl) {
+        capexEl.textContent = capex > 0 ? `- ${currency} ${formatNumber(capex)}` : `${currency} 0`;
+        capexEl.className = `fcf-value ${capex > 0 ? 'negative' : ''}`;
+    }
 
     const totalEl = document.getElementById('fcfTotal');
-    totalEl.textContent = signedAmount(fcf, currency);
-    totalEl.className = `fcf-value ${fcf >= 0 ? 'positive' : 'negative'}`;
+    if (totalEl) {
+        totalEl.textContent = signedAmount(fcf, currency);
+        totalEl.className = `fcf-value ${fcf >= 0 ? 'positive' : 'negative'}`;
+    }
 
     // Insight
     const insightEl = document.getElementById('fcfInsight');
