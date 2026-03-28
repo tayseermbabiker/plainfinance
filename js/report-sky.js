@@ -322,7 +322,7 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
     if (hasPrevious && previous.cash > 0) {
         startCash = previous.cash;
     } else {
-        startCash = current.openingCash || (ytd && ytd.startingCash) || 0;
+        startCash = current.openingCash || (ytd && ytd.startingCash) || metrics?.openingCash || 0;
         if (startCash > 0 && reportMonth > 1) bridgeSpan = 'ytd';
     }
 
