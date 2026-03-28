@@ -567,9 +567,12 @@ function populateFormFromCSV(data) {
     }
 
     // Populate YTD fields if present
+    // Map ytd data keys to actual form field IDs
+    const ytdFieldIdMap = { 'startingCash': 'ytdStartingCash' };
     if (data.ytd && Object.keys(data.ytd).length > 0) {
         Object.keys(data.ytd).forEach(fieldId => {
-            const field = document.getElementById(fieldId);
+            const actualId = ytdFieldIdMap[fieldId] || fieldId;
+            const field = document.getElementById(actualId);
             if (field && data.ytd[fieldId]) {
                 field.value = data.ytd[fieldId];
             }
