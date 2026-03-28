@@ -774,15 +774,22 @@ Please provide:
    - Second sentence: One specific thing to do to improve it, with a number.
    - Example: "Your money is tied up for 21 days before coming back — that's normal for your industry. Asking suppliers for 30-day payment terms instead of 9 would free up cash faster."
 
-4. ACTION_1: The most urgent action. Must be specific, physical, and actionable this week.
-   - Title: 3-6 words, starts with a verb (e.g. "Collect ${currency} 50,000 from customers")
-   - Description: One sentence with a specific action, a specific person/role to contact, and a number.
+4-6. THREE ACTIONS — each must be specific, physical, and actionable.
+   - Title: 3-6 words, starts with a verb
+   - Description: One sentence with a specific action and a number
    - IMPORTANT: You COLLECT from customers. You PAY or NEGOTIATE TERMS with suppliers. Never say "collect from suppliers."
-   - Use industry language (e.g., restaurants: "food cost", construction: "progress billings", SaaS: "churn").
+   - Use industry language (e.g., restaurants: "food cost", construction: "progress billings", SaaS: "churn")
 
-5. ACTION_2: Second priority action. Same format as ACTION_1.
+   ACTION RULES BY TONE:
+   - HEALTHY: ALL 3 actions must focus on GROWTH and OPTIMIZATION — pricing improvements, reinvestment, expansion, efficiency gains. Do NOT suggest collecting receivables, cutting costs, or negotiating terms unless the specific metric is actually bad. A business with strong cash, good margins, and low DSO does NOT need to "collect from customers."
+   - CAUTION: Mix of protective actions (collections, cost review) and improvements.
+   - DANGER: ALL 3 must be urgent survival actions — collect cash, cut spending, talk to bank.
 
-6. ACTION_3: Third action. Same format as ACTION_1. For healthy businesses, suggest growth/optimization actions, not survival actions.
+4. ACTION_1: Most important action.
+
+5. ACTION_2: Second priority.
+
+6. ACTION_3: Third action.
 
 7. MEETING_SUMMARY: 2-3 sentences an owner can say when a bank, partner, or accountant asks "How is your business doing?" Include: revenue (with trend if available), profit margin, and cash position in plain dollars. Do NOT use jargon like "current ratio" or "EBITDA" — use plain language like "cash in bank" and "profit margin."
 
