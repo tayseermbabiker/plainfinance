@@ -594,61 +594,97 @@ function updateInvestigationSection(industry) {
     const list = document.getElementById('investigationList');
     if (!section || !list) return;
 
+    const isHealthy = globalTier === 'safe';
+
+    // Healthy = optimization/growth focus. Danger = survival/cash protection focus.
     const factors = {
-        'food': [
-            { question: 'Food waste percentage (target: under 5%)', why: 'High waste directly erodes your gross margin and signals portion or ordering issues.' },
-            { question: 'Table turnover rate per service', why: 'More covers per table = more revenue from the same fixed costs.' },
-            { question: 'Average check size trend vs last month', why: 'A declining check size may indicate customers trading down or weak upselling.' },
-            { question: 'Menu item profitability — which dishes lose money?', why: 'Unprofitable items drag margins even when sales look healthy.' },
-            { question: 'Portion control adherence in the kitchen', why: 'Inconsistent portions are the hidden cause of food cost overruns.' }
+        'food': isHealthy ? [
+            { question: 'Which menu items generate the highest margin?', why: 'Double down on what works — promote high-margin dishes more prominently.' },
+            { question: 'Can you negotiate better prices with your top 3 suppliers?', why: 'Even 2-3% savings on food costs goes straight to your bottom line.' },
+            { question: 'Is your average check size growing?', why: 'Upselling and menu engineering can increase revenue without more customers.' },
+            { question: 'Are you tracking food waste weekly?', why: 'Even well-run kitchens can save 2-5% by tightening waste controls.' }
+        ] : [
+            { question: 'Food waste percentage (target: under 5%)', why: 'High waste directly erodes your gross margin — fix this first.' },
+            { question: 'Portion control adherence in the kitchen', why: 'Inconsistent portions are the hidden cause of food cost overruns.' },
+            { question: 'Which menu items lose money?', why: 'Remove or reprice unprofitable items immediately.' },
+            { question: 'Can you renegotiate supplier terms this week?', why: 'Extending payment terms keeps cash in your account longer.' }
         ],
-        'product': [
-            { question: 'Shrinkage rate (target: under 2%)', why: 'Shrinkage is lost inventory from theft, damage, or miscounts — it silently kills margins.' },
-            { question: 'Sell-through rate by category', why: 'Low sell-through means cash is trapped in slow-moving stock.' },
-            { question: 'Foot traffic vs conversion rate', why: 'Helps distinguish a traffic problem from a sales team problem.' },
-            { question: 'Return rate by product line', why: 'High returns erode revenue and signal quality or expectation issues.' }
+        'product': isHealthy ? [
+            { question: 'Which product categories have the highest margins?', why: 'Focus marketing and shelf space on your most profitable items.' },
+            { question: 'Can you negotiate volume discounts with suppliers?', why: 'Strong cash position gives you leverage to buy better.' },
+            { question: 'What is your sell-through rate by category?', why: 'High sell-through = efficient inventory. Low = cash trapped in stock.' },
+            { question: 'Are there pricing tiers you haven\'t tested?', why: 'Premium and bundle pricing can lift margins without losing customers.' }
+        ] : [
+            { question: 'Shrinkage rate (target: under 2%)', why: 'Shrinkage from theft, damage, or miscounts silently kills margins.' },
+            { question: 'Which products are sitting longest?', why: 'Clear slow-movers immediately — dead stock is cash you can\'t use.' },
+            { question: 'Return rate by product line', why: 'High returns erode revenue — find and fix the root cause.' },
+            { question: 'Can you cut any standing orders this week?', why: 'Stop automatic reorders on items that aren\'t selling.' }
         ],
-        'online': [
-            { question: 'Monthly churn rate (target: under 5%)', why: 'Churn is the single biggest threat to recurring revenue growth.' },
-            { question: 'Customer acquisition cost (CAC)', why: 'If CAC exceeds lifetime value, growth actually destroys cash.' },
-            { question: 'LTV/CAC ratio (target: 3x or higher)', why: 'The core unit economics metric — below 3x means unsustainable growth.' },
-            { question: 'Conversion rate by traffic source', why: 'Reveals which channels actually drive paying customers vs vanity traffic.' }
+        'online': isHealthy ? [
+            { question: 'What is your LTV/CAC ratio? (target: 3x+)', why: 'This tells you if your growth is sustainable and profitable.' },
+            { question: 'Which acquisition channels have the lowest CAC?', why: 'Shift budget to what works — cut what doesn\'t.' },
+            { question: 'Monthly churn rate (target: under 5%)', why: 'Reducing churn is often cheaper than acquiring new customers.' },
+            { question: 'Can you increase prices without losing customers?', why: 'SaaS businesses often underprice — test a 10% increase on new signups.' }
+        ] : [
+            { question: 'Monthly churn rate — is it accelerating?', why: 'Rising churn in a cash-tight situation is an emergency.' },
+            { question: 'Which customers are most likely to cancel?', why: 'Proactive outreach can save accounts before they leave.' },
+            { question: 'Can you cut any tools or services this week?', why: 'Every subscription you cancel extends your runway.' },
+            { question: 'Are there invoices you can collect faster?', why: 'Switch annual clients to monthly prepay if possible.' }
         ],
-        'services': [
-            { question: 'Team utilization rate (target: 65%+)', why: 'Under-utilized staff is the biggest hidden cost in service businesses.' },
-            { question: 'Realization rate — billed vs quoted', why: 'Scope creep and write-offs reduce effective margins even on profitable-looking projects.' },
-            { question: 'Client concentration — is one client more than 40% of revenue?', why: 'Losing a dominant client can cripple the business overnight.' },
-            { question: 'Average project margin by client', why: 'Some clients are profitable, others cost you money. Know which is which.' }
+        'services': isHealthy ? [
+            { question: 'Team utilization rate (target: 65%+)', why: 'Higher utilization = more revenue from the same payroll.' },
+            { question: 'Client concentration — is any client over 30% of revenue?', why: 'Diversifying reduces risk of a sudden revenue drop.' },
+            { question: 'Are you billing for all the work you do?', why: 'Scope creep and unbilled hours are hidden margin killers.' },
+            { question: 'Can you raise rates on your next contract renewal?', why: 'Strong performance gives you pricing leverage.' }
+        ] : [
+            { question: 'Which clients are paying slowest?', why: 'Chase overdue invoices — this is your most immediate cash source.' },
+            { question: 'Can you bill weekly instead of monthly?', why: 'Shorter billing cycles get cash in faster.' },
+            { question: 'Are there projects losing money?', why: 'Stop bleeding on unprofitable work — renegotiate or exit.' },
+            { question: 'Can you reduce contractor spend this month?', why: 'Cut variable costs before fixed costs.' }
         ],
-        'construction': [
-            { question: 'WIP as % of revenue (target: under 30%)', why: 'High WIP means cash is locked in unfinished work that cannot be billed yet.' },
-            { question: 'Retention amounts held by clients', why: 'Retentions are real money owed to you that often gets forgotten.' },
-            { question: 'Variation/change order capture rate', why: 'Uncaptured variations mean you are doing extra work for free.' },
-            { question: 'Subcontractor margin vs direct labour', why: 'Determines whether outsourcing is saving or costing you money.' }
+        'construction': isHealthy ? [
+            { question: 'Retention amounts held by clients', why: 'Retentions are real money owed to you — follow up on completed projects.' },
+            { question: 'Variation/change order capture rate', why: 'Uncaptured variations mean extra work for free.' },
+            { question: 'Can you negotiate better subcontractor rates?', why: 'Strong pipeline gives you leverage on pricing.' },
+            { question: 'Are your project estimates accurate vs actuals?', why: 'Accurate estimates prevent margin surprises.' }
+        ] : [
+            { question: 'Outstanding progress billings — who owes you?', why: 'This is your fastest path to cash. Chase it today.' },
+            { question: 'Can you pause material orders on non-urgent projects?', why: 'Stop buying ahead — align purchases with project milestones.' },
+            { question: 'Are any projects over budget?', why: 'Identify and contain losses before they spread.' },
+            { question: 'Can you demand deposits on new work?', why: 'Never start a project without upfront payment.' }
         ],
-        'manufacturing': [
-            { question: 'Yield rate (target: 95%+)', why: 'Low yield means raw materials are wasted before becoming sellable product.' },
-            { question: 'Scrap/waste rate (target: under 2%)', why: 'Scrap directly increases your effective COGS.' },
-            { question: 'Machine utilization rate', why: 'Idle machines mean fixed costs are spread over fewer units.' },
-            { question: 'BOM cost accuracy vs actuals', why: 'If actual costs exceed the bill of materials, your pricing may be wrong.' }
+        'manufacturing': isHealthy ? [
+            { question: 'Yield rate (target: 95%+)', why: 'Higher yield = less material waste = better margins.' },
+            { question: 'Can you reduce batch sizes?', why: 'Smaller batches reduce WIP and free up cash.' },
+            { question: 'Machine utilization rate', why: 'Idle capacity is a fixed cost you\'re already paying for.' },
+            { question: 'Are your BOMs accurate vs actual costs?', why: 'Inaccurate BOMs lead to wrong pricing decisions.' }
+        ] : [
+            { question: 'Scrap/waste rate — is it above 2%?', why: 'Every % of scrap directly increases your COGS.' },
+            { question: 'Can you delay non-urgent production runs?', why: 'Reduce WIP and free up cash for essentials.' },
+            { question: 'Which raw materials can you source cheaper?', why: 'Renegotiate with suppliers or find alternatives.' },
+            { question: 'Are there finished goods you can sell at a discount?', why: 'Cash from discounted stock is better than cash locked in warehouse.' }
         ],
-        'wholesale': [
-            { question: 'Order fill rate (target: 90%+)', why: 'Unfilled orders mean lost revenue and damaged customer relationships.' },
-            { question: 'Backorder rate', why: 'High backorders signal inventory planning failures.' },
-            { question: 'Customer credit risk exposure', why: 'Large outstanding balances from risky customers threaten your cash flow.' },
-            { question: 'Freight cost as % of revenue', why: 'Freight is often the hidden margin killer in distribution.' }
-        ],
-        'healthcare': [
+        'healthcare': isHealthy ? [
             { question: 'Provider utilization rate (target: 70%+)', why: 'Empty appointment slots are revenue that can never be recovered.' },
-            { question: 'Insurance claim denial rate', why: 'Denials delay or eliminate revenue you already earned.' },
-            { question: 'Revenue per patient visit', why: 'Tracks whether you are capturing full value from each encounter.' },
-            { question: 'Payer mix breakdown (insurance vs cash)', why: 'Insurance reimbursement rates vary widely — your mix affects margins.' }
+            { question: 'Revenue per patient visit — is it growing?', why: 'Higher revenue per visit means more efficient operations.' },
+            { question: 'Insurance claim denial rate', why: 'Even small improvements in claim accuracy add up quickly.' },
+            { question: 'Can you add ancillary services?', why: 'Supplements, cosmetics, or wellness programs boost margins.' }
+        ] : [
+            { question: 'Claim denial rate — how much revenue are you losing?', why: 'Fix denied claims immediately — this is revenue you already earned.' },
+            { question: 'Which payers are slowest to reimburse?', why: 'Follow up aggressively on outstanding claims.' },
+            { question: 'Can you reduce supply costs this month?', why: 'Switch to generics or negotiate bulk pricing with distributors.' },
+            { question: 'Are there underperforming service lines?', why: 'Cut or restructure services that cost more than they earn.' }
         ],
-        'other': [
-            { question: 'Customer concentration risk', why: 'If one customer is too large, losing them could be catastrophic.' },
-            { question: 'Revenue per employee', why: 'A key productivity metric that shows if your team is driving enough value.' },
+        'other': isHealthy ? [
+            { question: 'Customer concentration — is any client over 30% of revenue?', why: 'Diversifying reduces risk of a sudden revenue drop.' },
+            { question: 'Revenue per employee', why: 'A key productivity metric — are you getting enough value from your team?' },
             { question: 'Repeat purchase / retention rate', why: 'Retaining customers is far cheaper than acquiring new ones.' },
-            { question: 'Customer acquisition cost', why: 'Knowing what it costs to win a customer helps set marketing budgets.' }
+            { question: 'Are there expenses you can renegotiate?', why: 'Review contracts annually — vendors often offer better rates if you ask.' }
+        ] : [
+            { question: 'Who owes you money right now?', why: 'Make a list and start calling — receivables are your fastest cash source.' },
+            { question: 'Which expenses can you cut this week?', why: 'Cancel anything non-essential until cash improves.' },
+            { question: 'Can you offer discounts for early payment?', why: '2% off beats waiting 60 days for full payment.' },
+            { question: 'Are you tracking cash daily?', why: 'In tight times, check your bank balance every morning.' }
         ]
     };
 
@@ -660,7 +696,6 @@ function updateInvestigationSection(industry) {
     section.style.display = 'block';
     list.innerHTML = items.map(item => `
         <li class="nf-item">
-            <div class="nf-icon">\uD83D\uDD0D</div>
             <div class="nf-body">
                 <div class="nf-question">${item.question}</div>
                 <div class="nf-why">${item.why}</div>
@@ -693,7 +728,7 @@ function populateReportFromAPI(reportData) {
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
         updateBankMeetingSummary(current, metrics, currency, analysis);
-        updateWeeklyActions(current, metrics, currency, analysis);
+        updateWeeklyActions(current, metrics, currency, analysis, industry);
         updateInvestigationSection(industry);
         updateTechnicalMode(current, metrics, currency, industry, null);
         updateTechnicalMode(current, metrics, currency, industry);
@@ -729,7 +764,7 @@ function populateReport(data) {
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
         updateBankMeetingSummary(current, metrics, currency, null);
-        updateWeeklyActions(current, metrics, currency, null);
+        updateWeeklyActions(current, metrics, currency, null, industry);
         updateInvestigationSection(industry);
         updateTechnicalMode(current, metrics, currency, industry, null);
     }
@@ -1496,20 +1531,21 @@ function updateFCF(current, previous, metrics, currency) {
     const insightEl = document.getElementById('fcfInsight');
     let fcfInsightText = '';
     if (fcf > 0) {
-        fcfInsightText = `<p>Your business generated <strong>${currency} ${formatNumber(fcf)}</strong> in free cash flow. This is real cash available to pay down debt, distribute to owners, or reinvest.</p>`;
+        fcfInsightText = `<p>Your business generated <strong>${currency} ${formatNumber(fcf)}</strong> in cash this month. This is real money available to pay down debt, distribute to owners, or reinvest.</p>`;
     } else if (fcf === 0) {
-        fcfInsightText = `<p>Free cash flow is zero. The business generates just enough cash to sustain operations. Growth will need external funding.</p>`;
+        fcfInsightText = `<p>Cash generated is zero — the business produces just enough to sustain operations. Growth will need external funding or cost cuts.</p>`;
     } else {
-        fcfInsightText = `<p>Your business consumed <strong>${currency} ${formatNumber(Math.abs(fcf))}</strong> more cash than it generated. This is funded from reserves.</p>`;
+        fcfInsightText = `<p>Your business consumed <strong>${currency} ${formatNumber(Math.abs(fcf))}</strong> more cash than it generated. This is being funded from your cash reserves.</p>`;
     }
 
-    // Flag owner drawings if they're a significant cash drain
+    // Flag owner drawings when they exceed free cash flow (the real cash strain trigger)
     const ownerDrawings = current.ownerDrawings || 0;
-    if (ownerDrawings > 0 && netProfit > 0 && ownerDrawings > netProfit * 0.4) {
-        const drawingsPct = Math.round((ownerDrawings / netProfit) * 100);
-        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business this month — that is ${drawingsPct}% of your profit. ${ownerDrawings > fcf ? 'This exceeds your free cash flow, which is why your cash balance dropped despite being profitable.' : 'Keep an eye on this relative to your cash position.'}</p>`;
+    if (ownerDrawings > 0 && ownerDrawings > fcf && fcf > 0) {
+        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business, but it only generated ${currency} ${formatNumber(fcf)} in cash. The difference (${currency} ${formatNumber(ownerDrawings - fcf)}) came from your cash reserves — that's why your balance dropped despite being profitable.</p>`;
     } else if (ownerDrawings > 0 && netProfit <= 0) {
         fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business while making a loss. This directly reduces your cash reserves.</p>`;
+    } else if (ownerDrawings > 0 && fcf <= 0) {
+        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} while the business generated no free cash. This is being funded entirely from reserves.</p>`;
     }
 
     insightEl.innerHTML = fcfInsightText;
@@ -1547,15 +1583,14 @@ function updateFCFF(current, currency, fcfValue) {
     if (surplus > 0) {
         const ratio = fcfValue / loanRepayments;
         if (ratio >= 2 && globalTier === 'safe') {
-            insightEl.innerHTML = `<p>Debt coverage is strong at <strong>${ratio.toFixed(1)}x</strong>. Your free cash flow comfortably covers loan repayments.</p>`;
+            insightEl.innerHTML = `<p>You can comfortably afford your loan payments. Your business produces <strong>${ratio.toFixed(1)}x</strong> more cash than your loan requires.</p>`;
         } else if (ratio >= 2) {
-            // High ratio but overall status is tight/danger — don't say "breathing room"
-            insightEl.innerHTML = `<p>Debt coverage ratio is <strong>${ratio.toFixed(1)}x</strong>, which is adequate. However, your overall cash position needs attention — focus on improving cash runway.</p>`;
+            insightEl.innerHTML = `<p>Loan payments are covered (<strong>${ratio.toFixed(1)}x</strong> coverage), but your overall cash position needs attention — focus on building your cash buffer.</p>`;
         } else {
-            insightEl.innerHTML = `<p>Debt is covered, but the buffer is thin at <strong>${ratio.toFixed(1)}x</strong>. A bad month could make this tight. Consider accelerating collections.</p>`;
+            insightEl.innerHTML = `<p>Loan payments are covered, but barely — your buffer is only <strong>${ratio.toFixed(1)}x</strong>. One bad month could make this tight. Speed up collections to build a cushion.</p>`;
         }
     } else {
-        insightEl.innerHTML = `<p><strong>Debt is eating your cash.</strong> Free cash flow doesn't cover loan repayments. You're dipping into reserves by <strong>${currency} ${formatNumber(Math.abs(surplus))}</strong> per month. This is not sustainable.</p>`;
+        insightEl.innerHTML = `<p><strong>Your loan payments are draining cash faster than the business can generate it.</strong> You're dipping into reserves by <strong>${currency} ${formatNumber(Math.abs(surplus))}</strong> per month. This is not sustainable — talk to your lender about restructuring.</p>`;
     }
 }
 
@@ -1762,22 +1797,21 @@ function updateBankMeetingSummary(current, metrics, currency, analysis) {
 
     let cash = '';
     if (metrics.cashRunway === -1) {
-        cash = `Cash position is strong and growing.`;
+        cash = `Cash position is strong at ${currency} ${formatNumber(current.cash || 0)} and growing.`;
+    } else if (metrics.cashRunway >= 6) {
+        cash = `We have ${currency} ${formatNumber(current.cash || 0)} in cash — about ${metrics.cashRunway.toFixed(0)} months of runway.`;
     } else if (metrics.cashRunway >= 3) {
-        cash = `Cash runway is ${metrics.cashRunway.toFixed(1)} months.`;
+        cash = `Cash is ${currency} ${formatNumber(current.cash || 0)} with ${metrics.cashRunway.toFixed(1)} months of runway. We're focused on improving that.`;
     } else {
-        cash = `Cash runway is tight at ${metrics.cashRunway.toFixed(1)} months. We have ${currency} ${formatNumber(current.receivables || 0)} in receivables to collect.`;
+        cash = `Cash is tight at ${currency} ${formatNumber(current.cash || 0)}. We have ${currency} ${formatNumber(current.receivables || 0)} in receivables we're actively collecting.`;
     }
 
-    const cr = metrics.currentRatio >= 1.5 ? 'healthy' : 'adequate';
-    const crVal = metrics.currentRatio.toFixed(2);
-
-    quoteEl.textContent = `${sales}${profit}. ${cash} Current ratio is ${cr} at ${crVal}.`;
+    quoteEl.textContent = `${sales}${profit}. ${cash}`;
 }
 
 // ===== Section 8: Weekly Actions =====
 
-function updateWeeklyActions(current, metrics, currency, analysis) {
+function updateWeeklyActions(current, metrics, currency, analysis, industry) {
     const actionList = document.getElementById('actionList');
     if (!actionList) return;
 
@@ -1801,73 +1835,106 @@ function updateWeeklyActions(current, metrics, currency, analysis) {
         return;
     }
 
-    // Auto-generate actions
+    // Auto-generate actions — industry-aware with dynamic urgency
     const actions = [];
+    const bench = getDefaultBenchmarks(industry);
+    const runwaySafe = metrics.cashRunway === -1 || metrics.cashRunway >= 6;
+    const runwayDanger = metrics.cashRunway >= 0 && metrics.cashRunway < 3;
 
-    if (metrics.cashRunway >= 0 && metrics.cashRunway < 3) {
+    // Danger/Watch: urgent cash actions
+    if (runwayDanger) {
         const target = Math.round((current.receivables || 0) * 0.3);
-        actions.push({
-            title: `Collect ${currency} ${formatNumber(target)} from customers`,
-            desc: `You have ${currency} ${formatNumber(current.receivables || 0)} in receivables. Call your top 3 customers and agree on payment dates this week.`,
-            impact: target
-        });
-    } else if (metrics.dso > 30) {
+        if (target > 0) {
+            actions.push({
+                title: `Collect ${currency} ${formatNumber(target)} from customers`,
+                desc: `You have ${currency} ${formatNumber(current.receivables || 0)} outstanding. Call your top 3 customers and agree on payment dates this week.`,
+                impact: target
+            });
+        }
+    }
+
+    // DSO too high for industry
+    if (actions.length < 3 && metrics.dso > bench.dso.max) {
         actions.push({
             title: 'Speed up customer payments',
-            desc: `Customers take ${Math.round(metrics.dso)} days to pay. Send reminders earlier and offer small discounts for early payment.`,
+            desc: `Customers take ${Math.round(metrics.dso)} days to pay (industry target: ${bench.dso.max}). Send reminders earlier or offer small discounts for early payment.`,
             impact: Math.round((current.receivables || 0) * 0.15)
         });
     }
 
-    if (metrics.dpo < 20 && actions.length < 3) {
+    // DPO too low for industry
+    if (actions.length < 3 && metrics.dpo < bench.dpo.min) {
         actions.push({
-            title: 'Negotiate longer payment terms with suppliers',
-            desc: `You pay suppliers in ${Math.round(metrics.dpo)} days. Ask your top 3 suppliers for 30-day terms. This keeps ${currency} ${formatNumber(current.payables || 0)} in your account ${30 - Math.round(metrics.dpo)} extra days.`,
+            title: 'Negotiate longer supplier payment terms',
+            desc: `You pay suppliers in ${Math.round(metrics.dpo)} days (industry norm: ${bench.dpo.min}+). Ask your top 3 suppliers for 30-day terms.`,
             impact: Math.round((current.payables || 0) * 0.1)
         });
     }
 
-    if (metrics.grossMargin < 25 && actions.length < 3) {
+    // Gross margin below industry
+    if (actions.length < 3 && metrics.grossMargin < bench.grossMargin.min) {
         actions.push({
-            title: 'Improve your gross margin',
-            desc: `Gross margin is only ${metrics.grossMargin.toFixed(0)}%. Raise prices 5-10% or negotiate better supplier rates.`,
-            impact: Math.round((current.revenue || 0) * 0.05)
+            title: 'Improve your margins',
+            desc: `Gross margin is ${metrics.grossMargin.toFixed(0)}% (industry minimum: ${bench.grossMargin.min}%). Review pricing or negotiate better supplier rates.`,
+            impact: Math.round((current.revenue || 0) * 0.03)
         });
     }
 
-    if (metrics.cashRunway >= 0 && metrics.cashRunway < 3 && actions.length < 3) {
+    // DIO too high for industry
+    if (actions.length < 3 && metrics.dio > bench.dio.max && bench.dio.max > 0) {
         actions.push({
-            title: 'Pause non-essential spending',
-            desc: `With only ${metrics.cashRunway.toFixed(1)} months of cash, hold off on anything not critical until runway exceeds 3 months.`,
-            impact: Math.round((current.opex || 0) * 0.1)
-        });
-    }
-
-    if (actions.length < 3 && metrics.dio > 30) {
-        actions.push({
-            title: 'Reduce inventory levels',
-            desc: `Stock sits for ${Math.round(metrics.dio)} days. Order smaller quantities more often.`,
+            title: 'Reduce stock levels',
+            desc: `Stock sits for ${Math.round(metrics.dio)} days (industry target: ${bench.dio.max}). Order smaller quantities more often.`,
             impact: Math.round((current.inventory || 0) * 0.2)
         });
     }
 
-    // Ensure at least 3 actions
-    if (actions.length < 3) {
+    // Cash critically low
+    if (actions.length < 3 && runwayDanger) {
         actions.push({
-            title: 'Review operating expenses',
-            desc: 'Look for subscriptions, services, or costs that can be renegotiated or eliminated.',
-            impact: Math.round((current.opex || 0) * 0.05)
+            title: 'Pause non-essential spending',
+            desc: `Cash is critically low. Hold off on anything not essential until your runway exceeds 3 months.`,
+            impact: Math.round((current.opex || 0) * 0.1)
         });
     }
 
+    // Healthy business — growth/optimization actions
+    if (actions.length < 3 && runwaySafe && metrics.netMargin > 0) {
+        const healthyActions = [
+            { title: 'Review your pricing', desc: 'With strong margins, test raising prices 3-5% on your best-selling items. Even a small increase goes straight to profit.' },
+            { title: 'Automate invoice reminders', desc: 'Set up automatic payment reminders to collect faster without chasing customers manually.' },
+            { title: 'Identify your most profitable products', desc: 'Know which items or services generate the most margin — double down on what works.' }
+        ];
+        while (actions.length < 3 && healthyActions.length > 0) {
+            actions.push(healthyActions.shift());
+        }
+    }
+
+    // Fallback
+    while (actions.length < 3) {
+        actions.push({
+            title: 'Review operating expenses',
+            desc: 'Look for subscriptions, services, or costs that can be renegotiated or eliminated.'
+        });
+    }
+
+    // Dynamic urgency based on business health
+    const urgencyMap = runwayDanger
+        ? ['Do Today', 'This Week', 'This Week']
+        : runwaySafe
+        ? ['This Month', 'This Month', 'This Month']
+        : ['This Week', 'This Week', 'This Month'];
+
     actionList.innerHTML = actions.slice(0, 3).map((a, i) =>
-        actionCard(i + 1, a.title, a.desc, a.impact ? `Cash impact: +${currency} ${formatNumber(a.impact)}` : null)
+        actionCard(i + 1, a.title, a.desc,
+            a.impact ? `Estimated impact: ~${currency} ${formatNumber(a.impact)}` : null,
+            urgencyMap[i])
     ).join('');
 }
 
-function actionCard(num, title, desc, impact) {
-    const urgencyLabel = num === 1 ? 'Do Today' : num === 2 ? 'This Week' : 'This Month';
-    const urgencyClass = num === 1 ? 'u-today' : num === 2 ? 'u-week' : 'u-month';
+function actionCard(num, title, desc, impact, urgencyLabel) {
+    urgencyLabel = urgencyLabel || (num === 1 ? 'Do Today' : num === 2 ? 'This Week' : 'This Month');
+    const urgencyClass = urgencyLabel === 'Do Today' ? 'u-today' : urgencyLabel === 'This Week' ? 'u-week' : 'u-month';
     const metricTag = impact ? `<span class="action-metric">${impact}</span>` : '';
     return `
         <li class="action-item">
