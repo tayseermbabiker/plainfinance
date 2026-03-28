@@ -14,6 +14,5 @@ Other Liabilities,0,,Credit cards + accrued expenses etc
 Loan Repayments,5000,,Principal paid this month (not interest)
 Owner Drawings,10000,,Money taken out for personal use
 Asset Purchases,0,,Equipment or assets bought this month
-Planned Supplier Payments,25000,,Upcoming payments in next 30 days
-VAT Collected,25000,,Output VAT charged to customers
-VAT Paid,16250,,Input VAT paid on purchases
+Tax Collected from Customers,25000,,Sales tax or VAT charged to customers
+Tax Paid on Purchases,16250,,Sales tax or VAT paid on business expenses

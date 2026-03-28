@@ -199,8 +199,7 @@ function updateCalculations() {
     const loanRepayments = getValue('loanRepayments');
     const ownerDrawings = getValue('ownerDrawings');
     const assetPurchases = getValue('assetPurchases');
-    const plannedSupplierPayments = getValue('plannedSupplierPayments');
-    const totalCashOutflows = loanRepayments + ownerDrawings + assetPurchases + plannedSupplierPayments;
+    const totalCashOutflows = loanRepayments + ownerDrawings + assetPurchases;
     const totalCashOutflowsDisplay = document.getElementById('totalCashOutflows');
     if (totalCashOutflowsDisplay) {
         totalCashOutflowsDisplay.textContent = `${currency} ${formatNumber(totalCashOutflows)}`;
@@ -381,9 +380,7 @@ function parseCSVTemplate(file) {
                     'drawings': 'ownerDrawings',
                     'asset purchases': 'assetPurchases',
                     'equipment purchases': 'assetPurchases',
-                    'planned supplier payments': 'plannedSupplierPayments',
-                    'upcoming supplier payments': 'plannedSupplierPayments',
-                    // Labour cost (new)
+                    // Labour cost
                     'labour cost': 'labourCost',
                     'labor cost': 'labourCost',
                     'labour / staff cost': 'labourCost',
@@ -636,8 +633,7 @@ function showCSVReviewStep(data, missingFields, allMandatory, blankOptional = []
             { label: 'Opening Cash (Start of Year)', current: data.ytd?.startingCash },
             { label: 'Loan Repayments', current: data.current.loanRepayments },
             { label: 'Owner Drawings', current: data.current.ownerDrawings },
-            { label: 'Asset Purchases', current: data.current.assetPurchases },
-            { label: 'Planned Supplier Payments', current: data.current.plannedSupplierPayments }
+            { label: 'Asset Purchases', current: data.current.assetPurchases }
         ]
     };
 
@@ -917,7 +913,6 @@ function collectFormData() {
             loanRepayments: parseFloat(document.getElementById('loanRepayments')?.value) || 0,
             ownerDrawings: parseFloat(document.getElementById('ownerDrawings')?.value) || 0,
             assetPurchases: parseFloat(document.getElementById('assetPurchases')?.value) || 0,
-            plannedSupplierPayments: parseFloat(document.getElementById('plannedSupplierPayments')?.value) || 0,
             labourCost: parseFloat(document.getElementById('labourCost')?.value) || 0
         };
 
@@ -1119,9 +1114,8 @@ function updateCashOutflows() {
     const loanRepayments = getValue('loanRepayments');
     const ownerDrawings = getValue('ownerDrawings');
     const assetPurchases = getValue('assetPurchases');
-    const plannedSupplierPayments = getValue('plannedSupplierPayments');
 
-    const totalCashOutflows = loanRepayments + ownerDrawings + assetPurchases + plannedSupplierPayments;
+    const totalCashOutflows = loanRepayments + ownerDrawings + assetPurchases;
     const totalCashOutflowsDisplay = document.getElementById('totalCashOutflows');
 
     if (totalCashOutflowsDisplay) {
