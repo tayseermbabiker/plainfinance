@@ -506,8 +506,9 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
     }
 
     // KPIs — cash conversion and WC absorption
+    // Only show when bridge spans 1 month (previous month data). YTD bridges mix timeframes.
     const kpiSection = document.getElementById('bridgeKPIs');
-    if (kpiSection && profit !== 0) {
+    if (kpiSection && profit !== 0 && bridgeSpan === 'month') {
         const cashChange = endCash - startCash;
         const wcChange = arChange + invChange - apChange;
         const cashConversion = Math.round((cashChange / profit) * 100);
@@ -1603,6 +1604,9 @@ function updateFCFF(current, currency, fcfValue) {
         } else {
             insightEl.innerHTML = `<p>Loan payments are covered, but barely — your buffer is only <strong>${ratio.toFixed(1)}x</strong>. One bad month could make this tight. Speed up collections to build a cushion.</p>`;
         }
+    } else if (globalTier === 'safe') {
+        // Negative FCF but business is overall healthy — WC absorbed cash this month, not a crisis
+        insightEl.innerHTML = `<p>Free cash flow was negative this month, so loan payments of <strong>${currency} ${formatNumber(loanRepayments)}</strong> came from reserves. This is manageable with your cash buffer, but watch the trend — if this continues, it will erode your position.</p>`;
     } else {
         insightEl.innerHTML = `<p><strong>Your loan payments are draining cash faster than the business can generate it.</strong> You're dipping into reserves by <strong>${currency} ${formatNumber(Math.abs(surplus))}</strong> per month. This is not sustainable — talk to your lender about restructuring.</p>`;
     }
@@ -1681,20 +1685,20 @@ function updateCashRunway(metrics, currency, current, industry) {
             '_default': 'Your business generates more cash than it uses. You can invest, hire, or build reserves.'
         },
         safe: {
-            'food': `At this pace, you have enough cash to cover about ${useDays ? Math.round(daysDisplay / 7) + ' weeks' : Math.floor(runwayMonths) + ' months'} of food, labor, and overhead costs.`,
+            'food': `At this pace, you have enough cash to cover about ${effectiveUseDays ? Math.round(daysDisplay / 7) + ' weeks' : Math.floor(runwayMonths) + ' months'} of food, labor, and overhead costs.`,
             'online': `At your current burn rate, you have ${Math.floor(runwayMonths)} months of runway. This gives you time to grow or optimize before needing funding.`,
             'construction': `This covers approximately ${Math.floor(runwayMonths)} months of overhead between projects. Comfortable buffer for project delays.`,
             'manufacturing': `You have ${Math.floor(runwayMonths)} months of cash to cover production costs and overhead. Solid position for planning.`,
             '_default': `You have time to plan, invest, and weather surprises. Cash balance: ${currency} ${formatNumber(cash)}.`
         },
         warn: {
-            'food': `Cash covers about ${useDays ? Math.round(daysDisplay / 7) + ' weeks' : runwayMonths.toFixed(1) + ' months'} of expenses. Start tightening — reduce waste, speed up catering collections.`,
+            'food': `Cash covers about ${effectiveUseDays ? Math.round(daysDisplay / 7) + ' weeks' : runwayMonths.toFixed(1) + ' months'} of expenses. Start tightening — reduce waste, speed up catering collections.`,
             'online': `${runwayMonths.toFixed(1)} months of runway. If not yet profitable, start planning your next funding round or path to breakeven.`,
             'construction': `${runwayMonths.toFixed(1)} months of overhead coverage. Chase outstanding progress billings and delay non-critical equipment purchases.`,
             '_default': `Not critical yet, but start improving cash flow. Collect receivables faster and delay non-essential spending.`
         },
         low: {
-            'food': `Cash is dangerously low — only ${useDays ? daysDisplay + ' days' : runwayMonths.toFixed(1) + ' months'} left. Negotiate supplier terms, reduce portions or menu items, collect catering invoices immediately.`,
+            'food': `Cash is dangerously low — only ${effectiveUseDays ? daysDisplay + ' days' : runwayMonths.toFixed(1) + ' months'} left. Negotiate supplier terms, reduce portions or menu items, collect catering invoices immediately.`,
             'online': `Only ${runwayMonths.toFixed(1)} months of runway left. Cut non-essential costs immediately and accelerate revenue.`,
             'construction': `${runwayMonths.toFixed(1)} months left. Demand milestone payments on active projects and pause new commitments until cash improves.`,
             '_default': `Action needed. Collect receivables urgently, cut non-essential spending, and consider short-term credit.`
