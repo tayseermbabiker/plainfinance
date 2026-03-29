@@ -416,10 +416,10 @@ function updateInvestigationSection(industry) {
             { question: 'Freight cost as % of revenue', why: 'Freight is often the hidden margin killer in distribution.' }
         ],
         'healthcare': [
-            { question: 'Provider utilization rate (target: 70%+)', why: 'Empty appointment slots are revenue that can never be recovered.' },
-            { question: 'Insurance claim denial rate', why: 'Denials delay or eliminate revenue you already earned.' },
-            { question: 'Revenue per patient visit', why: 'Tracks whether you are capturing full value from each encounter.' },
-            { question: 'Payer mix breakdown (insurance vs cash)', why: 'Insurance reimbursement rates vary widely — your mix affects margins.' }
+            { question: 'Capacity utilization — are you maximizing throughput?', why: 'Unused capacity is revenue that can never be recovered.' },
+            { question: 'Billing rejection rate', why: 'Rejections delay or eliminate revenue you already earned.' },
+            { question: 'Revenue per transaction — is it growing?', why: 'Tracks whether you are capturing full value from each sale or service.' },
+            { question: 'Payer mix breakdown (insurance vs cash vs wholesale)', why: 'Different channels have different margins — your mix affects profitability.' }
         ],
         'other': [
             { question: 'Customer concentration risk', why: 'If one customer is too large, losing them could be catastrophic.' },

@@ -391,7 +391,7 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
         'service': 'Unpaid invoices<small>Clients still owe you</small>',
         'construction': 'Progress billings<small>Retention and milestone payments</small>',
         'manufacturing': 'Receivables change<small>Customers still owe you</small>',
-        'healthcare': 'Patient/insurer receivables<small>Unpaid claims and bills</small>',
+        'healthcare': 'Healthcare receivables<small>Unpaid invoices and claims</small>',
         'other': 'Receivables change<small>Customers still owe you</small>'
     };
     const invLabels = {
@@ -603,7 +603,7 @@ function showCashDriversFallback(current, currency, industry) {
     section.style.display = 'block';
 
     const hideInv = ['online', 'services', 'service'].includes(ind);
-    const arLabel = { 'services': 'Unpaid client invoices', 'service': 'Unpaid client invoices', 'construction': 'Progress billings owed', 'healthcare': 'Patient/insurer receivables' }[ind] || 'Accounts Receivable';
+    const arLabel = { 'services': 'Unpaid client invoices', 'service': 'Unpaid client invoices', 'construction': 'Progress billings owed', 'healthcare': 'Healthcare receivables' }[ind] || 'Accounts Receivable';
     const invLabel = { 'food': 'Food & beverage stock', 'restaurant': 'Food & beverage stock', 'construction': 'Work in progress', 'manufacturing': 'Materials & WIP', 'healthcare': 'Medical supplies' }[ind] || 'Inventory';
 
     let html = `
@@ -696,15 +696,15 @@ function updateInvestigationSection(industry) {
             { question: 'Are there finished goods you can sell at a discount?', why: 'Cash from discounted stock is better than cash locked in warehouse.' }
         ],
         'healthcare': isHealthy ? [
-            { question: 'Provider utilization rate (target: 70%+)', why: 'Empty appointment slots are revenue that can never be recovered.' },
-            { question: 'Revenue per patient visit — is it growing?', why: 'Higher revenue per visit means more efficient operations.' },
-            { question: 'Insurance claim denial rate', why: 'Even small improvements in claim accuracy add up quickly.' },
-            { question: 'Can you add ancillary services?', why: 'Supplements, cosmetics, or wellness programs boost margins.' }
+            { question: 'Capacity utilization — are you maximizing throughput?', why: 'Unused capacity is revenue that can never be recovered.' },
+            { question: 'Revenue per transaction — is it growing?', why: 'Higher revenue per transaction means more efficient operations.' },
+            { question: 'Claim and invoice rejection rate', why: 'Even small improvements in billing accuracy add up quickly.' },
+            { question: 'Can you add complementary products or services?', why: 'Supplements, wellness products, or additional services boost margins.' }
         ] : [
-            { question: 'Claim denial rate — how much revenue are you losing?', why: 'Fix denied claims immediately — this is revenue you already earned.' },
-            { question: 'Which payers are slowest to reimburse?', why: 'Follow up aggressively on outstanding claims.' },
+            { question: 'Billing rejection rate — how much revenue are you losing?', why: 'Fix rejected claims and invoices immediately — this is revenue you already earned.' },
+            { question: 'Which payers and customers are slowest to pay?', why: 'Follow up aggressively on outstanding receivables.' },
             { question: 'Can you reduce supply costs this month?', why: 'Switch to generics or negotiate bulk pricing with distributors.' },
-            { question: 'Are there underperforming service lines?', why: 'Cut or restructure services that cost more than they earn.' }
+            { question: 'Are there underperforming product lines or services?', why: 'Cut or restructure offerings that cost more than they earn.' }
         ],
         'other': isHealthy ? [
             { question: 'Customer concentration — is any client over 30% of revenue?', why: 'Diversifying reduces risk of a sudden revenue drop.' },
@@ -1452,7 +1452,7 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
                 'service': `without winning a single new client`,
                 'construction': `without completing a single extra project`,
                 'manufacturing': `without producing a single extra unit`,
-                'healthcare': `without seeing a single extra patient`,
+                'healthcare': `without generating any extra revenue`,
                 'general': `without generating any extra revenue`
             };
             const hook = oppText[indName] || oppText['general'];

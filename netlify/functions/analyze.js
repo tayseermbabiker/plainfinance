@@ -627,7 +627,7 @@ function buildPrompt(data, metrics, currency, industryType, language = 'en', his
         'construction': `INDUSTRY CONTEXT: Construction / Real Estate. Use construction language: project margin, WIP, progress billing, retentions, milestones. Focus on DSO and cash. Label COGS as "Project Costs".`,
         'manufacturing': `INDUSTRY CONTEXT: Manufacturing. Use manufacturing language: material cost, yield, batch sizing, production efficiency. Focus on DIO and material cost %. Label COGS as "Production Cost".`,
         'wholesale': `INDUSTRY CONTEXT: Wholesale / Distribution. Use distribution language: order fill, credit terms, volume pricing. Focus on DSO/DPO spread and thin margins. Label COGS as "Cost of Goods Purchased".`,
-        'healthcare': `INDUSTRY CONTEXT: Healthcare / Wellness. Use healthcare language: patient volume, payer mix, claim processing. Focus on AR days and margin. Label COGS as "Clinical / Treatment Cost".`,
+        'healthcare': `INDUSTRY CONTEXT: Healthcare / Wellness (covers clinics, pharmacies, labs, wellness centres). Use general healthcare language: volume, payer mix, billing, receivables. Do NOT assume clinics only — avoid "patient visits" or "appointments" as the business may be a pharmacy or lab. Focus on AR days and margin. Label COGS as "Clinical / Treatment Cost".`,
         'other': `INDUSTRY CONTEXT: General Business. Use standard business language.`
     };
 
