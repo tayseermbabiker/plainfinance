@@ -381,6 +381,12 @@
     margin-top: 1px;
 }
 
+.period-cell {
+    font-size: 13px;
+    color: #64748b;
+    white-space: nowrap;
+}
+
 /* Health Badge */
 .health-badge {
     display: inline-flex;
@@ -631,95 +637,6 @@
     .trends-summary { grid-template-columns: 1fr; }
 }
 
-/* ===== Coming Soon ===== */
-.coming-soon-section {
-    margin-top: 36px;
-    padding-top: 28px;
-    border-top: 1px solid #e2e8f0;
-}
-
-.coming-soon-section h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 4px;
-}
-
-.coming-soon-section .section-subtitle {
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 16px;
-}
-
-.coming-soon-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-}
-
-.coming-soon-card {
-    position: relative;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 20px;
-    transition: all 0.15s;
-}
-
-.coming-soon-card:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.coming-soon-icon {
-    width: 42px;
-    height: 42px;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
-    color: #0369a1;
-}
-
-.coming-soon-content h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #0f172a;
-    margin-bottom: 6px;
-}
-
-.coming-soon-content p {
-    font-size: 12px;
-    color: #64748b;
-    line-height: 1.5;
-    margin-bottom: 8px;
-}
-
-.coming-soon-price {
-    font-size: 13px;
-    font-weight: 600;
-    color: #0369a1;
-}
-
-.coming-soon-badge {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    background: #fef3c7;
-    color: #92400e;
-}
-
-@media (max-width: 900px) {
-    .coming-soon-grid { grid-template-columns: 1fr; }
-}
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
