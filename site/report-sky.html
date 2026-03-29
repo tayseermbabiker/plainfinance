@@ -26,7 +26,7 @@
     <!-- Navigation -->
     <nav class="nav nav-report">
         <div class="nav-container">
-            <a href="index.html" class="logo">
+            <a href="dashboard.html" class="logo">
                 <span class="logo-text">PlainFinancials</span>
             </a>
             <div class="nav-actions">
@@ -52,6 +52,7 @@
                     Email Report
                 </button>
                 <a href="analyze.html" class="btn btn-secondary btn-sm">New Analysis</a>
+                <a href="dashboard.html" class="btn btn-secondary btn-sm">Dashboard</a>
             </div>
         </div>
     </nav>
@@ -178,12 +179,12 @@
                         <div class="pl-pct" id="plGrossMargin">--</div>
                     </div>
                     <div class="pl-row indent">
-                        <div class="pl-name">Operating Expenses <small>Rent, wages, admin</small></div>
+                        <div class="pl-name">Operating Expenses <small>Rent, salaries, admin, marketing</small></div>
                         <div class="pl-val" id="plOpex" style="color:var(--ink-mid)">--</div>
                         <div class="pl-pct" id="plOpexPct">--</div>
                     </div>
                     <div class="pl-row subtotal">
-                        <div class="pl-name">EBITDA</div>
+                        <div class="pl-name">EBITDA<span class="pl-asterisk">*</span></div>
                         <div class="pl-val" id="plEBITDA">--</div>
                         <div class="pl-pct" id="plEBITDAMargin">--</div>
                     </div>
@@ -198,6 +199,7 @@
                         <div class="bench-item" id="benchGrossMargin"></div>
                         <div class="bench-item" id="benchNetMargin"></div>
                     </div>
+                    <p class="pl-footnote">*Calculated as Operating Profit (Revenue - COGS - OPEX). Equals EBITDA when no depreciation/amortization is reported.</p>
                 </div>
 
                 <!-- AI Insight -->
@@ -217,7 +219,7 @@
                     <div class="section-header">
                         <span class="section-num">04</span>
                         <span class="section-title">Where Did Your Cash Go?</span>
-                        <span class="section-hint">Start to end of month</span>
+                        <span class="section-hint" id="bridgeHint">Start to end of month</span>
                     </div>
                     <div class="bridge-container" id="cashBridge">
                         <div class="bridge-row">
@@ -231,12 +233,12 @@
                             <div class="b-val pos" id="bridgeProfit">--</div>
                         </div>
                         <div class="bridge-row" id="bridgeARRow" style="display:none;">
-                            <div class="b-label">Receivables change<small>Customers still owe you</small></div>
+                            <div class="b-label" id="bridgeARLabel">Receivables change<small>Customers still owe you</small></div>
                             <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" id="bridgeARBar" style="width:0"></div></div></div>
                             <div class="b-val" id="bridgeAR">--</div>
                         </div>
                         <div class="bridge-row" id="bridgeInvRow" style="display:none;">
-                            <div class="b-label">Inventory change<small>Stock sitting in storage</small></div>
+                            <div class="b-label" id="bridgeInvLabel">Inventory change<small>Stock sitting in storage</small></div>
                             <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" id="bridgeInvBar" style="width:0"></div></div></div>
                             <div class="b-val" id="bridgeInventory">--</div>
                         </div>
@@ -244,6 +246,11 @@
                             <div class="b-label">Payables change<small>You owe suppliers more</small></div>
                             <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar pos" id="bridgeAPBar" style="width:0"></div></div></div>
                             <div class="b-val" id="bridgeAP">--</div>
+                        </div>
+                        <div class="bridge-row" id="bridgeTaxRow" style="display:none;">
+                            <div class="b-label">Tax collected (not yours)<small>Sales tax liability</small></div>
+                            <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" id="bridgeTaxBar" style="width:0"></div></div></div>
+                            <div class="b-val neg" id="bridgeTax">--</div>
                         </div>
                         <div class="bridge-row" id="bridgeLoanRow" style="display:none;">
                             <div class="b-label">- Loan Repayments</div>
@@ -267,6 +274,23 @@
                         </div>
                     </div>
                     <p class="bridge-gap-note" id="bridgeGapNote"></p>
+                    <p class="bridge-tax-note" id="bridgeTaxNote" style="display:none;"></p>
+                    <p class="bridge-summary" id="bridgeSummary"></p>
+                    <div class="bridge-kpis" id="bridgeKPIs" style="display:none;">
+                        <div class="bridge-kpi"><span class="bridge-kpi-label">Cash from Profit</span><span class="bridge-kpi-value" id="kpiCashConversion">--</span></div>
+                        <div class="bridge-kpi"><span class="bridge-kpi-label">Working Capital Impact</span><span class="bridge-kpi-value" id="kpiWCAbsorption">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Cash Drivers (fallback when no bridge data) -->
+                <div class="section plain-only" id="cashDriversSection" style="display: none;">
+                    <div class="section-header">
+                        <span class="section-num">04</span>
+                        <span class="section-title">Cash Drivers</span>
+                        <span class="section-hint">What's affecting your cash</span>
+                    </div>
+                    <div class="cash-drivers" id="cashDriversList"></div>
+                    <p class="cash-drivers-note">These balances affect your cash, but we need last month's data to show the exact movement. Upload previous month data to unlock the full Cash Bridge.</p>
                 </div>
 
                 <!-- Working Capital Health -->
@@ -277,39 +301,40 @@
                         <span class="section-hint">How fast cash flows through the business</span>
                     </div>
 
+                    <!-- Plain-English summary (lead with the story) -->
+                    <p class="wc-summary" id="wcSummary"></p>
+
                     <div class="wc-cards">
                         <div class="wc-card" id="wcDSOCard">
-                            <div class="wc-card-label">Days Sales Outstanding</div>
-                            <div class="wc-card-abbr">DSO</div>
+                            <div class="wc-card-label">How fast customers pay you</div>
+                            <div class="wc-card-abbr">DSO — Days Sales Outstanding</div>
                             <div class="wc-number" id="opDSO">--</div>
                             <div class="wc-unit">days to collect</div>
                             <span class="wc-badge" id="opDSOBadge"></span>
                         </div>
                         <div class="wc-card" id="wcDIOCard">
-                            <div class="wc-card-label">Days Inventory Outstanding</div>
-                            <div class="wc-card-abbr">DIO</div>
+                            <div class="wc-card-label">How long stock sits unsold</div>
+                            <div class="wc-card-abbr">DIO — Days Inventory Outstanding</div>
                             <div class="wc-number" id="opDIO">--</div>
                             <div class="wc-unit">days in stock</div>
                             <span class="wc-badge" id="opDIOBadge"></span>
                         </div>
                         <div class="wc-card" id="wcDPOCard">
-                            <div class="wc-card-label">Days Payable Outstanding</div>
-                            <div class="wc-card-abbr">DPO</div>
+                            <div class="wc-card-label">How fast you pay suppliers</div>
+                            <div class="wc-card-abbr">DPO — Days Payable Outstanding</div>
                             <div class="wc-number" id="opDPO">--</div>
-                            <div class="wc-unit">days to pay suppliers</div>
+                            <div class="wc-unit">days to pay</div>
                             <span class="wc-badge" id="opDPOBadge"></span>
                         </div>
                     </div>
 
                     <div class="ccc-row" id="cccResult">
-                        <span style="font-size:11px;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;">Cash Conversion Cycle</span>
+                        <div>
+                            <span class="ccc-label">How long your money is tied up</span>
+                            <span class="ccc-sublabel">Cash Conversion Cycle (CCC)</span>
+                        </div>
                         <span class="ccc-total" id="cccValue">-- days</span>
                     </div>
-
-                    <!-- Explain text (hidden, populated by JS) -->
-                    <span style="display:none" id="opDSOExplain"></span>
-                    <span style="display:none" id="opDIOExplain"></span>
-                    <span style="display:none" id="opDPOExplain"></span>
 
                     <!-- Benchmark bars -->
                     <div class="bench-bar-section" id="opBenchmarks">
@@ -320,27 +345,27 @@
                     <table class="wcr-table" style="margin-top:1.25rem">
                         <thead>
                             <tr>
-                                <th>Component</th>
-                                <th>Actual</th>
+                                <th></th>
+                                <th>Your Business</th>
                                 <th>Industry Target</th>
-                                <th>Variance</th>
+                                <th>Difference</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Accounts Receivable</td>
+                            <tr id="wcrArRow">
+                                <td>What customers owe you</td>
                                 <td id="wcrArActual">--</td>
                                 <td id="wcrArIndustry">--</td>
                                 <td id="wcrArVariance">--</td>
                             </tr>
-                            <tr>
-                                <td>Inventory</td>
+                            <tr id="wcrInvRow">
+                                <td>Stock on hand</td>
                                 <td id="wcrInvActual">--</td>
                                 <td id="wcrInvIndustry">--</td>
                                 <td id="wcrInvVariance">--</td>
                             </tr>
                             <tr>
-                                <td>Accounts Payable</td>
+                                <td>What you owe suppliers</td>
                                 <td id="wcrApActual">--</td>
                                 <td id="wcrApIndustry">--</td>
                                 <td id="wcrApVariance">--</td>
@@ -348,7 +373,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td>Working Capital Required</td>
+                                <td>Cash tied up in the business</td>
                                 <td id="wcrTotalActual">--</td>
                                 <td id="wcrTotalIndustry">--</td>
                                 <td id="wcrTotalVariance">--</td>
@@ -359,14 +384,15 @@
 
                     <div class="op-cash-movement plain-only" id="opCashMovement"></div>
                     <div class="op-interpretation plain-only" id="opInterpretation"></div>
+                    <div class="wc-opportunity plain-only" id="wcOpportunity" style="display:none;"></div>
                 </div>
 
                 <!-- Cash Runway -->
                 <div class="section" id="runwaySection">
                     <div class="section-header">
                         <span class="section-num">06</span>
-                        <span class="section-title">Cash Runway</span>
-                        <span class="section-hint">How long can you last at this pace?</span>
+                        <span class="section-title">How Long Your Cash Will Last</span>
+                        <span class="section-hint">Cash Runway</span>
                     </div>
                     <div class="runway-hero">
                         <div>
@@ -375,36 +401,37 @@
                         </div>
                         <div class="runway-meta">
                             <div class="runway-cashout" id="runwayCashout"></div>
-                            <div class="runway-explanation" id="runwayMethodDisplay"></div>
+                            <div class="runway-explanation" id="runwayMethodDisplay" title=""></div>
                         </div>
                     </div>
                     <div class="bench-item" id="benchRunway"></div>
                     <div class="runway-drivers" id="runwayDrivers"></div>
                     <div class="runway-interpretation plain-only" id="runwayInterpretation"></div>
+                    <div class="runway-booster plain-only" id="runwayBooster" style="display:none;"></div>
                 </div>
 
                 <!-- Debt Coverage (FCFF) -->
                 <div class="section" id="fcffSection" style="display: none;">
                     <div class="section-header">
                         <span class="section-num">07</span>
-                        <span class="section-title">Debt Coverage</span>
-                        <span class="section-hint">Can you cover your loan payments?</span>
+                        <span class="section-title">Can You Afford Your Loan Payments?</span>
+                        <span class="section-hint">Debt Coverage</span>
                     </div>
                     <div class="debt-grid">
                         <div class="debt-card">
-                            <div class="debt-card-label">Free Cash Flow</div>
+                            <div class="debt-card-label">Cash left after expenses</div>
                             <div class="debt-card-number" id="fcffFCF">--</div>
-                            <div class="debt-card-sub">Cash generated before repayments</div>
+                            <div class="debt-card-sub">Before loan payments</div>
                         </div>
                         <div class="debt-card">
-                            <div class="debt-card-label">Loan Repayments</div>
+                            <div class="debt-card-label">Loan payments this month</div>
                             <div class="debt-card-number" id="fcffLoanRepayments" style="color:var(--red)">--</div>
-                            <div class="debt-card-sub">Monthly principal + interest</div>
+                            <div class="debt-card-sub">Principal + interest</div>
                         </div>
                         <div class="debt-card">
-                            <div class="debt-card-label">Surplus / Shortfall</div>
+                            <div class="debt-card-label">Cash left after loan payments</div>
                             <div class="debt-card-number" id="fcffSurplus">--</div>
-                            <div class="debt-card-sub">After debt service</div>
+                            <div class="debt-card-sub">What remains</div>
                         </div>
                     </div>
                     <div class="insight-block" id="fcffInsight">
@@ -412,12 +439,12 @@
                     </div>
                 </div>
 
-                <!-- Free Cash Flow -->
+                <!-- Cash Generated -->
                 <div class="section" id="fcfSection">
                     <div class="section-header">
                         <span class="section-num" id="fcfSectionNum">08</span>
-                        <span class="section-title">Free Cash Flow</span>
-                        <span class="section-hint">Real cash generated</span>
+                        <span class="section-title">Cash Generated</span>
+                        <span class="section-hint">Free Cash Flow</span>
                     </div>
                     <div class="fcf-breakdown">
                         <div class="fcf-row">
@@ -425,15 +452,15 @@
                             <strong class="fcf-value" id="fcfNetProfit">--</strong>
                         </div>
                         <div class="fcf-row">
-                            <span class="fcf-label">Working Capital Changes</span>
+                            <span class="fcf-label">Cash tied up in customers & inventory</span>
                             <strong class="fcf-value" id="fcfWCChanges">--</strong>
                         </div>
                         <div class="fcf-row">
-                            <span class="fcf-label">Capital Expenditure</span>
+                            <span class="fcf-label">Equipment & asset purchases</span>
                             <strong class="fcf-value" id="fcfCapex">--</strong>
                         </div>
                         <div class="fcf-total">
-                            <span class="fcf-label">Free Cash Flow</span>
+                            <span class="fcf-label">Cash Generated</span>
                             <strong class="fcf-value" id="fcfTotal">--</strong>
                         </div>
                     </div>
@@ -446,12 +473,12 @@
                 <div class="section" id="bankSummarySection">
                     <div class="section-header">
                         <span class="section-num">09</span>
-                        <span class="section-title">If Someone Asks How the Business Is Doing</span>
-                        <span class="section-hint">Ready to use</span>
+                        <span class="section-title">Your Business at a Glance</span>
+                        <span class="section-hint">Ready to share</span>
                     </div>
                     <div class="bank-quote-wrap" id="bankSummary">
                         <div class="bank-quote-text" id="bankSummaryQuote">--</div>
-                        <div class="bank-quote-note">Use this with your bank, business partner, or accountant.</div>
+                        <div class="bank-quote-note">Use this when your bank, partner, or accountant asks how the business is doing.</div>
                     </div>
                 </div>
 
@@ -476,8 +503,8 @@
                 <div class="section plain-only" id="investigationSection" style="display: none;">
                     <div class="section-header">
                         <span class="section-num">11</span>
-                        <span class="section-title">Things to Investigate</span>
-                        <span class="section-hint">Data we can't calculate — but you should track</span>
+                        <span class="section-title">What to Review This Month</span>
+                        <span class="section-hint">Things we can't calculate — but you should check</span>
                     </div>
                     <ul class="nf-list" id="investigationList">
                         <!-- Filled by JS -->
@@ -512,7 +539,7 @@
                     </tbody>
                 </table>
 
-                <div class="tech-section-title">Free Cash Flow &amp; Debt Service</div>
+                <div class="tech-section-title">Cash Generated &amp; Debt Coverage</div>
                 <table class="tech-table" id="techFCFTable">
                     <thead><tr><th>Item</th><th>Amount</th></tr></thead>
                     <tbody id="techFCFBody">
