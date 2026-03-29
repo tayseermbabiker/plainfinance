@@ -921,10 +921,15 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
     }
 
     // Interpretation from AI or generated
+    // Skip AI text when CCC <= 0 — hardcoded advice is more reliable
+    // Also filter out bad DPO advice — AI sometimes suggests "reducing DPO" which is backwards
+    // (lower DPO = paying suppliers faster = hurts cash flow)
     const interpEl = document.getElementById('opInterpretation');
     if (interpEl) {
-        if (analysis && analysis.cashCycleExplanation) {
-            interpEl.innerHTML = `<p>${analysis.cashCycleExplanation}</p>`;
+        const aiText = analysis && analysis.cashCycleExplanation;
+        const hasBadDPO = aiText && /reduc\w*\s+(your\s+)?days\s+payable|reduc\w*\s+(your\s+)?dpo|lower\w*\s+(your\s+)?dpo|lower\w*\s+(your\s+)?days\s+payable|decrease\s+(your\s+)?dpo/i.test(aiText);
+        if (aiText && metrics.ccc > 0 && !hasBadDPO) {
+            interpEl.innerHTML = `<p>${aiText}</p>`;
         } else {
             interpEl.innerHTML = '';
         }
@@ -1826,12 +1831,12 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
         const fcf = netProfit - capex;
         const surplus = fcf - loanRepayments;
         fcfBody.innerHTML = `
-            <tr><td>Net Profit</td><td>${currency} ${formatNumber(netProfit)}</td></tr>
+            <tr><td>Net Profit</td><td>${netProfit < 0 ? `(${currency} ${formatNumber(netProfit)})` : `${currency} ${formatNumber(netProfit)}`}</td></tr>
             <tr><td>Capital Expenditure</td><td>(${currency} ${formatNumber(capex)})</td></tr>
-            <tr class="subtotal"><td>Free Cash Flow</td><td>${currency} ${formatNumber(fcf)}</td></tr>
+            <tr class="subtotal"><td>Free Cash Flow</td><td>${fcf < 0 ? `(${currency} ${formatNumber(fcf)})` : `${currency} ${formatNumber(fcf)}`}</td></tr>
             ${loanRepayments > 0 ? `
             <tr><td>Loan Repayments</td><td>(${currency} ${formatNumber(loanRepayments)})</td></tr>
-            <tr class="subtotal"><td>Surplus / Shortfall</td><td>${currency} ${formatNumber(surplus)}</td></tr>
+            <tr class="subtotal"><td>Surplus / Shortfall</td><td>${surplus < 0 ? `(${currency} ${formatNumber(surplus)})` : `${currency} ${formatNumber(surplus)}`}</td></tr>
             ` : ''}
         `;
     }

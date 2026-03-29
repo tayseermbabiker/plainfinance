@@ -761,7 +761,7 @@ Use these metrics in your analysis. If any metric is notably above or below the 
 
 Please provide:
 
-1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision — always express as a decimal of the main currency unit.
+1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision. Round ALL amounts to whole numbers (no decimals) — write "${currency} 14,758" not "${currency} 14,757.78". If the per-dollar amount is less than ${currency} 0.01, say "less than ${currency} 0.01" instead of showing tiny decimals like ${currency} 0.0009.
 
 2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with a tag. Be specific with numbers. Write for a non-accountant — no jargon.
    TAG RULES based on tone:
@@ -771,8 +771,11 @@ Please provide:
 
 3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only. Write for someone who has never heard of "cash conversion cycle."
    - First sentence: How many days your money is tied up before it comes back, and whether this is good, normal, or risky for your industry.
-   - Second sentence: One specific thing to do to improve it, with a number.
-   - Example: "Your money is tied up for 21 days before coming back — that's normal for your industry. Asking suppliers for 30-day payment terms instead of 9 would free up cash faster."
+   - Second sentence: If the cycle is slow or risky, one specific thing to do to improve it, with a number. If the cycle is already good or negative, a brief note on what to maintain or reinvest in.
+   - CRITICAL DPO RULE: Higher DPO = better for cash flow (you hold cash longer). NEVER suggest reducing or lowering DPO — that means paying suppliers faster, which HURTS cash flow. To improve cash flow via suppliers, suggest INCREASING DPO or negotiating LONGER payment terms.
+   - If CCC is negative (excellent), do NOT force improvement advice. Instead, acknowledge the strong position and suggest maintaining supplier relationships or reinvesting.
+   - Example (positive CCC): "Your money is tied up for 21 days before coming back — that's normal for your industry. Asking suppliers for 30-day payment terms instead of 9 would free up cash faster."
+   - Example (negative CCC): "You collect cash before you need to pay it out — that's an excellent position. Focus on maintaining good supplier relationships to keep these terms."
 
 4-6. THREE ACTIONS — each must be specific, physical, and actionable.
    - Title: 3-6 words, starts with a verb
@@ -791,7 +794,7 @@ Please provide:
 
 6. ACTION_3: Third action.
 
-7. MEETING_SUMMARY: 2-3 sentences an owner can say when a bank, partner, or accountant asks "How is your business doing?" Include: revenue (with trend if available), profit margin, and cash position in plain dollars. Do NOT use jargon like "current ratio" or "EBITDA" — use plain language like "cash in bank" and "profit margin."
+7. MEETING_SUMMARY: 2-3 sentences an owner can say when a bank, partner, or accountant asks "How is your business doing?" Include: revenue (with trend if available), profit margin, and cash position in plain dollars. Do NOT use jargon like "current ratio" or "EBITDA" — use plain language like "cash in bank" and "profit margin." Round ALL amounts to whole numbers — no decimal places.
 
 8. BENCHMARK_NOTE: One sentence comparing a key metric to industry peers. Format: "Based on data from 100+ businesses, your [metric] is [above/below/in line with] the typical range for [industry type]." Pick the most notable metric (good or bad).
 

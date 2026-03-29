@@ -697,14 +697,17 @@ Use these metrics in your analysis. If any metric is notably above or below the 
 
 Please provide:
 
-1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept 11 fils."
+1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision. Round ALL amounts to whole numbers (no decimals) — write "${currency} 14,758" not "${currency} 14,757.78". If the per-dollar amount is less than ${currency} 0.01, say "less than ${currency} 0.01" instead of showing tiny decimals like ${currency} 0.0009.
 
 2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with "Good:", "Risk:", or "Watch:" as appropriate. Be specific with numbers.
 
 3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only.
    - First sentence: How many days cash is tied up and whether this is good, normal, or risky.
-   - Second sentence: What would improve it, with a specific number.
-   - Example: "Cash is tied up for 21 days, which is normal. Move supplier payments from 9 to 30 days to free up cash."
+   - Second sentence: If the cycle is slow or risky, one specific thing to do to improve it, with a number. If the cycle is already good or negative, a brief note on what to maintain or reinvest in.
+   - CRITICAL DPO RULE: Higher DPO = better for cash flow (you hold cash longer). NEVER suggest reducing or lowering DPO — that means paying suppliers faster, which HURTS cash flow. To improve cash flow via suppliers, suggest INCREASING DPO or negotiating LONGER payment terms.
+   - If CCC is negative (excellent), do NOT force improvement advice. Instead, acknowledge the strong position and suggest maintaining supplier relationships or reinvesting.
+   - Example (positive CCC): "Cash is tied up for 21 days, which is normal. Move supplier payments from 9 to 30 days to free up cash."
+   - Example (negative CCC): "You collect cash before you need to pay it out — that's an excellent position. Focus on maintaining good supplier relationships to keep these terms."
 
 4. ACTION_1: The most urgent action.
    - Title: 3-6 words, starts with a verb (e.g. "Collect ${currency} 50,000 from customers")
@@ -714,7 +717,7 @@ Please provide:
 
 6. ACTION_3: Third action. Same format as ACTION_1.
 
-7. MEETING_SUMMARY: 2-3 sentences an owner can say when asked "How is your business doing?" Include revenue, profit margin, and one key focus area.
+7. MEETING_SUMMARY: 2-3 sentences an owner can say when asked "How is your business doing?" Include revenue, profit margin, and one key focus area. Round ALL amounts to whole numbers — no decimal places.
 
 8. BENCHMARK_NOTE: One sentence comparing a key metric to industry peers. Format: "Based on data from 100+ businesses, your [metric] is [above/below/in line with] the typical range for [industry type]." Pick the most notable metric (good or bad).
 
