@@ -2,13 +2,13 @@
 
 .analyze-main {
     min-height: 100vh;
-    padding-top: 100px;
-    padding-bottom: 60px;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding-top: 80px;
+    padding-bottom: 40px;
+    background: #f8fafc;
 }
 
 .analyze-container {
-    max-width: 760px;
+    max-width: 680px;
     margin: 0 auto;
     padding: 0 24px;
 }
@@ -16,7 +16,7 @@
 /* ===== Progress Bar ===== */
 
 .progress-bar {
-    margin-bottom: 40px;
+    margin-bottom: 24px;
 }
 
 .progress-steps {
@@ -40,15 +40,15 @@
 }
 
 .step-number {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     color: #64748b;
     transition: all 0.3s ease;
 }
@@ -108,25 +108,25 @@
 
 .step-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .step-header h1 {
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 700;
     color: #0f172a;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .step-header p {
     color: #64748b;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 /* ===== Form Groups ===== */
 
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .form-group label {
@@ -198,13 +198,13 @@
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
     font-family: inherit;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    background: #f8fafc;
+    background: white;
     color: #0f172a;
     box-sizing: border-box;
 }
@@ -453,35 +453,35 @@
 /* ===== Input Method Toggle ===== */
 
 .input-method-toggle {
-    margin-top: 32px;
-    padding-top: 32px;
+    margin-top: 20px;
+    padding-top: 16px;
     border-top: 1px solid #e2e8f0;
 }
 
 .input-method-toggle p {
     font-weight: 500;
-    color: #334155;
-    margin-bottom: 16px;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 10px;
     text-align: center;
 }
 
 .toggle-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 10px;
 }
 
 .toggle-btn {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 24px 16px;
+    gap: 10px;
+    padding: 12px 16px;
     background: white;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
 }
 
 .toggle-btn:hover {
@@ -495,7 +495,10 @@
 }
 
 .toggle-btn svg {
-    color: #64748b;
+    color: #94a3b8;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
 .toggle-btn.active svg {
@@ -504,12 +507,14 @@
 
 .toggle-btn span {
     font-weight: 600;
+    font-size: 14px;
     color: #334155;
 }
 
 .toggle-btn small {
-    font-size: 12px;
+    font-size: 11px;
     color: #94a3b8;
+    margin-left: auto;
 }
 
 /* ===== Upload Zone ===== */
@@ -743,9 +748,9 @@
 .form-actions {
     display: flex;
     justify-content: space-between;
-    gap: 16px;
-    margin-top: 32px;
-    padding-top: 24px;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
     border-top: 1px solid #e2e8f0;
 }
 
@@ -754,12 +759,12 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 14px 28px;
-    border-radius: 10px;
-    font-size: 16px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     border: none;
     font-family: inherit;
 }

@@ -2,13 +2,13 @@
 
 .analyze-main {
     min-height: 100vh;
-    padding-top: 100px;
-    padding-bottom: 60px;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding-top: 80px;
+    padding-bottom: 40px;
+    background: #f8fafc;
 }
 
 .analyze-container {
-    max-width: 760px;
+    max-width: 680px;
     margin: 0 auto;
     padding: 0 24px;
 }
@@ -16,7 +16,7 @@
 /* ===== Progress Bar ===== */
 
 .progress-bar {
-    margin-bottom: 40px;
+    margin-bottom: 24px;
 }
 
 .progress-steps {
@@ -40,15 +40,15 @@
 }
 
 .step-number {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     color: #64748b;
     transition: all 0.3s ease;
 }
@@ -108,25 +108,25 @@
 
 .step-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .step-header h1 {
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 700;
     color: #0f172a;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .step-header p {
     color: #64748b;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 /* ===== Form Groups ===== */
 
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .form-group label {
@@ -198,13 +198,13 @@
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 16px 18px;
+    padding: 10px 12px;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 14px;
     font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    background: #f8fafc;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    background: white;
     color: #0f172a;
     box-sizing: border-box;
 }
@@ -227,8 +227,8 @@
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
     background: white;
 }
 
@@ -398,15 +398,15 @@
 
 .currency-prefix {
     position: absolute;
-    left: 16px;
-    color: #64748b;
+    left: 14px;
+    color: #94a3b8;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13px;
     pointer-events: none;
 }
 
 .input-with-currency input {
-    padding-left: 54px;
+    padding-left: 50px;
 }
 
 /* ===== Calculated Fields ===== */
@@ -453,35 +453,35 @@
 /* ===== Input Method Toggle ===== */
 
 .input-method-toggle {
-    margin-top: 32px;
-    padding-top: 32px;
+    margin-top: 20px;
+    padding-top: 16px;
     border-top: 1px solid #e2e8f0;
 }
 
 .input-method-toggle p {
     font-weight: 500;
-    color: #334155;
-    margin-bottom: 16px;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 10px;
     text-align: center;
 }
 
 .toggle-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 10px;
 }
 
 .toggle-btn {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 24px 16px;
+    gap: 10px;
+    padding: 12px 16px;
     background: white;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
 }
 
 .toggle-btn:hover {
@@ -495,7 +495,10 @@
 }
 
 .toggle-btn svg {
-    color: #64748b;
+    color: #94a3b8;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
 .toggle-btn.active svg {
@@ -504,24 +507,26 @@
 
 .toggle-btn span {
     font-weight: 600;
+    font-size: 14px;
     color: #334155;
 }
 
 .toggle-btn small {
-    font-size: 12px;
+    font-size: 11px;
     color: #94a3b8;
+    margin-left: auto;
 }
 
 /* ===== Upload Zone ===== */
 
 .upload-zone {
-    border: 1px dashed #cbd5e1;
-    border-radius: 16px;
-    padding: 48px 24px;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 28px 24px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    background: white;
+    background: #f8fafc;
 }
 
 .upload-zone:hover,
@@ -536,7 +541,7 @@
 }
 
 .upload-zone h3 {
-    font-size: 18px;
+    font-size: 15px;
     color: #334155;
     margin-bottom: 4px;
 }
@@ -743,9 +748,9 @@
 .form-actions {
     display: flex;
     justify-content: space-between;
-    gap: 16px;
-    margin-top: 32px;
-    padding-top: 24px;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
     border-top: 1px solid #e2e8f0;
 }
 
@@ -754,12 +759,12 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 14px 28px;
-    border-radius: 10px;
-    font-size: 16px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     border: none;
     font-family: inherit;
 }
@@ -1373,4 +1378,138 @@
 .skip-actions:hover {
     color: #334155;
     text-decoration: underline;
+}
+
+/* ===== CSV Note ===== */
+
+.csv-note {
+    font-size: 13px;
+    color: #64748b;
+    text-align: center;
+    margin-bottom: 16px;
+    font-style: italic;
+}
+
+/* ===== CSV Review Step ===== */
+
+.csv-review-summary {
+    margin-bottom: 28px;
+}
+
+.csv-review-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.csv-review-table thead th {
+    padding: 12px 16px;
+    text-align: left;
+    background: #f8fafc;
+    font-weight: 600;
+    color: #334155;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.csv-review-table thead th:not(:first-child) {
+    text-align: right;
+}
+
+.csv-review-table tbody td {
+    padding: 10px 16px;
+    color: #475569;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.csv-review-table tbody td:not(:first-child) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.csv-review-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.csv-review-group-header td {
+    font-weight: 600;
+    color: #1e3a5f !important;
+    background: #f1f5f9;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 16px !important;
+}
+
+.csv-review-missing {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 8px;
+}
+
+.csv-review-missing h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #92400e;
+    margin-bottom: 4px;
+}
+
+.csv-review-missing > p {
+    font-size: 13px;
+    color: #a16207;
+    margin-bottom: 20px;
+}
+
+.csv-review-missing .form-group {
+    margin-bottom: 16px;
+}
+
+.csv-review-missing .form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+.csv-review-blank {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 8px;
+}
+
+.csv-review-blank h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0c4a6e;
+    margin-bottom: 4px;
+}
+
+.csv-review-blank > p {
+    font-size: 13px;
+    color: #0369a1;
+    margin-bottom: 20px;
+}
+
+.csv-review-blank .form-group {
+    margin-bottom: 16px;
+}
+
+.csv-review-blank .form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+.field-hint {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
 }
