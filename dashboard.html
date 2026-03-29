@@ -18,7 +18,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a5f'/><text x='50' y='65' font-size='50' fill='white' text-anchor='middle' font-family='Arial'>PF</text></svg>">
 </head>
 <body>
@@ -28,9 +27,15 @@
             <a href="index.html" class="nav-logo">
                 <span class="logo-text">PlainFinancials</span>
             </a>
-            <div class="nav-links">
-                <a href="dashboard.html" class="active">My Reports</a>
-                <a href="analyze.html">New Analysis</a>
+            <div class="nav-right">
+                <div class="nav-plan-pill" id="navPlanPill" style="display:none;">
+                    <span id="navPlanText">Free Plan</span>
+                </div>
+                <a href="pricing.html" class="nav-upgrade-link" id="navUpgrade" style="display:none;">Upgrade</a>
+                <div class="nav-links">
+                    <a href="dashboard.html" class="active">My Reports</a>
+                    <a href="analyze.html">New Analysis</a>
+                </div>
                 <div class="nav-user">
                     <span id="userName">User</span>
                     <button class="btn btn-secondary btn-sm" onclick="signOut()">Log Out</button>
@@ -42,23 +47,15 @@
     <!-- Dashboard Content -->
     <main class="dashboard-main">
         <div class="dashboard-container">
-            <!-- Subscription Banner -->
-            <div class="subscription-banner" id="subscriptionBanner" style="display: none;">
-                <div class="subscription-info">
-                    <span class="plan-badge" id="planBadge">Free</span>
-                    <span class="reports-count" id="reportsCount"></span>
-                </div>
-                <a href="pricing.html" class="btn btn-sm btn-primary" id="upgradeBtn">Upgrade</a>
-            </div>
 
             <!-- Header -->
             <header class="dashboard-header">
                 <div>
-                    <h1>My Reports</h1>
-                    <p>View and manage your financial reports</p>
+                    <h1>My Business Reports</h1>
+                    <p class="header-sub" id="headerSub">Loading...</p>
                 </div>
                 <a href="analyze.html" class="btn btn-primary" id="newReportBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
@@ -66,55 +63,115 @@
                 </a>
             </header>
 
-            <!-- Trends Section (shown when 2+ reports exist) -->
-            <div class="trends-section" id="trendsSection" style="display: none;">
-                <h2>Your Business Trends</h2>
-                <p class="section-subtitle">How your key metrics have changed over time</p>
-
-                <div class="trends-summary" id="trendsSummary">
-                    <div class="trend-card">
-                        <span class="trend-label">Revenue Trend</span>
-                        <span class="trend-value" id="revenueTrend">-</span>
-                    </div>
-                    <div class="trend-card">
-                        <span class="trend-label">Profit Trend</span>
-                        <span class="trend-value" id="profitTrend">-</span>
-                    </div>
-                    <div class="trend-card">
-                        <span class="trend-label">Cash Trend</span>
-                        <span class="trend-value" id="cashTrend">-</span>
-                    </div>
+            <!-- KPI Tiles -->
+            <div class="kpi-row" id="kpiRow" style="display:none;">
+                <div class="kpi-card">
+                    <span class="kpi-label">Businesses Tracked</span>
+                    <span class="kpi-value" id="kpiBizCount">0</span>
+                    <span class="kpi-sub" id="kpiBizBreakdown"></span>
                 </div>
-
-                <div class="trends-chart-container">
-                    <canvas id="trendsChart"></canvas>
+                <div class="kpi-card">
+                    <span class="kpi-label">Needs Your Attention</span>
+                    <span class="kpi-value kpi-attention" id="kpiAttention">0</span>
+                    <span class="kpi-sub">Action items across your reports</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Best Performer</span>
+                    <span class="kpi-value kpi-best-name" id="kpiBestName">--</span>
+                    <span class="kpi-sub" id="kpiBestSub"></span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Reports Left This Month</span>
+                    <span class="kpi-value" id="kpiReportsLeft">--</span>
+                    <span class="kpi-sub" id="kpiReportsSub"></span>
                 </div>
             </div>
 
-            <!-- Reports List -->
-            <div class="reports-section">
-                <div class="reports-list" id="reportsList">
-                    <!-- Loading state -->
-                    <div class="loading-state" id="loadingState">
-                        <div class="loading-spinner"></div>
-                        <p>Loading your reports...</p>
+            <!-- Alert Banner -->
+            <div class="alert-banner" id="alertBanner" style="display:none;">
+                <span class="alert-icon">!</span>
+                <span class="alert-text" id="alertText"></span>
+                <a href="#reportsTable" class="alert-link" id="alertLink">View affected reports</a>
+            </div>
+
+            <!-- Reports Table -->
+            <div class="reports-section" id="reportsSection" style="display:none;">
+                <div class="reports-toolbar">
+                    <h2>All Reports</h2>
+                    <div class="filter-chips" id="filterChips">
+                        <button class="chip active" data-filter="all">All</button>
+                        <button class="chip chip-danger" data-filter="danger">Danger</button>
+                        <button class="chip chip-watch" data-filter="watch">Watch</button>
+                        <button class="chip chip-safe" data-filter="safe">Safe</button>
                     </div>
                 </div>
 
-                <!-- Empty state -->
-                <div class="empty-state" id="emptyState" style="display: none;">
-                    <div class="empty-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
+                <div class="reports-table-wrap" id="reportsTable">
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>Business</th>
+                                <th>Health</th>
+                                <th class="col-sortable" data-sort="revenue">Revenue <span class="sort-icon"></span></th>
+                                <th>Net Profit</th>
+                                <th>Cash in Bank</th>
+                                <th>Runway</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Loading state -->
+            <div class="loading-state" id="loadingState">
+                <div class="loading-spinner"></div>
+                <p>Loading your reports...</p>
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </div>
+                <h2>No reports yet</h2>
+                <p>Create your first financial report to get started.</p>
+                <a href="analyze.html" class="btn btn-primary">Create Your First Report</a>
+            </div>
+
+            <!-- Trends (collapsible, hidden by default) -->
+            <div class="trends-section" id="trendsSection" style="display: none;">
+                <div class="trends-toggle" onclick="toggleTrends()">
+                    <h2>Business Trends</h2>
+                    <svg class="trends-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="trends-body">
+                    <div class="trends-summary" id="trendsSummary">
+                        <div class="trend-card">
+                            <span class="trend-label">Revenue Trend</span>
+                            <span class="trend-value" id="revenueTrend">-</span>
+                        </div>
+                        <div class="trend-card">
+                            <span class="trend-label">Profit Trend</span>
+                            <span class="trend-value" id="profitTrend">-</span>
+                        </div>
+                        <div class="trend-card">
+                            <span class="trend-label">Cash Trend</span>
+                            <span class="trend-value" id="cashTrend">-</span>
+                        </div>
                     </div>
-                    <h2>No reports yet</h2>
-                    <p>Create your first financial report to get started.</p>
-                    <a href="analyze.html" class="btn btn-primary">Create Your First Report</a>
+                    <div class="trends-chart-container">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -124,55 +181,48 @@
                 <p class="section-subtitle">Powerful add-ons to supercharge your financial insights</p>
 
                 <div class="coming-soon-grid">
-                    <!-- Bank-Ready Pack -->
                     <div class="coming-soon-card">
                         <div class="coming-soon-icon">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M3 21h18"></path>
-                                <path d="M3 10h18"></path>
-                                <path d="M5 6l7-3 7 3"></path>
-                                <path d="M4 10v11"></path>
-                                <path d="M20 10v11"></path>
-                                <path d="M8 14v3"></path>
-                                <path d="M12 14v3"></path>
-                                <path d="M16 14v3"></path>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M3 21h18"></path><path d="M3 10h18"></path>
+                                <path d="M5 6l7-3 7 3"></path><path d="M4 10v11"></path>
+                                <path d="M20 10v11"></path><path d="M8 14v3"></path>
+                                <path d="M12 14v3"></path><path d="M16 14v3"></path>
                             </svg>
                         </div>
                         <div class="coming-soon-content">
                             <h3>Bank-Ready Pack</h3>
-                            <p>Generate professional loan application documents formatted for Gulf banks. Includes P&L, Balance Sheet, ratios, and executive narrative.</p>
+                            <p>Professional loan application documents formatted for banks. Includes P&L, Balance Sheet, ratios, and executive narrative.</p>
                             <span class="coming-soon-price">From $150</span>
                         </div>
                         <span class="coming-soon-badge">Coming Soon</span>
                     </div>
 
-                    <!-- Budget Wizard -->
                     <div class="coming-soon-card">
                         <div class="coming-soon-icon">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M12 2v20"></path>
                                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
                         </div>
                         <div class="coming-soon-content">
                             <h3>Budget Wizard</h3>
-                            <p>Create a 12-month P&L forecast in 60 minutes. Uses your historical data to project revenue, costs, and cash flow with variance tracking.</p>
+                            <p>Create a 12-month P&L forecast in 60 minutes. Uses your historical data to project revenue, costs, and cash flow.</p>
                             <span class="coming-soon-price">$59 per budget</span>
                         </div>
                         <span class="coming-soon-badge">Coming Soon</span>
                     </div>
 
-                    <!-- Data Health Scanner -->
                     <div class="coming-soon-card">
                         <div class="coming-soon-icon">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
                             </svg>
                         </div>
                         <div class="coming-soon-content">
                             <h3>Data Health Scanner</h3>
-                            <p>Audit-style checks before generating your report. Catches VAT errors, negative balances, missing accruals, and gives you a health score.</p>
+                            <p>Audit-style checks before generating your report. Catches VAT errors, negative balances, missing accruals.</p>
                             <span class="coming-soon-price">Pro feature</span>
                         </div>
                         <span class="coming-soon-badge">Coming Soon</span>
@@ -183,85 +233,126 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/supabase.js"></script>
     <script>
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                            'July', 'August', 'September', 'October', 'November', 'December'];
 
-        // Check authentication
+        let allReports = [];
+        let currentFilter = 'all';
+
+        // ===== Health Classification =====
+        function classifyHealth(report) {
+            const runway = report.cash_runway ?? null;
+            const netProfit = report.net_profit ?? 0;
+            const cash = report.cash ?? 0;
+
+            // Danger: negative profit AND low runway, or very low runway
+            if (runway !== null && runway < 3) return 'danger';
+            if (netProfit < 0 && cash < 0) return 'danger';
+
+            // Watch: low runway or negative profit
+            if (runway !== null && runway < 6) return 'watch';
+            if (netProfit < 0) return 'watch';
+
+            return 'safe';
+        }
+
+        function healthLabel(status) {
+            const labels = { danger: 'Danger', watch: 'Watch', safe: 'Safe' };
+            return labels[status] || 'Safe';
+        }
+
+        function runwayDisplay(months) {
+            if (months === null || months === undefined) return '--';
+            if (months > 12) return '12m+';
+            return months.toFixed(1) + 'm';
+        }
+
+        function runwayDotClass(months) {
+            if (months === null || months === undefined) return '';
+            if (months < 3) return 'dot-danger';
+            if (months < 6) return 'dot-watch';
+            return 'dot-safe';
+        }
+
+        // ===== Init =====
         document.addEventListener('DOMContentLoaded', async () => {
             const user = await getUser();
-
             if (!user) {
                 window.location.href = 'login.html';
                 return;
             }
 
-            // Update user name
             const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
             document.getElementById('userName').textContent = userName;
 
-            // Load subscription info
-            await loadSubscriptionInfo();
-
-            // Load reports
-            await loadReports();
+            await Promise.all([loadSubscriptionInfo(), loadReports()]);
         });
 
+        // ===== Subscription =====
         async function loadSubscriptionInfo() {
-            const banner = document.getElementById('subscriptionBanner');
-            const planBadge = document.getElementById('planBadge');
-            const reportsCount = document.getElementById('reportsCount');
-            const upgradeBtn = document.getElementById('upgradeBtn');
-            const newReportBtn = document.getElementById('newReportBtn');
-
             try {
                 const reportCheck = await canCreateReport();
-                banner.style.display = 'flex';
+                const planNames = { free: 'Free', owner: 'Owner', pro: 'Pro', admin: 'Admin' };
+                const planName = planNames[reportCheck.plan] || 'Free';
 
-                const planNames = {
-                    'free': 'Free',
-                    'owner': 'Owner',
-                    'pro': 'Pro'
-                };
-
-                planBadge.textContent = planNames[reportCheck.plan] || 'Free';
-                planBadge.className = 'plan-badge plan-' + reportCheck.plan;
+                // Nav pill
+                const pill = document.getElementById('navPlanPill');
+                const pillText = document.getElementById('navPlanText');
+                pill.style.display = 'flex';
 
                 if (reportCheck.plan === 'free') {
-                    // Free tier - lifetime limit
-                    reportsCount.textContent = `${reportCheck.remaining} of ${reportCheck.limit} free reports remaining`;
-
-                    if (reportCheck.remaining === 0) {
-                        newReportBtn.classList.add('disabled');
-                        newReportBtn.onclick = (e) => {
-                            e.preventDefault();
-                            if (confirm('You have used your 2 free reports. Upgrade to Owner for 6 reports per month.')) {
-                                window.location.href = 'pricing.html';
-                            }
-                        };
-                    }
+                    pillText.textContent = `${planName} Plan \u00b7 ${reportCheck.used} of ${reportCheck.limit} reports used`;
+                } else if (reportCheck.plan === 'admin') {
+                    pillText.textContent = 'Admin';
                 } else {
-                    // Paid tier - monthly limit
-                    reportsCount.textContent = `${reportCheck.remaining} of ${reportCheck.limit} reports remaining this month`;
-                    upgradeBtn.style.display = reportCheck.plan === 'pro' ? 'none' : 'inline-flex';
+                    pillText.textContent = `${planName} Plan \u00b7 ${reportCheck.used} of ${reportCheck.limit} reports used`;
+                }
+
+                // Upgrade link
+                if (reportCheck.plan !== 'pro' && reportCheck.plan !== 'admin') {
+                    document.getElementById('navUpgrade').style.display = 'inline';
+                }
+
+                // KPI: reports left
+                document.getElementById('kpiReportsLeft').textContent = reportCheck.remaining === 999 ? '\u221e' : reportCheck.remaining;
+                const resetDate = new Date();
+                resetDate.setMonth(resetDate.getMonth() + 1, 1);
+                const resetLabel = reportCheck.plan === 'free'
+                    ? 'Lifetime limit'
+                    : `Resets ${resetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                const upgradeSuffix = (reportCheck.plan !== 'pro' && reportCheck.plan !== 'admin') ? ' \u00b7 upgrade for more' : '';
+                document.getElementById('kpiReportsSub').textContent = resetLabel + upgradeSuffix;
+
+                // Disable new report if at limit
+                if (!reportCheck.allowed) {
+                    const btn = document.getElementById('newReportBtn');
+                    btn.classList.add('disabled');
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        if (confirm('You\'ve used all your reports. Upgrade to get more.')) {
+                            window.location.href = 'pricing.html';
+                        }
+                    };
                 }
             } catch (e) {
                 console.log('Could not load subscription info');
             }
         }
 
+        // ===== Load Reports =====
         async function loadReports() {
             const loadingState = document.getElementById('loadingState');
             const emptyState = document.getElementById('emptyState');
-            const reportsList = document.getElementById('reportsList');
 
             const { data: reports, error } = await getUserReports();
-
             loadingState.style.display = 'none';
 
             if (error) {
-                reportsList.innerHTML = `<p class="error-message">Failed to load reports. Please try again.</p>`;
+                document.getElementById('reportsSection').style.display = 'block';
+                document.getElementById('reportsBody').innerHTML = `<tr><td colspan="7" class="error-message">Failed to load reports. Please try again.</td></tr>`;
                 return;
             }
 
@@ -270,198 +361,270 @@
                 return;
             }
 
-            // Show trends if 2+ reports
-            if (reports.length >= 2) {
-                renderTrends(reports);
+            allReports = reports.map(r => ({
+                ...r,
+                health: classifyHealth(r)
+            }));
+
+            renderKPIs();
+            renderAlertBanner();
+            renderTable();
+            setupFilters();
+
+            document.getElementById('kpiRow').style.display = 'grid';
+            document.getElementById('reportsSection').style.display = 'block';
+
+            // Header subtitle
+            const now = new Date();
+            const uniqueBiz = new Set(allReports.map(r => (r.company_name || '').toLowerCase())).size;
+            document.getElementById('headerSub').textContent =
+                `${monthNames[now.getMonth()]} ${now.getFullYear()} \u00b7 ${allReports.length} reports across ${uniqueBiz} business${uniqueBiz !== 1 ? 'es' : ''}`;
+
+            // Trends (collapsible, 3+ reports from different periods)
+            const uniquePeriods = new Set(allReports.map(r => `${r.period_year}-${r.period_month}`));
+            if (uniquePeriods.size >= 3) {
+                document.getElementById('trendsSection').style.display = 'block';
+            }
+        }
+
+        // ===== KPIs =====
+        function renderKPIs() {
+            // Businesses tracked
+            const bizMap = {};
+            allReports.forEach(r => {
+                const name = (r.company_name || 'Unknown').toLowerCase();
+                if (!bizMap[name]) bizMap[name] = [];
+                bizMap[name].push(r);
+            });
+            const bizCount = Object.keys(bizMap).length;
+            const safeCount = Object.values(bizMap).filter(arr => classifyHealth(arr[0]) === 'safe').length;
+            const watchCount = Object.values(bizMap).filter(arr => classifyHealth(arr[0]) === 'watch').length;
+            const dangerCount = Object.values(bizMap).filter(arr => classifyHealth(arr[0]) === 'danger').length;
+
+            document.getElementById('kpiBizCount').textContent = bizCount;
+            const parts = [];
+            if (safeCount) parts.push(`<span class="kpi-dot safe"></span>${safeCount} safe`);
+            if (watchCount) parts.push(`<span class="kpi-dot watch"></span>${watchCount} watch`);
+            if (dangerCount) parts.push(`<span class="kpi-dot danger"></span>${dangerCount} danger`);
+            document.getElementById('kpiBizBreakdown').innerHTML = parts.join('&nbsp;&nbsp;');
+
+            // Needs attention: danger + watch count
+            const attentionCount = allReports.filter(r => r.health === 'danger' || r.health === 'watch').length;
+            document.getElementById('kpiAttention').textContent = attentionCount;
+            if (attentionCount > 0) {
+                document.getElementById('kpiAttention').classList.add('has-attention');
             }
 
-            reportsList.innerHTML = reports.map(report => {
+            // Best performer: highest net profit
+            const best = [...allReports].sort((a, b) => (b.net_profit || 0) - (a.net_profit || 0))[0];
+            if (best && best.net_profit > 0) {
+                document.getElementById('kpiBestName').textContent = best.company_name || '--';
+                const margin = best.revenue ? ((best.net_profit / best.revenue) * 100).toFixed(1) : '0';
+                document.getElementById('kpiBestSub').textContent =
+                    `+${formatCurrency(best.net_profit, best.currency)} net profit \u00b7 ${margin}% margin`;
+            } else {
+                document.getElementById('kpiBestName').textContent = '--';
+                document.getElementById('kpiBestSub').textContent = 'No profitable reports yet';
+            }
+        }
+
+        // ===== Alert Banner =====
+        function renderAlertBanner() {
+            const lowRunway = allReports.filter(r => r.cash_runway !== null && r.cash_runway < 3);
+            if (lowRunway.length === 0) return;
+
+            const banner = document.getElementById('alertBanner');
+            banner.style.display = 'flex';
+            document.getElementById('alertText').textContent =
+                `${lowRunway.length} business${lowRunway.length > 1 ? 'es' : ''} ha${lowRunway.length > 1 ? 've' : 's'} under 3 months of cash runway \u2014 action needed before month end`;
+
+            document.getElementById('alertLink').onclick = (e) => {
+                e.preventDefault();
+                document.querySelector('[data-filter="danger"]').click();
+                document.getElementById('reportsTable').scrollIntoView({ behavior: 'smooth' });
+            };
+        }
+
+        // ===== Table Rendering =====
+        function renderTable() {
+            const filtered = currentFilter === 'all'
+                ? allReports
+                : allReports.filter(r => r.health === currentFilter);
+
+            const tbody = document.getElementById('reportsBody');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-filter">No ${currentFilter} reports found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(report => {
                 const period = `${monthNames[parseInt(report.period_month) - 1] || ''} ${report.period_year || ''}`;
-                const createdDate = new Date(report.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
-                const profitClass = report.net_profit >= 0 ? 'positive' : 'negative';
-                const profitSign = report.net_profit >= 0 ? '+' : '';
+                const profitClass = (report.net_profit || 0) >= 0 ? 'metric-positive' : 'metric-negative';
+                const profitSign = (report.net_profit || 0) >= 0 ? '+' : '';
+                const runway = report.cash_runway;
+                const dotClass = runwayDotClass(runway);
+                const currency = report.currency || 'USD';
+
+                // Derive industry from report_data if available
+                const rd = report.report_data;
+                const industry = rd?.company?.industry || '';
 
                 return `
-                    <div class="report-card" data-id="${report.id}">
-                        <div class="report-card-header">
-                            <div class="report-company">${report.company_name || 'Unknown Company'}</div>
-                            <div class="report-period">${period}</div>
-                        </div>
-                        <div class="report-card-metrics">
-                            <div class="report-metric">
-                                <span class="metric-label">Revenue</span>
-                                <span class="metric-value">${report.currency || 'AED'} ${formatNumber(report.revenue)}</span>
-                            </div>
-                            <div class="report-metric">
-                                <span class="metric-label">Net Profit</span>
-                                <span class="metric-value ${profitClass}">${profitSign}${report.currency || 'AED'} ${formatNumber(report.net_profit)}</span>
-                            </div>
-                            <div class="report-metric">
-                                <span class="metric-label">Cash</span>
-                                <span class="metric-value">${report.currency || 'AED'} ${formatNumber(report.cash)}</span>
-                            </div>
-                        </div>
-                        <div class="report-card-footer">
-                            <span class="report-date">Created ${createdDate}</span>
-                            <div class="report-actions">
+                    <tr data-health="${report.health}" data-id="${report.id}">
+                        <td>
+                            <div class="report-name-cell">${report.company_name || 'Unknown'}</div>
+                            ${industry ? `<div class="report-industry">${industry}</div>` : ''}
+                        </td>
+                        <td><span class="health-badge ${report.health}">${healthLabel(report.health)}</span></td>
+                        <td>${formatCurrency(report.revenue, currency)}</td>
+                        <td class="${profitClass}">${profitSign}${formatCurrency(report.net_profit, currency)}</td>
+                        <td>${formatCurrency(report.cash, currency)}</td>
+                        <td><span class="runway-cell"><span class="runway-dot ${dotClass}"></span>${runwayDisplay(runway)}</span></td>
+                        <td>
+                            <div class="table-actions">
                                 <button class="btn btn-sm btn-secondary" onclick="viewReport('${report.id}')">View</button>
-                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('${report.id}')">Delete</button>
+                                <button class="btn-icon-delete" onclick="confirmDelete('${report.id}')" title="Delete">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
                             </div>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
 
+        // ===== Filter Chips =====
+        function setupFilters() {
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentFilter = chip.dataset.filter;
+                    renderTable();
+                });
+            });
+        }
+
+        // ===== Helpers =====
         function formatNumber(num) {
             if (num === undefined || num === null) return '0';
             return Math.abs(num).toLocaleString('en-US', { maximumFractionDigits: 0 });
         }
 
+        function formatCurrency(num, currency) {
+            if (num === undefined || num === null) return '$0';
+            const sym = currency === 'AED' ? 'AED ' : '$';
+            return `${sym}${formatNumber(num)}`;
+        }
+
+        // ===== Actions =====
         async function viewReport(reportId) {
             const { data, error } = await getReport(reportId);
-
             if (error || !data) {
                 alert('Failed to load report');
                 return;
             }
-
-            // Store report data and redirect
             localStorage.setItem('plainfinance_report', JSON.stringify(data.report_data));
             window.location.href = 'report-sky.html';
         }
 
         async function confirmDelete(reportId) {
-            if (!confirm('Are you sure you want to delete this report? This cannot be undone.')) {
-                return;
-            }
-
+            if (!confirm('Are you sure you want to delete this report? This cannot be undone.')) return;
             const { error } = await deleteReport(reportId);
-
             if (error) {
                 alert('Failed to delete report');
                 return;
             }
-
-            // Reload reports
+            // Reload
+            document.getElementById('loadingState').style.display = 'flex';
+            document.getElementById('reportsSection').style.display = 'none';
+            document.getElementById('kpiRow').style.display = 'none';
+            document.getElementById('alertBanner').style.display = 'none';
             await loadReports();
         }
 
-        function renderTrends(reports) {
-            const trendsSection = document.getElementById('trendsSection');
-            trendsSection.style.display = 'block';
+        // ===== Trends (collapsible) =====
+        function toggleTrends() {
+            const section = document.getElementById('trendsSection');
+            const wasExpanded = section.classList.contains('expanded');
+            section.classList.toggle('expanded');
 
-            // Sort reports by period (oldest first)
-            const sortedReports = [...reports].sort((a, b) => {
-                const dateA = new Date(a.period_year, parseInt(a.period_month) - 1);
-                const dateB = new Date(b.period_year, parseInt(b.period_month) - 1);
-                return dateA - dateB;
-            }).slice(-6); // Last 6 reports max
+            // Lazy-load chart on first expand
+            if (!wasExpanded && !section.dataset.chartLoaded) {
+                section.dataset.chartLoaded = 'true';
+                renderTrendsChart();
+            }
+        }
 
-            // Prepare data
-            const labels = sortedReports.map(r => {
-                const monthShort = monthNames[parseInt(r.period_month) - 1]?.substring(0, 3) || '';
-                return `${monthShort} ${r.period_year?.toString().slice(-2) || ''}`;
+        function renderTrendsChart() {
+            const sorted = [...allReports].sort((a, b) => {
+                const da = new Date(a.period_year, parseInt(a.period_month) - 1);
+                const db = new Date(b.period_year, parseInt(b.period_month) - 1);
+                return da - db;
+            }).slice(-6);
+
+            const labels = sorted.map(r => {
+                const m = monthNames[parseInt(r.period_month) - 1]?.substring(0, 3) || '';
+                return `${m} ${(r.period_year || '').toString().slice(-2)}`;
             });
 
-            const revenueData = sortedReports.map(r => r.revenue || 0);
-            const profitData = sortedReports.map(r => r.net_profit || 0);
-            const cashData = sortedReports.map(r => r.cash || 0);
+            const revenueData = sorted.map(r => r.revenue || 0);
+            const profitData = sorted.map(r => r.net_profit || 0);
+            const cashData = sorted.map(r => r.cash || 0);
 
-            // Calculate trends (comparing latest to earliest)
             const calcTrend = (data) => {
-                if (data.length < 2) return { text: '-', class: '' };
-                const first = data[0] || 1;
-                const last = data[data.length - 1];
-                const change = ((last - first) / Math.abs(first)) * 100;
-                const arrow = change >= 0 ? '↑' : '↓';
-                const cls = change >= 0 ? 'positive' : 'negative';
-                return { text: `${arrow} ${Math.abs(change).toFixed(0)}%`, class: cls };
+                if (data.length < 2 || data[0] === 0) return { text: '--', class: '' };
+                const change = ((data[data.length - 1] - data[0]) / Math.abs(data[0])) * 100;
+                const arrow = change >= 0 ? '\u2191' : '\u2193';
+                return { text: `${arrow} ${Math.abs(change).toFixed(0)}%`, class: change >= 0 ? 'positive' : 'negative' };
             };
 
-            const revenueTrend = calcTrend(revenueData);
-            const profitTrend = calcTrend(profitData);
-            const cashTrend = calcTrend(cashData);
+            const rt = calcTrend(revenueData);
+            const pt = calcTrend(profitData);
+            const ct = calcTrend(cashData);
 
-            document.getElementById('revenueTrend').textContent = revenueTrend.text;
-            document.getElementById('revenueTrend').className = `trend-value ${revenueTrend.class}`;
-            document.getElementById('profitTrend').textContent = profitTrend.text;
-            document.getElementById('profitTrend').className = `trend-value ${profitTrend.class}`;
-            document.getElementById('cashTrend').textContent = cashTrend.text;
-            document.getElementById('cashTrend').className = `trend-value ${cashTrend.class}`;
+            document.getElementById('revenueTrend').textContent = rt.text;
+            document.getElementById('revenueTrend').className = `trend-value ${rt.class}`;
+            document.getElementById('profitTrend').textContent = pt.text;
+            document.getElementById('profitTrend').className = `trend-value ${pt.class}`;
+            document.getElementById('cashTrend').textContent = ct.text;
+            document.getElementById('cashTrend').className = `trend-value ${ct.class}`;
 
-            // Render chart
             const ctx = document.getElementById('trendsChart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [
-                        {
-                            label: 'Revenue',
-                            data: revenueData,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Net Profit',
-                            data: profitData,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Cash',
-                            data: cashData,
-                            borderColor: '#f59e0b',
-                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        }
+                        { label: 'Revenue', data: revenueData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', fill: true, tension: 0.3 },
+                        { label: 'Net Profit', data: profitData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.08)', fill: true, tension: 0.3 },
+                        { label: 'Cash', data: cashData, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.08)', fill: true, tension: 0.3 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: AED ${formatNumber(context.raw)}`;
-                                }
-                            }
-                        }
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 12 } } },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: $${formatNumber(ctx.raw)}` } }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
-                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-                                    if (value >= 1000) return (value / 1000).toFixed(0) + 'K';
-                                    return value;
-                                }
+                                callback: (v) => v >= 1000000 ? (v/1000000).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v,
+                                font: { size: 11 }
                             }
-                        }
+                        },
+                        x: { ticks: { font: { size: 11 } } }
                     }
                 }
             });
         }
-
     </script>
 </body>
 </html>
