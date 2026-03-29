@@ -521,12 +521,12 @@
 
 .upload-zone {
     border: 1.5px dashed #cbd5e1;
-    border-radius: 12px;
-    padding: 28px 24px;
+    border-radius: 8px;
+    padding: 20px 16px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s ease;
-    background: #f8fafc;
+    transition: all 0.15s ease;
+    background: #fafbfc;
 }
 
 .upload-zone:hover,
@@ -536,19 +536,25 @@
 }
 
 .upload-icon {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     color: #94a3b8;
 }
 
+.upload-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
 .upload-zone h3 {
-    font-size: 15px;
+    font-size: 14px;
     color: #334155;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .upload-zone p {
     color: #94a3b8;
-    margin-bottom: 16px;
+    font-size: 13px;
+    margin-bottom: 10px;
 }
 
 .accepted-formats {
@@ -939,24 +945,24 @@
 /* ===== Template Section ===== */
 
 .template-section {
-    margin-bottom: 24px;
+    margin-bottom: 14px;
 }
 
 .template-box {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-    border: 1px solid #a7f3d0;
-    border-radius: 12px;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
 }
 
 .template-icon {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     background: white;
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -964,32 +970,37 @@
     flex-shrink: 0;
 }
 
+.template-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
 .template-info {
     flex: 1;
 }
 
 .template-info h4 {
-    font-size: 15px;
+    font-size: 13px;
     color: #065f46;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
 }
 
 .template-info p {
-    font-size: 13px;
+    font-size: 12px;
     color: #047857;
     margin: 0;
 }
 
 .template-box .btn-sm {
-    padding: 10px 16px;
-    font-size: 14px;
+    padding: 7px 14px;
+    font-size: 13px;
     white-space: nowrap;
 }
 
 /* ===== Format Guide ===== */
 
 .format-guide {
-    margin-top: 24px;
+    margin-top: 14px;
 }
 
 .format-guide-toggle {
@@ -997,15 +1008,15 @@
     align-items: center;
     gap: 8px;
     width: 100%;
-    padding: 14px 16px;
+    padding: 10px 14px;
     background: white;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 14px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 500;
     color: #475569;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
 }
 
 .format-guide-toggle:hover {
@@ -1383,10 +1394,10 @@
 /* ===== CSV Note ===== */
 
 .csv-note {
-    font-size: 13px;
-    color: #64748b;
+    font-size: 12px;
+    color: #94a3b8;
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     font-style: italic;
 }
 
