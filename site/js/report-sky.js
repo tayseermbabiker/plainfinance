@@ -38,9 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => applyBlurStrategy(), 100);
 
     // Auto-send report email (fire-and-forget, only for real data)
-    if (shouldAutoSend) {
-        setTimeout(() => autoSendReportEmail(), 500);
-    }
+    // TEMPORARILY DISABLED for testing — re-enable when going live
+    // if (shouldAutoSend) {
+    //     setTimeout(() => autoSendReportEmail(), 500);
+    // }
 });
 
 // ===== Sample Banner =====
@@ -76,17 +77,33 @@ function updateOwnerHeadline(current, metrics, currency) {
     if (!el || !textEl) return;
 
     const profitable = (current.netProfit || 0) > 0;
-    const runway = metrics.cashRunway || 0;
-    const runwayMonths = metrics.runwayMonths || runway;
+    const rawRunway = metrics.runwayMonths || metrics.cashRunway || 0;
+    // -1 means cash is growing (infinite runway) — treat as best case
+    const runwayMonths = rawRunway === -1 ? 999 : rawRunway;
+    const cashPositive = rawRunway === -1;
     const cash = current.cash || 0;
     const revenue = current.revenue || 0;
+
+    // Check for operational stress even when cash/profit look safe
+    const hasOperationalStress = (metrics.netMargin < 5 && metrics.netMargin > 0)
+        || metrics.ccc > 20
+        || (metrics.grossMargin < 40 && metrics.grossMargin > 0);
 
     let headline = '';
     let tier = 'danger';
 
-    if (profitable && runwayMonths >= 6) {
+    if (profitable && cashPositive && !hasOperationalStress) {
+        tier = 'safe';
+        headline = `Good month. Your business is profitable and generating cash. You're in a strong position — focus on growth and reinvestment.`;
+    } else if (profitable && cashPositive && hasOperationalStress) {
+        tier = 'safe';
+        headline = `Profitable and cash is growing, but watch your costs — margins are thin and some operational metrics need attention. Read the details below.`;
+    } else if (profitable && runwayMonths >= 6 && !hasOperationalStress) {
         tier = 'safe';
         headline = `Good month. Your business is profitable and you have ${runwayMonths.toFixed(1)} months of cash runway. Keep doing what you're doing.`;
+    } else if (profitable && runwayMonths >= 6 && hasOperationalStress) {
+        tier = 'safe';
+        headline = `Profitable with ${runwayMonths.toFixed(1)} months of runway, but margins are tight and some numbers need your attention. You have time to fix them.`;
     } else if (profitable && runwayMonths >= 3) {
         tier = 'safe';
         headline = `Profitable month, but cash runway is ${runwayMonths.toFixed(1)} months. You have time, but start tightening collections.`;
@@ -129,7 +146,7 @@ const COGS_LABELS = {
     'online': 'Cost of Service', 'ecommerce': 'Product & Shipping Cost',
     'services': 'Direct Delivery Cost', 'service': 'Direct Delivery Cost',
     'construction': 'Project Costs',
-    'manufacturing': 'Material & Production Cost',
+    'manufacturing': 'Production Cost',
     'wholesale': 'Cost of Goods Purchased',
     'healthcare': 'Clinical / Treatment Cost',
     'other': 'Cost of Goods Sold'
@@ -149,59 +166,107 @@ const INDUSTRY_NAMES = {
 
 // ===== 4 Pillars Grid =====
 
-function updateFourPillars(current, metrics, currency, industry) {
+function updateFourPillars(current, metrics, currency, industry, previous) {
     const grid = document.getElementById('pillarsGrid');
     if (!grid) return;
 
+    const prev = previous || {};
     const revenue = current.revenue || 0;
     const netProfit = current.netProfit || 0;
     const cash = current.cash || 0;
     const payables = current.payables || 0;
-    const runway = metrics.cashRunway || 0;
     const cogsPercent = revenue > 0 ? ((current.cogs || 0) / revenue * 100) : 0;
     const cashVsAP = payables > 0 ? cash / payables : (cash > 0 ? 999 : 0);
     const daysRevInBank = revenue > 0 ? cash / (revenue / 30) : 0;
 
-    // Define 4 pillars per industry
+    // Previous month values for trend arrows
+    const prevRevenue = prev.revenue;
+    const prevCash = prev.cash;
+    const prevCogsPercent = prev.revenue > 0 && prev.cogs !== undefined ? (prev.cogs / prev.revenue * 100) : undefined;
+    const prevNetMargin = prev.revenue > 0 && prev.netProfit !== undefined ? (prev.netProfit / prev.revenue * 100) : undefined;
+
+    // Helpers for pillar construction
+    const cashBadge = cashVsAP < 1 ? 'Critical' : daysRevInBank < 15 ? 'Low' : 'Adequate';
+    const cashStatus = cashVsAP >= 1.5 ? 'good' : cashVsAP >= 1 ? 'warning' : 'danger';
+    const cashInsight = cashVsAP < 1 ? 'You owe more than you have' : '';
+
+    function pillarRevenue(sub) {
+        return { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: sub || 'This month', status: 'neutral', badge: revenue > 0 ? 'Active' : 'No Sales', insight: '', currNumeric: revenue, prevValue: prevRevenue };
+    }
+    function pillarCash() {
+        return { label: 'Cash in Bank', value: `${currency} ${formatNumber(cash)}`, sub: `You owe suppliers ${currency} ${formatNumber(payables)}`, status: cashStatus, badge: cashBadge, insight: cashInsight, currNumeric: cash, prevValue: prevCash };
+    }
+    function pillarBottomLine(goodThresh, warnThresh) {
+        const g = goodThresh || 5, w = warnThresh || 0;
+        return { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))} ${netProfit >= 0 ? 'profit' : 'loss'}`, status: metrics.netMargin >= g ? 'good' : metrics.netMargin >= w ? 'warning' : 'danger', badge: metrics.netMargin >= g ? 'Healthy' : metrics.netMargin >= 0 ? 'Thin' : 'Loss', insight: '', currNumeric: metrics.netMargin, prevValue: prevNetMargin };
+    }
+    function pillarKeyCost(label, healthyMax, warnMax) {
+        const s = cogsPercent <= healthyMax ? 'good' : cogsPercent <= warnMax ? 'warning' : 'danger';
+        const b = cogsPercent <= healthyMax ? 'On Target' : cogsPercent <= warnMax ? 'High' : 'Too High';
+        const ins = cogsPercent > healthyMax ? `Every 1% reduction adds ${currency} ${formatNumber(revenue * 0.01)}/month` : '';
+        return { label, value: `${cogsPercent.toFixed(0)}%`, sub: `Target: under ${healthyMax}%`, status: s, badge: b, insight: ins, currNumeric: cogsPercent, prevValue: prevCogsPercent };
+    }
+
+    // Spec v2: P1=Revenue, P2=Key Cost Metric, P3=Cash Position, P4=Bottom Line
     const configs = {
         'food': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month\'s sales', status: 'neutral', badge: revenue > 0 ? 'Active' : 'No Sales', insight: '' },
-            { label: 'Food Cost %', value: `${cogsPercent.toFixed(0)}%`, sub: 'Target: 28-32%', status: cogsPercent <= 32 ? 'good' : cogsPercent <= 36 ? 'warning' : 'danger', badge: cogsPercent <= 32 ? 'On Target' : cogsPercent <= 36 ? 'High' : 'Too High', insight: cogsPercent > 32 ? `Every 1% reduction adds ${currency} ${formatNumber(revenue * 0.01)}/month` : '' },
-            { label: 'Cash in Bank', value: `${currency} ${formatNumber(cash)}`, sub: `You owe suppliers ${currency} ${formatNumber(payables)}`, status: cashVsAP >= 1.5 ? 'good' : cashVsAP >= 1 ? 'warning' : 'danger', badge: cashVsAP < 1 ? 'Critical' : daysRevInBank < 15 ? 'Low' : 'Adequate', insight: cashVsAP < 1 ? 'You owe more than you have' : '' },
-            { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))} ${netProfit >= 0 ? 'profit' : 'loss'}`, status: metrics.netMargin >= 6 ? 'good' : metrics.netMargin >= 3 ? 'warning' : 'danger', badge: metrics.netMargin >= 6 ? 'Healthy' : metrics.netMargin >= 0 ? 'Thin' : 'Loss', insight: '' }
+            pillarRevenue('This month\'s sales'),
+            pillarKeyCost('Food Cost %', 32, 36),
+            pillarCash(),
+            pillarBottomLine(6, 3)
+        ],
+        'product': [
+            pillarRevenue(),
+            pillarKeyCost('COGS %', 45, 55),
+            pillarCash(),
+            pillarBottomLine(5, 2)
         ],
         'online': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month', status: 'neutral', badge: '', insight: '' },
-            { label: 'Gross Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After cost of service', status: metrics.grossMargin >= 60 ? 'good' : metrics.grossMargin >= 40 ? 'warning' : 'danger', badge: metrics.grossMargin >= 60 ? 'Strong' : 'Low', insight: '' },
-            { label: 'Cash Runway', value: runway === -1 ? 'Growing' : `${runway.toFixed(1)} mo`, sub: `Balance: ${currency} ${formatNumber(cash)}`, status: runway === -1 || runway >= 12 ? 'good' : runway >= 6 ? 'warning' : 'danger', badge: runway < 6 ? 'Short' : 'Okay', insight: '' },
-            { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))}`, status: metrics.netMargin >= 10 ? 'good' : metrics.netMargin >= 0 ? 'warning' : 'danger', badge: netProfit >= 0 ? 'Profit' : 'Loss', insight: '' }
-        ],
-        'construction': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'Billed this month', status: 'neutral', badge: '', insight: '' },
-            { label: 'Project Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After project costs', status: metrics.grossMargin >= 15 ? 'good' : metrics.grossMargin >= 10 ? 'warning' : 'danger', badge: metrics.grossMargin >= 15 ? 'Healthy' : 'Thin', insight: '' },
-            { label: 'DSO', value: `${Math.round(metrics.dso)} days`, sub: 'Days to collect', status: metrics.dso <= 45 ? 'good' : metrics.dso <= 75 ? 'warning' : 'danger', badge: metrics.dso > 75 ? 'Slow' : 'Okay', insight: '' },
-            { label: 'Cash vs AP', value: `${cashVsAP.toFixed(1)}x`, sub: `Cash: ${currency} ${formatNumber(cash)}`, status: cashVsAP >= 1.5 ? 'good' : cashVsAP >= 1 ? 'warning' : 'danger', badge: cashVsAP < 1 ? 'At Risk' : 'Covered', insight: '' }
+            pillarRevenue(),
+            pillarKeyCost('Cost of Service %', 30, 40),
+            pillarCash(),
+            pillarBottomLine(10, 5)
         ],
         'services': [
-            { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month', status: 'neutral', badge: '', insight: '' },
-            { label: 'Gross Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After delivery costs', status: metrics.grossMargin >= 50 ? 'good' : metrics.grossMargin >= 35 ? 'warning' : 'danger', badge: metrics.grossMargin >= 50 ? 'Strong' : 'Tight', insight: '' },
-            { label: 'Overhead', value: `${(revenue > 0 ? ((current.opex || 0) / revenue * 100) : 0).toFixed(0)}%`, sub: 'OPEX as % of revenue', status: (revenue > 0 ? (current.opex || 0) / revenue * 100 : 0) <= 40 ? 'good' : 'warning', badge: '', insight: '' },
-            { label: 'Cash Runway', value: runway === -1 ? 'Growing' : `${runway.toFixed(1)} mo`, sub: `Balance: ${currency} ${formatNumber(cash)}`, status: runway === -1 || runway >= 6 ? 'good' : runway >= 3 ? 'warning' : 'danger', badge: runway < 3 ? 'Short' : '', insight: '' }
+            pillarRevenue(),
+            pillarKeyCost('Direct Cost %', 50, 65),
+            pillarCash(),
+            pillarBottomLine(10, 5)
+        ],
+        'construction': [
+            pillarRevenue('Billed this month'),
+            pillarKeyCost('Project Cost %', 80, 85),
+            pillarCash(),
+            pillarBottomLine(5, 3)
+        ],
+        'manufacturing': [
+            pillarRevenue(),
+            pillarKeyCost('Production Cost %', 70, 80),
+            pillarCash(),
+            pillarBottomLine(5, 3)
+        ],
+        'healthcare': [
+            pillarRevenue(),
+            pillarKeyCost('Clinical Cost %', 60, 75),
+            pillarCash(),
+            pillarBottomLine(10, 5)
+        ],
+        'other': [
+            pillarRevenue(),
+            pillarKeyCost('COGS %', 60, 75),
+            pillarCash(),
+            pillarBottomLine(5, 2)
         ]
     };
 
-    // Default config for industries without specific pillars
-    const defaultConfig = [
-        { label: 'Revenue', value: `${currency} ${formatNumber(revenue)}`, sub: 'This month', status: 'neutral', badge: '', insight: '' },
-        { label: 'Gross Margin', value: `${metrics.grossMargin.toFixed(0)}%`, sub: 'After direct costs', status: metrics.grossMargin >= 35 ? 'good' : metrics.grossMargin >= 20 ? 'warning' : 'danger', badge: metrics.grossMargin >= 35 ? 'Healthy' : 'Low', insight: '' },
-        { label: 'Cash Runway', value: runway === -1 ? 'Growing' : `${runway.toFixed(1)} mo`, sub: `Balance: ${currency} ${formatNumber(cash)}`, status: runway === -1 || runway >= 6 ? 'good' : runway >= 3 ? 'warning' : 'danger', badge: runway < 3 ? 'Low' : '', insight: '' },
-        { label: 'Net Margin', value: `${metrics.netMargin.toFixed(1)}%`, sub: `${currency} ${formatNumber(Math.abs(netProfit))} ${netProfit >= 0 ? 'profit' : 'loss'}`, status: metrics.netMargin >= 5 ? 'good' : metrics.netMargin >= 0 ? 'warning' : 'danger', badge: netProfit >= 0 ? 'Profit' : 'Loss', insight: '' }
-    ];
-
     const ind = industry?.toLowerCase();
-    const aliases = { 'food': 'food', 'restaurant': 'food', 'service': 'services', 'ecommerce': 'online' };
+    const aliases = { 'restaurant': 'food', 'service': 'services', 'ecommerce': 'online', 'retail': 'product', 'wholesale': 'product' };
     const key = aliases[ind] || ind;
-    const config = configs[key] || defaultConfig;
+    const config = configs[key] || configs['other'];
+
+    // Set pillars hint
+    const hintEl = document.getElementById('pillarsHint');
+    if (hintEl) hintEl.textContent = 'Revenue, key cost, cash, and bottom line at a glance';
 
     config.forEach((p, i) => {
         const idx = i + 1;
@@ -252,116 +317,305 @@ function updateFourPillars(current, metrics, currency, industry) {
 
 // ===== Cash Bridge =====
 
-function updateCashBridge(current, previous, metrics, currency, ytd) {
-    const section = document.getElementById('cashBridgeSection');
-    if (!section) return;
+function updateCashBridge(current, previous, metrics, currency, ytd, industry, company) {
+    const bridgeSection = document.getElementById('cashBridgeSection');
+    const driversSection = document.getElementById('cashDriversSection');
+    if (!bridgeSection) return;
 
-    const startCash = previous?.cash || current.openingCash || (ytd && ytd.startingCash) || 0;
+    const hasPrevious = previous && previous.cash !== undefined;
+    const reportMonth = company?.period?.month ? parseInt(company.period.month) : 0;
+
+    // Determine starting cash:
+    // 1. Previous month cash (best — bridge spans 1 month)
+    // 2. Opening cash / YTD starting cash (spans multiple months — hint adjusts)
+    let startCash = 0;
+    let bridgeSpan = 'month';
+    if (hasPrevious && previous.cash > 0) {
+        startCash = previous.cash;
+    } else {
+        startCash = current.openingCash || (ytd && ytd.startingCash) || metrics?.openingCash || 0;
+        if (startCash > 0 && reportMonth > 1) bridgeSpan = 'ytd';
+    }
+
+    // Update hint based on span
+    const hintEl = document.getElementById('bridgeHint');
+    if (hintEl) hintEl.textContent = bridgeSpan === 'ytd' ? 'January to end of month (year to date)' : 'Start to end of month';
+
     const endCash = current.cash || 0;
+    const hasPrevWC = previous && previous.receivables !== undefined;
 
-    // Need starting cash OR ending cash to show something useful
-    if (startCash === 0 && endCash === 0) {
-        section.style.display = 'none';
+    // If no starting cash → show Cash Drivers fallback instead
+    if (startCash === 0) {
+        bridgeSection.style.display = 'none';
+        showCashDriversFallback(current, currency, industry);
         return;
     }
-    section.style.display = 'block';
 
-    const profit = current.netProfit || 0;
-    const arChange = previous?.receivables !== undefined ? ((current.receivables || 0) - (previous.receivables || 0)) : 0;
-    const invChange = previous?.inventory !== undefined ? ((current.inventory || 0) - (previous.inventory || 0)) : 0;
-    const apChange = previous?.payables !== undefined ? ((current.payables || 0) - (previous.payables || 0)) : 0;
-    const loanRepay = current.loanRepayments || 0;
-    const drawings = current.ownerDrawings || 0;
-    const capex = current.assetPurchases || 0;
+    bridgeSection.style.display = 'block';
+    if (driversSection) driversSection.style.display = 'none';
 
+    // Use YTD values when bridge spans YTD, single-month when spans 1 month
+    const useYTD = bridgeSpan === 'ytd' && ytd;
+    const profit = useYTD && ytd.netProfit ? ytd.netProfit : (current.netProfit || 0);
+    // WC changes: use opening balances for YTD bridge, previous month for 1-month bridge
+    const hasOpeningWC = useYTD && ytd && (ytd.openingAR || ytd.openingInventory || ytd.openingAP);
+    let arChange = 0, invChange = 0, apChange = 0;
+    if (hasOpeningWC) {
+        // YTD: current balance - Jan 1 balance
+        arChange = (current.receivables || 0) - (ytd.openingAR || 0);
+        invChange = (current.inventory || 0) - (ytd.openingInventory || 0);
+        apChange = (current.payables || 0) - (ytd.openingAP || 0);
+    } else if (hasPrevWC) {
+        // 1-month: current - previous month
+        arChange = (current.receivables || 0) - (previous.receivables || 0);
+        invChange = (current.inventory || 0) - (previous.inventory || 0);
+        apChange = (current.payables || 0) - (previous.payables || 0);
+    }
+    const loanRepay = useYTD && ytd.loanRepayments ? ytd.loanRepayments : (current.loanRepayments || 0);
+    const drawings = useYTD && ytd.ownerDrawings ? ytd.ownerDrawings : (current.ownerDrawings || 0);
+    const capex = useYTD && ytd.assetPurchases ? ytd.assetPurchases : (current.assetPurchases || 0);
+    const taxCollected = useYTD && ytd.taxCollected ? ytd.taxCollected : (current.vatCollected || 0);
+    const taxPaid = useYTD && ytd.taxPaid ? ytd.taxPaid : (current.vatPaid || 0);
+    const taxNet = taxCollected - taxPaid;
+    const revenue = current.revenue || 0;
+
+    // Industry-specific labels for AR and Inventory
+    const arLabels = {
+        'food': 'Receivables change<small>Tabs and catering invoices</small>',
+        'restaurant': 'Receivables change<small>Tabs and catering invoices</small>',
+        'product': 'Receivables change<small>Customers still owe you</small>',
+        'retail': 'Receivables change<small>Customers still owe you</small>',
+        'online': 'Subscription receivables<small>Unpaid subscriptions</small>',
+        'ecommerce': 'Receivables change<small>Customers still owe you</small>',
+        'services': 'Unpaid invoices<small>Clients still owe you</small>',
+        'service': 'Unpaid invoices<small>Clients still owe you</small>',
+        'construction': 'Progress billings<small>Retention and milestone payments</small>',
+        'manufacturing': 'Receivables change<small>Customers still owe you</small>',
+        'healthcare': 'Healthcare receivables<small>Unpaid invoices and claims</small>',
+        'other': 'Receivables change<small>Customers still owe you</small>'
+    };
+    const invLabels = {
+        'food': 'Food & beverage stock<small>Perishable inventory</small>',
+        'restaurant': 'Food & beverage stock<small>Perishable inventory</small>',
+        'product': 'Inventory change<small>Stock sitting in storage</small>',
+        'retail': 'Inventory change<small>Stock sitting in storage</small>',
+        'online': '', // hidden
+        'ecommerce': 'Inventory change<small>Stock in warehouse</small>',
+        'services': '', // hidden
+        'service': '', // hidden
+        'construction': 'Work in progress<small>Materials on site</small>',
+        'manufacturing': 'Materials & WIP<small>Raw materials and work in progress</small>',
+        'healthcare': 'Medical supplies<small>Consumables and stock</small>',
+        'other': 'Inventory change<small>Stock sitting in storage</small>'
+    };
+
+    const ind = industry?.toLowerCase() || 'other';
+    const arLabelEl = document.getElementById('bridgeARLabel');
+    if (arLabelEl) arLabelEl.innerHTML = arLabels[ind] || arLabels['other'];
+    const invLabelEl = document.getElementById('bridgeInvLabel');
+    if (invLabelEl) invLabelEl.innerHTML = invLabels[ind] || invLabels['other'];
+
+    // Populate bridge values
     document.getElementById('bridgeStartCash').textContent = `${currency} ${formatNumber(startCash)}`;
     document.getElementById('bridgeProfit').textContent = profit >= 0 ? `+ ${currency} ${formatNumber(profit)}` : `- ${currency} ${formatNumber(Math.abs(profit))}`;
 
     // Collect all absolute values for bar width calculation
-    const allVals = [Math.abs(profit), Math.abs(arChange), Math.abs(invChange), Math.abs(apChange), Math.abs(loanRepay), Math.abs(drawings), Math.abs(capex)];
+    const allVals = [Math.abs(profit), Math.abs(arChange), Math.abs(invChange), Math.abs(apChange), Math.abs(taxNet), Math.abs(loanRepay), Math.abs(drawings), Math.abs(capex)];
     const maxVal = Math.max(...allVals.filter(v => v > 0)) || 1;
 
+    function setBar(barId, val) {
+        const bar = document.getElementById(barId);
+        if (bar) bar.style.width = `${(Math.abs(val) / maxVal) * 100}%`;
+    }
+
     // Profit bar
-    const profitBar = document.getElementById('bridgeProfitBar');
-    if (profitBar) profitBar.style.width = `${(Math.abs(profit) / maxVal) * 100}%`;
+    setBar('bridgeProfitBar', profit);
+
+    // Helper to show/hide a WC row
+    function showWCRow(rowId, valId, barId, change, isInverse) {
+        const row = document.getElementById(rowId);
+        const valEl = document.getElementById(valId);
+        if (!row) return;
+        // For inventory rows in service/SaaS industries, hide entirely (they don't carry stock)
+        if (rowId === 'bridgeInvRow' && ['online', 'services', 'service'].includes(ind)) {
+            row.style.display = 'none';
+            return;
+        }
+        if (change !== 0) {
+            row.style.display = '';
+            const isPos = isInverse ? change > 0 : change < 0;
+            valEl.textContent = isPos ? `+ ${currency} ${formatNumber(Math.abs(change))}` : `- ${currency} ${formatNumber(Math.abs(change))}`;
+            valEl.className = isPos ? 'b-val pos' : 'b-val neg';
+            setBar(barId, change);
+        } else {
+            row.style.display = 'none';
+        }
+    }
 
     // AR change (increase = cash drain)
-    const bridgeAR = document.getElementById('bridgeAR');
-    const bridgeARRow = document.getElementById('bridgeARRow');
-    if (arChange !== 0 && bridgeARRow) {
-        bridgeARRow.style.display = '';
-        bridgeAR.textContent = arChange > 0 ? `- ${currency} ${formatNumber(arChange)}` : `+ ${currency} ${formatNumber(Math.abs(arChange))}`;
-        bridgeAR.className = arChange > 0 ? 'b-val neg' : 'b-val pos';
-        const arBar = document.getElementById('bridgeARBar');
-        if (arBar) arBar.style.width = `${(Math.abs(arChange) / maxVal) * 100}%`;
-    } else if (bridgeARRow) {
-        bridgeARRow.style.display = 'none';
-    }
-
-    // Inventory change
-    const bridgeInv = document.getElementById('bridgeInventory');
-    const bridgeInvRow = document.getElementById('bridgeInvRow');
-    if (invChange !== 0 && bridgeInvRow) {
-        bridgeInvRow.style.display = '';
-        bridgeInv.textContent = invChange > 0 ? `- ${currency} ${formatNumber(invChange)}` : `+ ${currency} ${formatNumber(Math.abs(invChange))}`;
-        bridgeInv.className = invChange > 0 ? 'b-val neg' : 'b-val pos';
-        const invBar = document.getElementById('bridgeInvBar');
-        if (invBar) invBar.style.width = `${(Math.abs(invChange) / maxVal) * 100}%`;
-    } else if (bridgeInvRow) {
-        bridgeInvRow.style.display = 'none';
-    }
-
+    showWCRow('bridgeARRow', 'bridgeAR', 'bridgeARBar', arChange, false);
+    // Inventory change (increase = cash drain)
+    showWCRow('bridgeInvRow', 'bridgeInventory', 'bridgeInvBar', invChange, false);
     // AP change (increase = cash saved)
-    const bridgeAP = document.getElementById('bridgeAP');
-    const bridgeAPRow = document.getElementById('bridgeAPRow');
-    if (apChange !== 0 && bridgeAPRow) {
-        bridgeAPRow.style.display = '';
-        bridgeAP.textContent = apChange > 0 ? `+ ${currency} ${formatNumber(apChange)}` : `- ${currency} ${formatNumber(Math.abs(apChange))}`;
-        bridgeAP.className = apChange > 0 ? 'b-val pos' : 'b-val neg';
-        const apBar = document.getElementById('bridgeAPBar');
-        if (apBar) apBar.style.width = `${(Math.abs(apChange) / maxVal) * 100}%`;
-    } else if (bridgeAPRow) {
-        bridgeAPRow.style.display = 'none';
+    showWCRow('bridgeAPRow', 'bridgeAP', 'bridgeAPBar', apChange, true);
+
+    // Tax row — show when tax data exists
+    const taxRow = document.getElementById('bridgeTaxRow');
+    if (taxNet > 0 && taxRow) {
+        taxRow.style.display = '';
+        document.getElementById('bridgeTax').textContent = `- ${currency} ${formatNumber(taxNet)}`;
+        setBar('bridgeTaxBar', taxNet);
+    } else if (taxRow) {
+        taxRow.style.display = 'none';
     }
 
-    // Loan repayments
-    const loanRow = document.getElementById('bridgeLoanRow');
-    if (loanRepay > 0 && loanRow) {
-        loanRow.style.display = '';
-        document.getElementById('bridgeLoanRepay').textContent = `- ${currency} ${formatNumber(loanRepay)}`;
-        const loanBar = document.getElementById('bridgeLoanBar');
-        if (loanBar) loanBar.style.width = `${(Math.abs(loanRepay) / maxVal) * 100}%`;
+    // Outflow rows
+    function showOutflow(rowId, valId, barId, val) {
+        const row = document.getElementById(rowId);
+        if (val > 0 && row) {
+            row.style.display = '';
+            document.getElementById(valId).textContent = `- ${currency} ${formatNumber(val)}`;
+            setBar(barId, val);
+        } else if (row) {
+            row.style.display = 'none';
+        }
     }
 
-    // Owner drawings
-    const drawingsRow = document.getElementById('bridgeDrawingsRow');
-    if (drawings > 0 && drawingsRow) {
-        drawingsRow.style.display = '';
-        document.getElementById('bridgeDrawings').textContent = `- ${currency} ${formatNumber(drawings)}`;
-        const drawingsBar = document.getElementById('bridgeDrawingsBar');
-        if (drawingsBar) drawingsBar.style.width = `${(Math.abs(drawings) / maxVal) * 100}%`;
-    }
-
-    // Capex
-    const capexRow = document.getElementById('bridgeCapexRow');
-    if (capex > 0 && capexRow) {
-        capexRow.style.display = '';
-        document.getElementById('bridgeCapex').textContent = `- ${currency} ${formatNumber(capex)}`;
-        const capexBar = document.getElementById('bridgeCapexBar');
-        if (capexBar) capexBar.style.width = `${(Math.abs(capex) / maxVal) * 100}%`;
-    }
+    showOutflow('bridgeLoanRow', 'bridgeLoanRepay', 'bridgeLoanBar', loanRepay);
+    showOutflow('bridgeDrawingsRow', 'bridgeDrawings', 'bridgeDrawingsBar', drawings);
+    showOutflow('bridgeCapexRow', 'bridgeCapex', 'bridgeCapexBar', capex);
 
     document.getElementById('bridgeEndCash').textContent = `${currency} ${formatNumber(endCash)}`;
 
-    // Gap note
-    const calculated = startCash + profit - arChange - invChange + apChange - loanRepay - drawings - capex;
+    // Gap note — threshold scales with revenue: max(1% of revenue, 250)
+    const calculated = startCash + profit - arChange - invChange + apChange - taxNet - loanRepay - drawings - capex;
     const gap = endCash - calculated;
+    const gapThreshold = Math.max(revenue * 0.01, 250);
     const gapNote = document.getElementById('bridgeGapNote');
-    if (gapNote && Math.abs(gap) > 100) {
-        gapNote.textContent = `Note: ${currency} ${formatNumber(Math.abs(gap))} difference between calculated and actual ending cash. This is likely from items not captured here (tax, interest, timing differences).`;
+    if (gapNote && Math.abs(gap) > gapThreshold) {
+        gapNote.textContent = `Note: ${currency} ${formatNumber(Math.abs(gap))} difference between calculated and actual ending cash. Common causes: sales tax remittance, loan interest, payroll timing, bank fees, or items not captured in this report.`;
     } else if (gapNote) {
         gapNote.textContent = '';
     }
+
+    // Tax warning note — when tax collected but bridge doesn't fully account for it
+    const taxNote = document.getElementById('bridgeTaxNote');
+    if (taxNote && taxCollected > 0 && taxPaid === 0) {
+        const usableCash = endCash - taxCollected;
+        taxNote.style.display = '';
+        taxNote.textContent = `You collected ${currency} ${formatNumber(taxCollected)} in sales tax. This is not your money — your usable cash is approximately ${currency} ${formatNumber(Math.max(usableCash, 0))}.`;
+    } else if (taxNote) {
+        taxNote.style.display = 'none';
+    }
+
+    // Summary sentence — find biggest cash drain and make it actionable
+    const summaryEl = document.getElementById('bridgeSummary');
+    if (summaryEl) {
+        const drains = [];
+        if (arChange > 0) drains.push({ label: 'unpaid customer invoices', val: arChange, fix: `Collecting half would add ${currency} ${formatNumber(Math.round(arChange / 2))} to your bank.` });
+        if (invChange > 0) drains.push({ label: 'inventory purchases', val: invChange, fix: `Reducing stock orders could free up ${currency} ${formatNumber(Math.round(invChange * 0.5))}.` });
+        if (apChange < 0) drains.push({ label: 'paying down suppliers', val: Math.abs(apChange), fix: `Stretching payment terms would keep more cash in the business.` });
+        if (drawings > 0) drains.push({ label: 'owner drawings', val: drawings, fix: '' });
+        if (loanRepay > 0) drains.push({ label: 'loan repayments', val: loanRepay, fix: '' });
+        if (capex > 0) drains.push({ label: 'asset purchases', val: capex, fix: '' });
+        if (profit < 0) drains.push({ label: 'the operating loss', val: Math.abs(profit), fix: 'Focus on revenue growth or cost reduction.' });
+
+        if (drains.length > 0) {
+            drains.sort((a, b) => b.val - a.val);
+            const top = drains[0];
+            summaryEl.textContent = `Your biggest cash drain this month was ${top.label} (${currency} ${formatNumber(top.val)}). ${top.fix}`;
+        } else {
+            summaryEl.textContent = '';
+        }
+    }
+
+    // KPIs — cash conversion and WC absorption
+    // Only show when bridge spans 1 month (previous month data). YTD bridges mix timeframes.
+    const kpiSection = document.getElementById('bridgeKPIs');
+    if (kpiSection && profit !== 0 && bridgeSpan === 'month') {
+        const cashChange = endCash - startCash;
+        const wcChange = arChange + invChange - apChange;
+        const cashConversion = Math.round((cashChange / profit) * 100);
+        const wcAbsorption = Math.round((wcChange / Math.abs(profit)) * 100);
+
+        const ccEl = document.getElementById('kpiCashConversion');
+        const wcEl = document.getElementById('kpiWCAbsorption');
+
+        if (ccEl) {
+            if (profit > 0) {
+                ccEl.textContent = `${cashConversion}% of profit became cash`;
+                ccEl.className = `bridge-kpi-value ${cashConversion >= 80 ? 'kpi-good' : cashConversion >= 50 ? 'kpi-warn' : 'kpi-danger'}`;
+            } else {
+                ccEl.textContent = 'N/A (loss)';
+                ccEl.className = 'bridge-kpi-value';
+            }
+        }
+        if (wcEl && hasPrevWC) {
+            if (profit <= 0) {
+                // Don't show % of profit when there's no profit
+                if (wcChange > 0) {
+                    wcEl.textContent = `Working capital drained ${currency} ${formatNumber(wcChange)}`;
+                    wcEl.className = 'bridge-kpi-value kpi-danger';
+                } else if (wcChange < 0) {
+                    wcEl.textContent = `Working capital released ${currency} ${formatNumber(Math.abs(wcChange))}`;
+                    wcEl.className = 'bridge-kpi-value kpi-good';
+                } else {
+                    wcEl.textContent = 'No working capital movement';
+                    wcEl.className = 'bridge-kpi-value';
+                }
+            } else if (wcChange > 0) {
+                wcEl.textContent = `Working capital absorbed ${wcAbsorption}% of profit`;
+                wcEl.className = `bridge-kpi-value ${wcAbsorption <= 30 ? 'kpi-good' : wcAbsorption <= 70 ? 'kpi-warn' : 'kpi-danger'}`;
+            } else {
+                wcEl.textContent = `Working capital released ${currency} ${formatNumber(Math.abs(wcChange))}`;
+                wcEl.className = 'bridge-kpi-value kpi-good';
+            }
+        } else if (wcEl) {
+            wcEl.textContent = 'Need previous month data';
+            wcEl.className = 'bridge-kpi-value';
+        }
+
+        kpiSection.style.display = '';
+    } else if (kpiSection) {
+        kpiSection.style.display = 'none';
+    }
+}
+
+// ===== Cash Drivers Fallback =====
+
+function showCashDriversFallback(current, currency, industry) {
+    const section = document.getElementById('cashDriversSection');
+    const list = document.getElementById('cashDriversList');
+    if (!section || !list) return;
+
+    const ar = current.receivables || 0;
+    const inv = current.inventory || 0;
+    const ap = current.payables || 0;
+    const cash = current.cash || 0;
+    const ind = industry?.toLowerCase() || 'other';
+
+    // Hide if no meaningful balance sheet data
+    if (ar === 0 && inv === 0 && ap === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    const hideInv = ['online', 'services', 'service'].includes(ind);
+    const arLabel = { 'services': 'Unpaid client invoices', 'service': 'Unpaid client invoices', 'construction': 'Progress billings owed', 'healthcare': 'Healthcare receivables' }[ind] || 'Accounts Receivable';
+    const invLabel = { 'food': 'Food & beverage stock', 'restaurant': 'Food & beverage stock', 'construction': 'Work in progress', 'manufacturing': 'Materials & WIP', 'healthcare': 'Medical supplies' }[ind] || 'Inventory';
+
+    let html = `
+        <div class="driver-row"><span class="driver-label">Cash in Bank</span><span class="driver-value">${currency} ${formatNumber(cash)}</span></div>
+        <div class="driver-row"><span class="driver-label">${arLabel}</span><span class="driver-value">${currency} ${formatNumber(ar)}</span><small>Customers owe you this</small></div>
+    `;
+    if (!hideInv && inv > 0) {
+        html += `<div class="driver-row"><span class="driver-label">${invLabel}</span><span class="driver-value">${currency} ${formatNumber(inv)}</span><small>Cash tied up in stock</small></div>`;
+    }
+    html += `<div class="driver-row"><span class="driver-label">Accounts Payable</span><span class="driver-value">${currency} ${formatNumber(ap)}</span><small>You owe suppliers this</small></div>`;
+
+    list.innerHTML = html;
 }
 
 // ===== Investigation Points =====
@@ -371,61 +625,97 @@ function updateInvestigationSection(industry) {
     const list = document.getElementById('investigationList');
     if (!section || !list) return;
 
+    const isHealthy = globalTier === 'safe';
+
+    // Healthy = optimization/growth focus. Danger = survival/cash protection focus.
     const factors = {
-        'food': [
-            { question: 'Food waste percentage (target: under 5%)', why: 'High waste directly erodes your gross margin and signals portion or ordering issues.' },
-            { question: 'Table turnover rate per service', why: 'More covers per table = more revenue from the same fixed costs.' },
-            { question: 'Average check size trend vs last month', why: 'A declining check size may indicate customers trading down or weak upselling.' },
-            { question: 'Menu item profitability — which dishes lose money?', why: 'Unprofitable items drag margins even when sales look healthy.' },
-            { question: 'Portion control adherence in the kitchen', why: 'Inconsistent portions are the hidden cause of food cost overruns.' }
+        'food': isHealthy ? [
+            { question: 'Which menu items generate the highest margin?', why: 'Double down on what works — promote high-margin dishes more prominently.' },
+            { question: 'Can you negotiate better prices with your top 3 suppliers?', why: 'Even 2-3% savings on food costs goes straight to your bottom line.' },
+            { question: 'Is your average check size growing?', why: 'Upselling and menu engineering can increase revenue without more customers.' },
+            { question: 'Are you tracking food waste weekly?', why: 'Even well-run kitchens can save 2-5% by tightening waste controls.' }
+        ] : [
+            { question: 'Food waste percentage (target: under 5%)', why: 'High waste directly erodes your gross margin — fix this first.' },
+            { question: 'Portion control adherence in the kitchen', why: 'Inconsistent portions are the hidden cause of food cost overruns.' },
+            { question: 'Which menu items lose money?', why: 'Remove or reprice unprofitable items immediately.' },
+            { question: 'Can you renegotiate supplier terms this week?', why: 'Extending payment terms keeps cash in your account longer.' }
         ],
-        'product': [
-            { question: 'Shrinkage rate (target: under 2%)', why: 'Shrinkage is lost inventory from theft, damage, or miscounts — it silently kills margins.' },
-            { question: 'Sell-through rate by category', why: 'Low sell-through means cash is trapped in slow-moving stock.' },
-            { question: 'Foot traffic vs conversion rate', why: 'Helps distinguish a traffic problem from a sales team problem.' },
-            { question: 'Return rate by product line', why: 'High returns erode revenue and signal quality or expectation issues.' }
+        'product': isHealthy ? [
+            { question: 'Which product categories have the highest margins?', why: 'Focus marketing and shelf space on your most profitable items.' },
+            { question: 'Can you negotiate volume discounts with suppliers?', why: 'Strong cash position gives you leverage to buy better.' },
+            { question: 'What is your sell-through rate by category?', why: 'High sell-through = efficient inventory. Low = cash trapped in stock.' },
+            { question: 'Are there pricing tiers you haven\'t tested?', why: 'Premium and bundle pricing can lift margins without losing customers.' }
+        ] : [
+            { question: 'Shrinkage rate (target: under 2%)', why: 'Shrinkage from theft, damage, or miscounts silently kills margins.' },
+            { question: 'Which products are sitting longest?', why: 'Clear slow-movers immediately — dead stock is cash you can\'t use.' },
+            { question: 'Return rate by product line', why: 'High returns erode revenue — find and fix the root cause.' },
+            { question: 'Can you cut any standing orders this week?', why: 'Stop automatic reorders on items that aren\'t selling.' }
         ],
-        'online': [
-            { question: 'Monthly churn rate (target: under 5%)', why: 'Churn is the single biggest threat to recurring revenue growth.' },
-            { question: 'Customer acquisition cost (CAC)', why: 'If CAC exceeds lifetime value, growth actually destroys cash.' },
-            { question: 'LTV/CAC ratio (target: 3x or higher)', why: 'The core unit economics metric — below 3x means unsustainable growth.' },
-            { question: 'Conversion rate by traffic source', why: 'Reveals which channels actually drive paying customers vs vanity traffic.' }
+        'online': isHealthy ? [
+            { question: 'What is your LTV/CAC ratio? (target: 3x+)', why: 'This tells you if your growth is sustainable and profitable.' },
+            { question: 'Which acquisition channels have the lowest CAC?', why: 'Shift budget to what works — cut what doesn\'t.' },
+            { question: 'Monthly churn rate (target: under 5%)', why: 'Reducing churn is often cheaper than acquiring new customers.' },
+            { question: 'Can you increase prices without losing customers?', why: 'SaaS businesses often underprice — test a 10% increase on new signups.' }
+        ] : [
+            { question: 'Monthly churn rate — is it accelerating?', why: 'Rising churn in a cash-tight situation is an emergency.' },
+            { question: 'Which customers are most likely to cancel?', why: 'Proactive outreach can save accounts before they leave.' },
+            { question: 'Can you cut any tools or services this week?', why: 'Every subscription you cancel extends your runway.' },
+            { question: 'Are there invoices you can collect faster?', why: 'Switch annual clients to monthly prepay if possible.' }
         ],
-        'services': [
-            { question: 'Team utilization rate (target: 65%+)', why: 'Under-utilized staff is the biggest hidden cost in service businesses.' },
-            { question: 'Realization rate — billed vs quoted', why: 'Scope creep and write-offs reduce effective margins even on profitable-looking projects.' },
-            { question: 'Client concentration — is one client more than 40% of revenue?', why: 'Losing a dominant client can cripple the business overnight.' },
-            { question: 'Average project margin by client', why: 'Some clients are profitable, others cost you money. Know which is which.' }
+        'services': isHealthy ? [
+            { question: 'Team utilization rate (target: 65%+)', why: 'Higher utilization = more revenue from the same payroll.' },
+            { question: 'Client concentration — is any client over 30% of revenue?', why: 'Diversifying reduces risk of a sudden revenue drop.' },
+            { question: 'Are you billing for all the work you do?', why: 'Scope creep and unbilled hours are hidden margin killers.' },
+            { question: 'Can you raise rates on your next contract renewal?', why: 'Strong performance gives you pricing leverage.' }
+        ] : [
+            { question: 'Which clients are paying slowest?', why: 'Chase overdue invoices — this is your most immediate cash source.' },
+            { question: 'Can you bill weekly instead of monthly?', why: 'Shorter billing cycles get cash in faster.' },
+            { question: 'Are there projects losing money?', why: 'Stop bleeding on unprofitable work — renegotiate or exit.' },
+            { question: 'Can you reduce contractor spend this month?', why: 'Cut variable costs before fixed costs.' }
         ],
-        'construction': [
-            { question: 'WIP as % of revenue (target: under 30%)', why: 'High WIP means cash is locked in unfinished work that cannot be billed yet.' },
-            { question: 'Retention amounts held by clients', why: 'Retentions are real money owed to you that often gets forgotten.' },
-            { question: 'Variation/change order capture rate', why: 'Uncaptured variations mean you are doing extra work for free.' },
-            { question: 'Subcontractor margin vs direct labour', why: 'Determines whether outsourcing is saving or costing you money.' }
+        'construction': isHealthy ? [
+            { question: 'Retention amounts held by clients', why: 'Retentions are real money owed to you — follow up on completed projects.' },
+            { question: 'Variation/change order capture rate', why: 'Uncaptured variations mean extra work for free.' },
+            { question: 'Can you negotiate better subcontractor rates?', why: 'Strong pipeline gives you leverage on pricing.' },
+            { question: 'Are your project estimates accurate vs actuals?', why: 'Accurate estimates prevent margin surprises.' }
+        ] : [
+            { question: 'Outstanding progress billings — who owes you?', why: 'This is your fastest path to cash. Chase it today.' },
+            { question: 'Can you pause material orders on non-urgent projects?', why: 'Stop buying ahead — align purchases with project milestones.' },
+            { question: 'Are any projects over budget?', why: 'Identify and contain losses before they spread.' },
+            { question: 'Can you demand deposits on new work?', why: 'Never start a project without upfront payment.' }
         ],
-        'manufacturing': [
-            { question: 'Yield rate (target: 95%+)', why: 'Low yield means raw materials are wasted before becoming sellable product.' },
-            { question: 'Scrap/waste rate (target: under 2%)', why: 'Scrap directly increases your effective COGS.' },
-            { question: 'Machine utilization rate', why: 'Idle machines mean fixed costs are spread over fewer units.' },
-            { question: 'BOM cost accuracy vs actuals', why: 'If actual costs exceed the bill of materials, your pricing may be wrong.' }
+        'manufacturing': isHealthy ? [
+            { question: 'Yield rate (target: 95%+)', why: 'Higher yield = less material waste = better margins.' },
+            { question: 'Can you reduce batch sizes?', why: 'Smaller batches reduce WIP and free up cash.' },
+            { question: 'Machine utilization rate', why: 'Idle capacity is a fixed cost you\'re already paying for.' },
+            { question: 'Are your BOMs accurate vs actual costs?', why: 'Inaccurate BOMs lead to wrong pricing decisions.' }
+        ] : [
+            { question: 'Scrap/waste rate — is it above 2%?', why: 'Every % of scrap directly increases your COGS.' },
+            { question: 'Can you delay non-urgent production runs?', why: 'Reduce WIP and free up cash for essentials.' },
+            { question: 'Which raw materials can you source cheaper?', why: 'Renegotiate with suppliers or find alternatives.' },
+            { question: 'Are there finished goods you can sell at a discount?', why: 'Cash from discounted stock is better than cash locked in warehouse.' }
         ],
-        'wholesale': [
-            { question: 'Order fill rate (target: 90%+)', why: 'Unfilled orders mean lost revenue and damaged customer relationships.' },
-            { question: 'Backorder rate', why: 'High backorders signal inventory planning failures.' },
-            { question: 'Customer credit risk exposure', why: 'Large outstanding balances from risky customers threaten your cash flow.' },
-            { question: 'Freight cost as % of revenue', why: 'Freight is often the hidden margin killer in distribution.' }
-        ],
-        'healthcare': [
+        'healthcare': isHealthy ? [
             { question: 'Capacity utilization — are you maximizing throughput?', why: 'Unused capacity is revenue that can never be recovered.' },
-            { question: 'Billing rejection rate', why: 'Rejections delay or eliminate revenue you already earned.' },
-            { question: 'Revenue per transaction — is it growing?', why: 'Tracks whether you are capturing full value from each sale or service.' },
-            { question: 'Payer mix breakdown (insurance vs cash vs wholesale)', why: 'Different channels have different margins — your mix affects profitability.' }
+            { question: 'Revenue per transaction — is it growing?', why: 'Higher revenue per transaction means more efficient operations.' },
+            { question: 'Claim and invoice rejection rate', why: 'Even small improvements in billing accuracy add up quickly.' },
+            { question: 'Can you add complementary products or services?', why: 'Supplements, wellness products, or additional services boost margins.' }
+        ] : [
+            { question: 'Billing rejection rate — how much revenue are you losing?', why: 'Fix rejected claims and invoices immediately — this is revenue you already earned.' },
+            { question: 'Which payers and customers are slowest to pay?', why: 'Follow up aggressively on outstanding receivables.' },
+            { question: 'Can you reduce supply costs this month?', why: 'Switch to generics or negotiate bulk pricing with distributors.' },
+            { question: 'Are there underperforming product lines or services?', why: 'Cut or restructure offerings that cost more than they earn.' }
         ],
-        'other': [
-            { question: 'Customer concentration risk', why: 'If one customer is too large, losing them could be catastrophic.' },
-            { question: 'Revenue per employee', why: 'A key productivity metric that shows if your team is driving enough value.' },
+        'other': isHealthy ? [
+            { question: 'Customer concentration — is any client over 30% of revenue?', why: 'Diversifying reduces risk of a sudden revenue drop.' },
+            { question: 'Revenue per employee', why: 'A key productivity metric — are you getting enough value from your team?' },
             { question: 'Repeat purchase / retention rate', why: 'Retaining customers is far cheaper than acquiring new ones.' },
-            { question: 'Customer acquisition cost', why: 'Knowing what it costs to win a customer helps set marketing budgets.' }
+            { question: 'Are there expenses you can renegotiate?', why: 'Review contracts annually — vendors often offer better rates if you ask.' }
+        ] : [
+            { question: 'Who owes you money right now?', why: 'Make a list and start calling — receivables are your fastest cash source.' },
+            { question: 'Which expenses can you cut this week?', why: 'Cancel anything non-essential until cash improves.' },
+            { question: 'Can you offer discounts for early payment?', why: '2% off beats waiting 60 days for full payment.' },
+            { question: 'Are you tracking cash daily?', why: 'In tight times, check your bank balance every morning.' }
         ]
     };
 
@@ -437,7 +727,6 @@ function updateInvestigationSection(industry) {
     section.style.display = 'block';
     list.innerHTML = items.map(item => `
         <li class="nf-item">
-            <div class="nf-icon">\uD83D\uDD0D</div>
             <div class="nf-body">
                 <div class="nf-question">${item.question}</div>
                 <div class="nf-why">${item.why}</div>
@@ -460,17 +749,17 @@ function populateReportFromAPI(reportData) {
 
     if (current && metrics) {
         updateOwnerHeadline(current, metrics, currency);
-        updateFourPillars(current, metrics, currency, industry);
+        updateFourPillars(current, metrics, currency, industry, previous);
         updateStatusBadge(metrics);
         updateMiniPL(current, metrics, currency, industry);
-        updateProfitInterpretation(current, metrics, currency, analysis);
+        updateProfitInterpretation(current, metrics, currency, analysis, industry);
         updateOperationalHealth(metrics, currency, analysis, industry, current, reportData.ytd);
         const fcfValue = updateFCF(current, previous, metrics, currency);
-        updateCashBridge(current, previous, metrics, currency, reportData.ytd);
+        updateCashBridge(current, previous, metrics, currency, reportData.ytd, industry, reportData.company);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
         updateBankMeetingSummary(current, metrics, currency, analysis);
-        updateWeeklyActions(current, metrics, currency, analysis);
+        updateWeeklyActions(current, metrics, currency, analysis, industry);
         updateInvestigationSection(industry);
         updateTechnicalMode(current, metrics, currency, industry, null);
         updateTechnicalMode(current, metrics, currency, industry);
@@ -496,17 +785,17 @@ function populateReport(data) {
         const metrics = calculateMetrics(current, previous, daysInMonth, ytd);
 
         updateOwnerHeadline(current, metrics, currency);
-        updateFourPillars(current, metrics, currency, industry);
+        updateFourPillars(current, metrics, currency, industry, previous);
         updateStatusBadge(metrics);
         updateMiniPL(current, metrics, currency, industry);
-        updateProfitInterpretation(current, metrics, currency, null);
+        updateProfitInterpretation(current, metrics, currency, null, industry);
         updateOperationalHealth(metrics, currency, null, industry, current, ytd);
         const fcfValue = updateFCF(current, previous, metrics, currency);
-        updateCashBridge(current, previous, metrics, currency, ytd);
+        updateCashBridge(current, previous, metrics, currency, ytd, industry, data.company);
         updateFCFF(current, currency, fcfValue);
         updateCashRunway(metrics, currency, current, industry);
         updateBankMeetingSummary(current, metrics, currency, null);
-        updateWeeklyActions(current, metrics, currency, null);
+        updateWeeklyActions(current, metrics, currency, null, industry);
         updateInvestigationSection(industry);
         updateTechnicalMode(current, metrics, currency, industry, null);
     }
@@ -610,20 +899,23 @@ function calculateMetrics(current, previous, days, ytd = {}) {
     }
     const ccc = dso + dio - dpo;
 
+    // OPEX-based runway: Cash / monthly operating costs (COGS + OPEX)
+    // Excludes non-operating items (drawings, loans, capex, tax)
     let cashRunway = 0;
     let runwayMethod = 'opex';
 
-    if (ytd && ytd.startingCash > 0 && ytd.monthsElapsed > 0) {
-        const monthlyBurn = (ytd.startingCash - cash) / ytd.monthsElapsed;
-        runwayMethod = 'ytd';
-        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : -1;
-    } else if (previous && previous.cash !== undefined && previous.cash > 0) {
-        const monthlyBurn = previous.cash - cash;
-        runwayMethod = 'monthly';
-        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : -1;
+    const monthlyOpCost = cogs + opex;
+
+    if (monthlyOpCost > 0) {
+        runwayMethod = 'opex';
+        cashRunway = cash / monthlyOpCost;
+    } else if (ytd && ytd.monthsElapsed > 0 && ((ytd.cogs || 0) + (ytd.opex || 0)) > 0) {
+        runwayMethod = 'ytd_opex';
+        const avgMonthlyOp = ((ytd.cogs || 0) + (ytd.opex || 0)) / ytd.monthsElapsed;
+        cashRunway = cash / avgMonthlyOp;
     } else {
         runwayMethod = 'opex';
-        cashRunway = opex > 0 ? cash / opex : 0;
+        cashRunway = -1;
     }
 
     const revenueChange = previous.revenue ? ((revenue - previous.revenue) / previous.revenue) * 100 : null;
@@ -651,17 +943,19 @@ function signedAmount(val, currency) {
 function getDefaultBenchmarks(industry) {
     // Industry benchmarks — DSO/DIO/DPO sourced from CreditPulse 2025, ReadyRatios SEC 2024, PwC Working Capital Study 24/25, Hackett Group 2025
     const b = {
-        'retail':        { name: 'Retail',        grossMargin: { min: 25, max: 50, ideal: 35 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 0, max: 10, industry: 2 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 20, max: 45, industry: 30 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'service':       { name: 'Service',       grossMargin: { min: 40, max: 70, ideal: 55 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 30, max: 60, industry: 45 }, dio: { min: 0, max: 0, industry: 0 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 20, max: 45, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 0, max: 5, industry: 1 }, dio: { min: 20, max: 45, industry: 30 }, dpo: { min: 20, max: 45, industry: 30 } },
-        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 45, max: 75, industry: 60 }, dio: { min: 60, max: 120, industry: 90 }, dpo: { min: 30, max: 60, industry: 45 } },
-        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 }, dso: { min: 25, max: 50, industry: 35 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 25, max: 50, industry: 35 } },
-        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 55, max: 70, ideal: 62 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 0, max: 3, industry: 1 }, dio: { min: 3, max: 10, industry: 7 }, dpo: { min: 14, max: 30, industry: 21 } },
-        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 2, max: 10, ideal: 5 }, dso: { min: 60, max: 120, industry: 90 }, dio: { min: 7, max: 30, industry: 15 }, dpo: { min: 45, max: 90, industry: 60 } }
+        'retail':        { name: 'Retail',        grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 2, max: 8, ideal: 5 },  dso: { min: 0, max: 10, industry: 5 },  dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'product':       { name: 'Product',       grossMargin: { min: 30, max: 55, ideal: 40 }, netMargin: { min: 2, max: 8, ideal: 5 },  dso: { min: 0, max: 10, industry: 5 },  dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'service':       { name: 'Service',       grossMargin: { min: 50, max: 70, ideal: 60 }, netMargin: { min: 10, max: 25, ideal: 15 }, dso: { min: 20, max: 60, industry: 40 }, dio: { min: 0, max: 0, industry: 0 },  dpo: { min: 15, max: 45, industry: 30 } },
+        'ecommerce':     { name: 'E-commerce',    grossMargin: { min: 30, max: 50, ideal: 40 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 0, max: 5, industry: 2 },  dio: { min: 20, max: 45, industry: 30 }, dpo: { min: 20, max: 45, industry: 30 } },
+        'manufacturing': { name: 'Manufacturing', grossMargin: { min: 20, max: 40, ideal: 30 }, netMargin: { min: 3, max: 12, ideal: 7 }, dso: { min: 20, max: 60, industry: 40 }, dio: { min: 30, max: 90, industry: 60 }, dpo: { min: 30, max: 60, industry: 45 } },
+        'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 },  dso: { min: 20, max: 45, industry: 35 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 25, max: 50, industry: 35 } },
+        'restaurant':    { name: 'Restaurant',    grossMargin: { min: 60, max: 80, ideal: 70 }, netMargin: { min: 3, max: 9, ideal: 6 },  dso: { min: 0, max: 5, industry: 2 },  dio: { min: 5, max: 15, industry: 10 }, dpo: { min: 10, max: 30, industry: 20 } },
+        'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 30, max: 90, industry: 60 }, dio: { min: 7, max: 30, industry: 15 }, dpo: { min: 30, max: 90, industry: 60 } },
+        'healthcare':    { name: 'Healthcare',    grossMargin: { min: 40, max: 60, ideal: 50 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 10, max: 60, industry: 35 }, dio: { min: 5, max: 30, industry: 15 }, dpo: { min: 15, max: 45, industry: 30 } },
+        'general':       { name: 'General',       grossMargin: { min: 30, max: 60, ideal: 45 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 15, max: 60, industry: 35 }, dio: { min: 10, max: 60, industry: 30 }, dpo: { min: 20, max: 60, industry: 35 } }
     };
     // Map form values to benchmark keys
-    const aliases = { 'food': 'restaurant', 'services': 'service', 'online': 'ecommerce', 'healthcare': 'service', 'other': 'product' };
+    const aliases = { 'food': 'restaurant', 'services': 'service', 'online': 'ecommerce', 'other': 'general' };
     const key = aliases[industry?.toLowerCase()] || industry?.toLowerCase();
     return b[key] || b['product'];
 }
@@ -722,7 +1016,8 @@ let globalTier = 'safe';
 
 function updateStatusBadge(metrics) {
     const badgeEl = document.getElementById('healthStatus');
-    const runway = metrics.runwayMonths || metrics.cashRunway || 0;
+    const rawRunway = metrics.runwayMonths || metrics.cashRunway || 0;
+    const runway = rawRunway === -1 ? 999 : rawRunway; // -1 = cash positive = best case
     const netMargin = metrics.netMargin || 0;
     const profitable = netMargin > 0;
 
@@ -776,7 +1071,7 @@ function updateMiniPL(current, metrics, currency, industry) {
     const cogsPctEl = document.getElementById('plCogsPct');
     if (cogsPctEl) cogsPctEl.textContent = revenue > 0 ? `${((cogs / revenue) * 100).toFixed(0)}%` : '0%';
 
-    document.getElementById('plGrossProfit').textContent = `${currency} ${formatNumber(grossProfit)}`;
+    document.getElementById('plGrossProfit').textContent = `${grossProfit < 0 ? '-' : ''}${currency} ${formatNumber(grossProfit)}`;
     document.getElementById('plGrossMargin').textContent = `${gm}%`;
 
     // OPEX row
@@ -785,10 +1080,10 @@ function updateMiniPL(current, metrics, currency, industry) {
     const opexPctEl = document.getElementById('plOpexPct');
     if (opexPctEl) opexPctEl.textContent = revenue > 0 ? `${((opex / revenue) * 100).toFixed(0)}%` : '0%';
 
-    // EBITDA = EBIT = Operating Profit (no D&A to split)
-    document.getElementById('plEBITDA').textContent = `${currency} ${formatNumber(operatingProfit)}`;
+    // EBITDA* = Operating Profit (no D&A to split)
+    document.getElementById('plEBITDA').textContent = `${operatingProfit < 0 ? '-' : ''}${currency} ${formatNumber(operatingProfit)}`;
     document.getElementById('plEBITDAMargin').textContent = `${om}%`;
-    document.getElementById('plNetIncome').textContent = `${currency} ${formatNumber(netProfit)}`;
+    document.getElementById('plNetIncome').textContent = `${netProfit < 0 ? '-' : ''}${currency} ${formatNumber(netProfit)}`;
     document.getElementById('plNetMargin').textContent = `${nm}%`;
 
     // Color negative values
@@ -804,12 +1099,13 @@ function updateMiniPL(current, metrics, currency, industry) {
 
 function setNegativeClass(id, val) {
     const el = document.getElementById(id);
-    if (el) el.className = `pl-value${val < 0 ? ' negative' : ''}`;
+    if (!el) return;
+    el.classList.toggle('negative', val < 0);
 }
 
 // ===== Section 2: Profit Interpretation =====
 
-function updateProfitInterpretation(current, metrics, currency, analysis) {
+function updateProfitInterpretation(current, metrics, currency, analysis, industry) {
     const el = document.getElementById('interpretationText');
     if (!el) return;
 
@@ -825,31 +1121,78 @@ function updateProfitInterpretation(current, metrics, currency, analysis) {
     const netProfit = current.netProfit || 0;
     const grossProfit = revenue - cogs;
     const operatingProfit = grossProfit - opex;
+    const gm = metrics.grossMargin;
+    const runway = metrics.cashRunway;
+
+    // Industry-specific GM thresholds for text descriptors
+    const gmThresholds = {
+        'food': { strong: 70, solid: 60 }, 'restaurant': { strong: 70, solid: 60 },
+        'product': { strong: 40, solid: 30 }, 'retail': { strong: 40, solid: 30 },
+        'online': { strong: 40, solid: 30 }, 'ecommerce': { strong: 40, solid: 30 },
+        'services': { strong: 60, solid: 50 }, 'service': { strong: 60, solid: 50 },
+        'construction': { strong: 25, solid: 15 },
+        'manufacturing': { strong: 30, solid: 20 },
+        'healthcare': { strong: 50, solid: 40 },
+        'other': { strong: 45, solid: 30 }
+    };
+    const ind = industry?.toLowerCase() || 'other';
+    const thresh = gmThresholds[ind] || gmThresholds['other'];
+
+    // Industry-specific OPEX-to-GP warning threshold (proportion of GP consumed by OPEX)
+    // Higher threshold = more tolerant for industries with naturally high overhead
+    const opexThresholds = {
+        'food': 0.7, 'restaurant': 0.7,
+        'product': 0.6, 'retail': 0.6,
+        'online': 0.5, 'ecommerce': 0.5,
+        'services': 0.5, 'service': 0.5,
+        'construction': 0.7,
+        'manufacturing': 0.65,
+        'healthcare': 0.65,
+        'other': 0.6
+    };
+    const opexWarnRatio = opexThresholds[ind] || 0.6;
+
     let text = '';
 
     if (netProfit > 0) {
-        if (metrics.grossMargin >= 40) {
-            text = `Strong performance. Your gross margin of ${metrics.grossMargin.toFixed(0)}% means you keep a healthy share of revenue after direct costs. `;
-        } else if (metrics.grossMargin >= 25) {
-            text = `Your business is profitable with a solid ${metrics.grossMargin.toFixed(0)}% gross margin. `;
+        // GM descriptor — industry-aware
+        if (gm >= thresh.strong) {
+            text = `Strong performance. Your gross margin of ${gm.toFixed(0)}% means you keep a healthy share of revenue after direct costs. `;
+        } else if (gm >= thresh.solid) {
+            text = `Your business is profitable with a solid ${gm.toFixed(0)}% gross margin. `;
         } else {
-            text = `You're profitable, but your ${metrics.grossMargin.toFixed(0)}% gross margin is tight. `;
+            text = `You're profitable, but your ${gm.toFixed(0)}% gross margin is tight for your industry. `;
         }
-        if (operatingProfit < grossProfit * 0.5) {
-            text += `However, operating expenses are consuming more than half your gross profit. Review your overhead costs.`;
+
+        // OPEX check — industry-aware threshold
+        if (grossProfit > 0 && opex > grossProfit * opexWarnRatio) {
+            text += `However, operating expenses are consuming ${Math.round((opex / grossProfit) * 100)}% of your gross profit. Review your overhead costs.`;
         } else {
             text += `Operating costs are well controlled, leaving a healthy operating profit.`;
         }
     } else if (netProfit === 0) {
         text = 'You broke even this month. Every dollar earned was spent. Focus on growing revenue or reducing costs to move into profit.';
     } else {
+        // Loss scenarios
         if (grossProfit <= 0) {
             text = `You're selling below cost. This is unsustainable and needs immediate pricing or sourcing changes.`;
-        } else if (operatingProfit <= 0) {
-            text = `Your products have a healthy margin (${metrics.grossMargin.toFixed(0)}%), but operating expenses pushed you into a loss. Cut overheads or grow sales volume.`;
         } else {
-            text = `Operations are profitable, but other costs pushed the bottom line into a loss.`;
+            // GP positive but net loss — OPEX caused it
+            const gmDesc = gm >= thresh.solid ? 'reasonable' : 'thin';
+            text = `Your gross margin is ${gmDesc} at ${gm.toFixed(0)}%, but operating expenses of ${currency} ${formatNumber(opex)} pushed the business into a loss of ${currency} ${formatNumber(Math.abs(netProfit))}. Focus on cutting overhead or increasing sales volume.`;
         }
+    }
+
+    // Cash sentence — ties P&L to cash position
+    const cash = current.cash || 0;
+    if (runway === -1 && cash > 0) {
+        text += ' Your cash position is strong and growing.';
+    } else if (runway >= 6) {
+        text += ' Cash reserves provide a comfortable buffer.';
+    } else if (runway >= 3) {
+        text += ' Keep an eye on cash — your runway is adequate but not long.';
+    } else if (cash > 0) {
+        text += ' Cash is critically low — address this before anything else.';
     }
 
     el.textContent = text;
@@ -858,19 +1201,48 @@ function updateProfitInterpretation(current, metrics, currency, analysis) {
 // ===== Section 3: Operational Health =====
 
 function updateOperationalHealth(metrics, currency, analysis, industry, current, ytd) {
-    document.getElementById('opDIO').textContent = `${Math.round(metrics.dio)}`;
-    document.getElementById('opDSO').textContent = `${Math.round(metrics.dso)}`;
-    document.getElementById('opDPO').textContent = `${Math.round(metrics.dpo)}`;
-    document.getElementById('opDIOExplain').textContent = `Your stock sits for ${Math.round(metrics.dio)} days`;
-    document.getElementById('opDSOExplain').textContent = `Your customers pay you in ${Math.round(metrics.dso)} days`;
-    document.getElementById('opDPOExplain').textContent = `You pay suppliers in ${Math.round(metrics.dpo)} days`;
-
-    // Industry benchmark for badges
+    const ind = industry?.toLowerCase() || 'other';
     const bench = getDefaultBenchmarks(industry);
+    const dso = Math.round(metrics.dso);
+    const dio = Math.round(metrics.dio);
+    const dpo = Math.round(metrics.dpo);
+    const ccc = Math.round(metrics.ccc);
 
-    // DSO badge and card
-    const dsoStatus = metrics.dso <= bench.dso.max ? 'ok' : metrics.dso <= bench.dso.max * 1.3 ? 'warn' : 'danger';
+    // Industry-specific CCC thresholds
+    const cccThresholds = {
+        'food': { good: 10, warn: 20 }, 'restaurant': { good: 10, warn: 20 },
+        'product': { good: 20, warn: 45 }, 'retail': { good: 20, warn: 45 },
+        'online': { good: 10, warn: 25 }, 'ecommerce': { good: 10, warn: 25 },
+        'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
+        'construction': { good: 45, warn: 75 },
+        'manufacturing': { good: 40, warn: 70 },
+        'healthcare': { good: 25, warn: 50 },
+        'other': { good: 30, warn: 60 }
+    };
+    const cccT = cccThresholds[ind] || cccThresholds['other'];
+
+    // Hide irrelevant cards per industry
+    const hideInventory = ['online', 'services', 'service'].includes(ind);
+    const hideAR = ind === 'food' || ind === 'restaurant';
     const dsoCard = document.getElementById('wcDSOCard');
+    const dioCard = document.getElementById('wcDIOCard');
+    const wcrInvRow = document.getElementById('wcrInvRow');
+    const wcrArRow = document.getElementById('wcrArRow');
+
+    if (dioCard) dioCard.style.display = hideInventory ? 'none' : '';
+    if (wcrInvRow) wcrInvRow.style.display = hideInventory ? 'none' : '';
+    // Only hide DSO/AR for food if AR is actually 0
+    const arIsZero = hideAR && (current?.receivables || 0) === 0;
+    if (dsoCard) dsoCard.style.display = arIsZero ? 'none' : '';
+    if (wcrArRow) wcrArRow.style.display = arIsZero ? 'none' : '';
+
+    // Populate card numbers
+    document.getElementById('opDSO').textContent = `${dso}`;
+    document.getElementById('opDIO').textContent = `${dio}`;
+    document.getElementById('opDPO').textContent = `${dpo}`;
+
+    // DSO badge
+    const dsoStatus = metrics.dso <= bench.dso.max ? 'ok' : metrics.dso <= bench.dso.max * 1.3 ? 'warn' : 'danger';
     if (dsoCard) dsoCard.className = `wc-card ${dsoStatus}`;
     const dsoBadge = document.getElementById('opDSOBadge');
     if (dsoBadge) {
@@ -880,19 +1252,20 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
     const dsoNum = document.getElementById('opDSO');
     if (dsoNum) dsoNum.className = `wc-number ${dsoStatus}`;
 
-    // DIO badge and card
-    const dioStatus = metrics.dio <= bench.dio.max ? 'ok' : metrics.dio <= bench.dio.max * 1.3 ? 'warn' : 'danger';
-    const dioCard = document.getElementById('wcDIOCard');
-    if (dioCard) dioCard.className = `wc-card ${dioStatus}`;
-    const dioBadge = document.getElementById('opDIOBadge');
-    if (dioBadge) {
-        dioBadge.className = `wc-badge ${dioStatus}`;
-        dioBadge.textContent = dioStatus === 'ok' ? 'Good' : dioStatus === 'warn' ? 'High' : 'Critical';
+    // DIO badge
+    if (!hideInventory) {
+        const dioStatus = metrics.dio <= bench.dio.max ? 'ok' : metrics.dio <= bench.dio.max * 1.3 ? 'warn' : 'danger';
+        if (dioCard) dioCard.className = `wc-card ${dioStatus}`;
+        const dioBadge = document.getElementById('opDIOBadge');
+        if (dioBadge) {
+            dioBadge.className = `wc-badge ${dioStatus}`;
+            dioBadge.textContent = dioStatus === 'ok' ? 'Good' : dioStatus === 'warn' ? 'High' : 'Critical';
+        }
+        const dioNum = document.getElementById('opDIO');
+        if (dioNum) dioNum.className = `wc-number ${dioStatus}`;
     }
-    const dioNum = document.getElementById('opDIO');
-    if (dioNum) dioNum.className = `wc-number ${dioStatus}`;
 
-    // DPO badge and card (higher DPO is generally better, so invert logic)
+    // DPO badge (higher DPO = better, so inverted)
     const dpoStatus = metrics.dpo >= bench.dpo.min ? 'ok' : metrics.dpo >= bench.dpo.min * 0.7 ? 'warn' : 'danger';
     const dpoCard = document.getElementById('wcDPOCard');
     if (dpoCard) dpoCard.className = `wc-card ${dpoStatus}`;
@@ -904,16 +1277,42 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
     const dpoNum = document.getElementById('opDPO');
     if (dpoNum) dpoNum.className = `wc-number ${dpoStatus}`;
 
-    // CCC
+    // CCC — industry-specific thresholds
     const cccEl = document.getElementById('cccValue');
-    cccEl.textContent = `${Math.round(metrics.ccc)} days`;
-
+    if (cccEl) cccEl.textContent = `${ccc} days`;
     const cccResult = document.getElementById('cccResult');
-    let cccStatus = metrics.ccc > 45 ? 'danger' : metrics.ccc > 20 ? 'warning' : 'good';
-    cccResult.className = `ccc-row ${cccStatus}`;
+    const cccStatus = ccc >= cccT.warn ? 'danger' : ccc >= cccT.good ? 'warning' : 'good';
+    if (cccResult) cccResult.className = `ccc-row ${cccStatus}`;
 
-    // Industry benchmark for DSO
-    renderBenchBar('benchDSO', 'Days Sales Outstanding', metrics.dso, bench.dso, ' days', false);
+    // Summary sentence — lead with the story
+    const summaryEl = document.getElementById('wcSummary');
+    if (summaryEl) {
+        let summary = '';
+        if (ccc < 0) {
+            summary = `Your cash cycle is ${Math.abs(ccc)} days negative — you collect money before you need to pay it out. This is an excellent position.`;
+        } else if (cccStatus === 'good') {
+            summary = `Your cash takes ${ccc} days to flow through the business — that's healthy for your industry.`;
+        } else if (cccStatus === 'warning') {
+            summary = `Your cash takes ${ccc} days to flow through the business — that's slower than ideal. Here's what's causing it.`;
+        } else {
+            summary = `Your cash is tied up for ${ccc} days before it comes back — this is too long and puts pressure on your bank balance.`;
+        }
+
+        // Name the villain
+        if (ccc > cccT.good) {
+            if (dsoStatus !== 'ok' && dso >= dio && dso >= dpo) {
+                summary += ` Slow customer payments are the main issue.`;
+            } else if (!hideInventory && metrics.dio > bench.dio.max) {
+                summary += ` Stock is sitting too long before selling.`;
+            } else if (dpoStatus !== 'ok') {
+                summary += ` You're paying suppliers faster than you need to.`;
+            }
+        }
+        summaryEl.textContent = summary;
+    }
+
+    // Benchmark bar for DSO
+    renderBenchBar('benchDSO', 'How fast customers pay you (DSO)', metrics.dso, bench.dso, ' days', false);
 
     // WCR table
     if (current) {
@@ -921,14 +1320,14 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
     }
 
     // Interpretation from AI or generated
-    // Skip AI text when CCC <= 0 — hardcoded advice is more reliable
+    // Skip AI text when CCC <= 0 — hardcoded advice (getCCCNegativeAdvice) is more reliable
     // Also filter out bad DPO advice — AI sometimes suggests "reducing DPO" which is backwards
     // (lower DPO = paying suppliers faster = hurts cash flow)
     const interpEl = document.getElementById('opInterpretation');
     if (interpEl) {
         const aiText = analysis && analysis.cashCycleExplanation;
         const hasBadDPO = aiText && /reduc\w*\s+(your\s+)?days\s+payable|reduc\w*\s+(your\s+)?dpo|lower\w*\s+(your\s+)?dpo|lower\w*\s+(your\s+)?days\s+payable|decrease\s+(your\s+)?dpo/i.test(aiText);
-        if (aiText && metrics.ccc > 0 && !hasBadDPO) {
+        if (aiText && ccc > 0 && !hasBadDPO) {
             interpEl.innerHTML = `<p>${aiText}</p>`;
         } else {
             interpEl.innerHTML = '';
@@ -1023,27 +1422,92 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
             narrative = `You are running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than the industry average — strong working capital management.`;
         }
 
+        // DPO context — when paying suppliers too fast
+        const dpoStatus = metrics.dpo >= bench.dpo.min ? 'ok' : metrics.dpo >= bench.dpo.min * 0.7 ? 'warn' : 'danger';
+        if (dpoStatus !== 'ok' && bench.dpo.min > 0) {
+            const daysGivingAway = Math.round(bench.dpo.min - metrics.dpo);
+            const dailyCOGSApprox = cogsBase / periodDays;
+            const cashGivingAway = Math.round(daysGivingAway * dailyCOGSApprox);
+            if (daysGivingAway > 0) {
+                narrative += ` You're also paying suppliers in ${Math.round(metrics.dpo)} days when most ${bench.name.toLowerCase()} businesses take ${bench.dpo.min}+. That's ${daysGivingAway} days of cash you're giving away early.`;
+            }
+        }
+
         narrativeEl.textContent = narrative;
     }
 
-    // CCC insight
-    const ccc = metrics.ccc;
+    // Biggest Opportunity card — when WCR variance is significant (>5000)
+    const oppEl = document.getElementById('wcOpportunity');
+    if (oppEl) {
+        if (wcrVar > 5000) {
+            // Money tied up — opportunity to free cash
+            const indName = bench.name.toLowerCase();
+            const oppText = {
+                'restaurant': `without selling a single extra meal`,
+                'retail': `without making a single extra sale`,
+                'product': `without making a single extra sale`,
+                'e-commerce': `without a single extra order`,
+                'service': `without winning a single new client`,
+                'construction': `without completing a single extra project`,
+                'manufacturing': `without producing a single extra unit`,
+                'healthcare': `without generating any extra revenue`,
+                'general': `without generating any extra revenue`
+            };
+            const hook = oppText[indName] || oppText['general'];
+            oppEl.style.display = '';
+            oppEl.className = 'wc-opportunity plain-only opp-positive';
+            oppEl.innerHTML = `
+                <div class="wc-opportunity-label">Biggest Opportunity</div>
+                <div class="wc-opportunity-text">If you matched industry averages, you'd free up</div>
+                <span class="wc-opportunity-amount">${currency} ${formatNumber(wcrVar)}</span>
+                <div class="wc-opportunity-text">in cash — right now, ${hook}.</div>
+            `;
+        } else if (wcrVar < -5000) {
+            // Running lean — celebrate
+            oppEl.style.display = '';
+            oppEl.className = 'wc-opportunity plain-only opp-negative';
+            oppEl.innerHTML = `
+                <div class="wc-opportunity-label">Strong Position</div>
+                <div class="wc-opportunity-text">You're running <strong>${currency} ${formatNumber(Math.abs(wcrVar))}</strong> leaner than the industry average. Your working capital management is excellent.</div>
+            `;
+        } else {
+            oppEl.style.display = 'none';
+        }
+    }
+
+    // CCC insight — industry-specific thresholds
     const cccInsightEl = document.getElementById('opCashMovement');
     if (cccInsightEl) {
+        const ind2 = industry?.toLowerCase() || 'other';
+        const cccThresh = {
+            'food': { good: 10, warn: 20 }, 'restaurant': { good: 10, warn: 20 },
+            'product': { good: 20, warn: 45 }, 'retail': { good: 20, warn: 45 },
+            'online': { good: 10, warn: 25 }, 'ecommerce': { good: 10, warn: 25 },
+            'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
+            'construction': { good: 45, warn: 75 },
+            'manufacturing': { good: 40, warn: 70 },
+            'healthcare': { good: 25, warn: 50 },
+            'other': { good: 30, warn: 60 }
+        };
+        const ct = cccThresh[ind2] || cccThresh['other'];
+        const roundCCC = Math.round(metrics.ccc);
+        const roundDSO = Math.round(metrics.dso);
+        const roundDPO = Math.round(metrics.dpo);
+
         let insight = '';
-        if (ccc < 0) {
+        if (metrics.ccc < 0) {
             insight = getCCCNegativeAdvice(bench.name);
-        } else if (ccc > 90) {
-            insight = `Your capital is locked up for ${Math.round(ccc)} days — this is critical. Consider invoice factoring to get 80-90% of your receivables in 24 hours. Halt non-essential purchasing and review slow-paying clients who are draining your liquidity.`;
-        } else if (ccc > 60) {
-            insight = getCCC60Advice(bench.name, ccc);
-        } else if (ccc > 30) {
-            insight = `Your cash cycle is ${Math.round(ccc)} days. You pay suppliers in ${Math.round(metrics.dpo)} days but wait ${Math.round(metrics.dso)} days to collect. That's ${Math.round(ccc)} days your money is stuck in operations.`;
+        } else if (roundCCC >= ct.warn * 1.5) {
+            insight = `Your capital is locked up for ${roundCCC} days — this is critical for your industry. Consider invoice factoring to collect receivables quickly. Review slow-paying clients and halt non-essential purchasing.`;
+        } else if (roundCCC >= ct.warn) {
+            insight = getCCC60Advice(bench.name, roundCCC);
+        } else if (roundCCC >= ct.good) {
+            insight = `Your cash cycle is ${roundCCC} days. You pay suppliers in ${roundDPO} days but wait ${roundDSO} days to collect. That's ${roundCCC} days your money is stuck in operations.`;
         } else {
             if (globalTier === 'danger') {
-                insight = `Cash cycle is ${Math.round(ccc)} days. While the cycle itself is short, your overall cash position is critical — focus on the cash runway and liquidity issues above.`;
+                insight = `Cash cycle is ${roundCCC} days — short for your industry. But your overall cash position is critical — focus on the cash runway and liquidity issues above.`;
             } else {
-                insight = `Cash cycle is ${Math.round(ccc)} days — cash moves through your business at a reasonable pace.`;
+                insight = `Cash cycle is ${roundCCC} days — cash moves through your business at a healthy pace.`;
             }
         }
         cccInsightEl.innerHTML = `<p>${insight}</p>`;
@@ -1132,39 +1596,48 @@ function updateFCF(current, previous, metrics, currency) {
 
     // Display
     const npEl = document.getElementById('fcfNetProfit');
-    npEl.textContent = signedAmount(netProfit, currency);
-    npEl.className = `fcf-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
+    if (npEl) {
+        npEl.textContent = signedAmount(netProfit, currency);
+        npEl.className = `fcf-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
+    }
 
     const wcEl = document.getElementById('fcfWCChanges');
-    wcEl.textContent = wcChanges >= 0 ? `- ${currency} ${formatNumber(wcChanges)}` : `+ ${currency} ${formatNumber(Math.abs(wcChanges))}`;
-    wcEl.className = `fcf-value ${wcChanges >= 0 ? 'negative' : 'positive'}`;
+    if (wcEl) {
+        wcEl.textContent = wcChanges >= 0 ? `- ${currency} ${formatNumber(wcChanges)}` : `+ ${currency} ${formatNumber(Math.abs(wcChanges))}`;
+        wcEl.className = `fcf-value ${wcChanges >= 0 ? 'negative' : 'positive'}`;
+    }
 
     const capexEl = document.getElementById('fcfCapex');
-    capexEl.textContent = capex > 0 ? `- ${currency} ${formatNumber(capex)}` : `${currency} 0`;
-    capexEl.className = `fcf-value ${capex > 0 ? 'negative' : ''}`;
+    if (capexEl) {
+        capexEl.textContent = capex > 0 ? `- ${currency} ${formatNumber(capex)}` : `${currency} 0`;
+        capexEl.className = `fcf-value ${capex > 0 ? 'negative' : ''}`;
+    }
 
     const totalEl = document.getElementById('fcfTotal');
-    totalEl.textContent = signedAmount(fcf, currency);
-    totalEl.className = `fcf-value ${fcf >= 0 ? 'positive' : 'negative'}`;
+    if (totalEl) {
+        totalEl.textContent = signedAmount(fcf, currency);
+        totalEl.className = `fcf-value ${fcf >= 0 ? 'positive' : 'negative'}`;
+    }
 
     // Insight
     const insightEl = document.getElementById('fcfInsight');
     let fcfInsightText = '';
     if (fcf > 0) {
-        fcfInsightText = `<p>Your business generated <strong>${currency} ${formatNumber(fcf)}</strong> in free cash flow. This is real cash available to pay down debt, distribute to owners, or reinvest.</p>`;
+        fcfInsightText = `<p>Your business generated <strong>${currency} ${formatNumber(fcf)}</strong> in cash this month. This is real money available to pay down debt, distribute to owners, or reinvest.</p>`;
     } else if (fcf === 0) {
-        fcfInsightText = `<p>Free cash flow is zero. The business generates just enough cash to sustain operations. Growth will need external funding.</p>`;
+        fcfInsightText = `<p>Cash generated is zero — the business produces just enough to sustain operations. Growth will need external funding or cost cuts.</p>`;
     } else {
-        fcfInsightText = `<p>Your business consumed <strong>${currency} ${formatNumber(Math.abs(fcf))}</strong> more cash than it generated. This is funded from reserves.</p>`;
+        fcfInsightText = `<p>Your business consumed <strong>${currency} ${formatNumber(Math.abs(fcf))}</strong> more cash than it generated. This is being funded from your cash reserves.</p>`;
     }
 
-    // Flag owner drawings if they're a significant cash drain
+    // Flag owner drawings when they exceed free cash flow (the real cash strain trigger)
     const ownerDrawings = current.ownerDrawings || 0;
-    if (ownerDrawings > 0 && netProfit > 0 && ownerDrawings > netProfit * 0.4) {
-        const drawingsPct = Math.round((ownerDrawings / netProfit) * 100);
-        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business this month — that is ${drawingsPct}% of your profit. ${ownerDrawings > fcf ? 'This exceeds your free cash flow, which is why your cash balance dropped despite being profitable.' : 'Keep an eye on this relative to your cash position.'}</p>`;
+    if (ownerDrawings > 0 && ownerDrawings > fcf && fcf > 0) {
+        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business, but it only generated ${currency} ${formatNumber(fcf)} in cash. The difference (${currency} ${formatNumber(ownerDrawings - fcf)}) came from your cash reserves — that's why your balance dropped despite being profitable.</p>`;
     } else if (ownerDrawings > 0 && netProfit <= 0) {
         fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} out of the business while making a loss. This directly reduces your cash reserves.</p>`;
+    } else if (ownerDrawings > 0 && fcf <= 0) {
+        fcfInsightText += `<p style="margin-top: 8px;"><strong>Owner drawings:</strong> You took ${currency} ${formatNumber(ownerDrawings)} while the business generated no free cash. This is being funded entirely from reserves.</p>`;
     }
 
     insightEl.innerHTML = fcfInsightText;
@@ -1202,15 +1675,17 @@ function updateFCFF(current, currency, fcfValue) {
     if (surplus > 0) {
         const ratio = fcfValue / loanRepayments;
         if (ratio >= 2 && globalTier === 'safe') {
-            insightEl.innerHTML = `<p>Debt coverage is strong at <strong>${ratio.toFixed(1)}x</strong>. Your free cash flow comfortably covers loan repayments.</p>`;
+            insightEl.innerHTML = `<p>You can comfortably afford your loan payments. Your business produces <strong>${ratio.toFixed(1)}x</strong> more cash than your loan requires.</p>`;
         } else if (ratio >= 2) {
-            // High ratio but overall status is tight/danger — don't say "breathing room"
-            insightEl.innerHTML = `<p>Debt coverage ratio is <strong>${ratio.toFixed(1)}x</strong>, which is adequate. However, your overall cash position needs attention — focus on improving cash runway.</p>`;
+            insightEl.innerHTML = `<p>Loan payments are covered (<strong>${ratio.toFixed(1)}x</strong> coverage), but your overall cash position needs attention — focus on building your cash buffer.</p>`;
         } else {
-            insightEl.innerHTML = `<p>Debt is covered, but the buffer is thin at <strong>${ratio.toFixed(1)}x</strong>. A bad month could make this tight. Consider accelerating collections.</p>`;
+            insightEl.innerHTML = `<p>Loan payments are covered, but barely — your buffer is only <strong>${ratio.toFixed(1)}x</strong>. One bad month could make this tight. Speed up collections to build a cushion.</p>`;
         }
+    } else if (globalTier === 'safe') {
+        // Negative FCF but business is overall healthy — WC absorbed cash this month, not a crisis
+        insightEl.innerHTML = `<p>Free cash flow was negative this month, so loan payments of <strong>${currency} ${formatNumber(loanRepayments)}</strong> came from reserves. This is manageable with your cash buffer, but watch the trend — if this continues, it will erode your position.</p>`;
     } else {
-        insightEl.innerHTML = `<p><strong>Debt is eating your cash.</strong> Free cash flow doesn't cover loan repayments. You're dipping into reserves by <strong>${currency} ${formatNumber(Math.abs(surplus))}</strong> per month. This is not sustainable.</p>`;
+        insightEl.innerHTML = `<p><strong>Your loan payments are draining cash faster than the business can generate it.</strong> You're dipping into reserves by <strong>${currency} ${formatNumber(Math.abs(surplus))}</strong> per month. This is not sustainable — talk to your lender about restructuring.</p>`;
     }
 }
 
@@ -1218,59 +1693,168 @@ function updateFCFF(current, currency, fcfValue) {
 
 function updateCashRunway(metrics, currency, current, industry) {
     const bigValueEl = document.getElementById('runwayBigValue');
+    const unitEl = document.querySelector('.runway-unit');
     const methodEl = document.getElementById('runwayMethodDisplay');
     const cashoutEl = document.getElementById('runwayCashout');
     const driversEl = document.getElementById('runwayDrivers');
     const interpEl = document.getElementById('runwayInterpretation');
+    const boosterEl = document.getElementById('runwayBooster');
 
-    const methodLabel = {
-        'ytd': 'Based on YTD average burn',
-        'monthly': 'Based on last month burn',
-        'opex': 'Based on monthly expenses'
-    }[metrics.runwayMethod] || 'Based on monthly expenses';
+    const ind = industry?.toLowerCase() || 'other';
+    const cash = current.cash || 0;
+    const revenue = current.revenue || 0;
+    const runway = metrics.cashRunway; // months, or -1 for cash-positive
 
-    if (metrics.cashRunway === -1) {
-        bigValueEl.textContent = '\u221E';
-        bigValueEl.className = 'runway-big ok';
-        methodEl.textContent = 'Your cash is growing, not burning';
-        if (cashoutEl) cashoutEl.textContent = '';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong> and increasing.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p>Your business generates more cash than it uses. This is the healthiest position.</p>`;
-    } else if (metrics.cashRunway >= 6) {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
-        bigValueEl.className = 'runway-big ok';
-        methodEl.textContent = methodLabel;
-        if (cashoutEl) cashoutEl.textContent = '';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>. Comfortable buffer for ${Math.floor(metrics.cashRunway)}+ months.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p>You have time to plan, invest, and weather surprises.</p>`;
-    } else if (metrics.cashRunway >= 3) {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
-        bigValueEl.className = 'runway-big warn';
-        methodEl.textContent = methodLabel;
-        const cashOutDate = getCashOutDate(metrics.cashRunway);
-        if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p>Not critical, but start improving cash flow. Collect faster, delay non-essential spending.</p>`;
-    } else if (metrics.cashRunway >= 1) {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
-        bigValueEl.className = 'runway-big danger';
-        methodEl.textContent = methodLabel;
-        const cashOutDate = getCashOutDate(metrics.cashRunway);
-        if (cashoutEl) cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p><strong>Action needed.</strong> Collect receivables urgently, cut non-essential spending, consider short-term credit.</p>`;
-    } else {
-        bigValueEl.textContent = metrics.cashRunway.toFixed(1);
-        bigValueEl.className = 'runway-big danger';
-        methodEl.textContent = methodLabel;
-        if (cashoutEl) cashoutEl.textContent = 'Cash runway is critical.';
-        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(current.cash)}</strong>.</p>`;
-        if (interpEl) interpEl.innerHTML = `<p><strong>Your cash is very low</strong> — take action this week. Collect receivables, pause non-essential spending, and talk to your bank about options.</p>`;
+    // Method tooltip (hidden from UI, shown on hover)
+    const methodTooltip = {
+        'ytd': 'Calculated from your year-to-date cash movement',
+        'monthly': 'Calculated from last month\'s cash change',
+        'opex': 'Estimated from your monthly expenses'
+    }[metrics.runwayMethod] || 'Estimated from your monthly expenses';
+    if (methodEl) methodEl.title = methodTooltip;
+
+    // Industry-specific thresholds (all in months — converted to days for display-only industries)
+    const thresholds = {
+        'food': { safe: 6, warn: 3, useDays: true },
+        'restaurant': { safe: 6, warn: 3, useDays: true },
+        'product': { safe: 6, warn: 3, useDays: true },
+        'retail': { safe: 6, warn: 3, useDays: true },
+        'ecommerce': { safe: 6, warn: 3, useDays: true },
+        'online': { safe: 12, warn: 6, useDays: false },
+        'services': { safe: 6, warn: 3, useDays: false },
+        'service': { safe: 6, warn: 3, useDays: false },
+        'construction': { safe: 9, warn: 4, useDays: false },
+        'manufacturing': { safe: 6, warn: 3, useDays: false },
+        'healthcare': { safe: 6, warn: 3, useDays: false },
+        'other': { safe: 6, warn: 3, useDays: false }
+    };
+    const t = thresholds[ind] || thresholds['other'];
+    const useDays = t.useDays;
+
+    // OPEX-based runway — one consistent metric everywhere
+    const runwayMonths = runway === -1 ? 999 : runway;
+    const runwayDays = Math.round(runwayMonths * 30);
+
+    // Determine tier from months
+    let tier;
+    if (runway === -1) tier = 'positive';
+    else if (runwayMonths >= t.safe) tier = 'safe';
+    else if (runwayMonths >= t.warn) tier = 'warn';
+    else if (runwayMonths >= 1) tier = 'low';
+    else tier = 'critical';
+
+    // Display in days for short runways, months for longer ones
+    const effectiveUseDays = useDays || runwayMonths < 3;
+    const displayVal = effectiveUseDays ? runwayDays : runwayMonths;
+    const displayUnit = effectiveUseDays ? 'days' : 'months';
+    const daysDisplay = runwayDays;
+
+    if (unitEl) unitEl.textContent = displayUnit;
+
+    // Industry-specific interpretation
+    const interpTexts = {
+        positive: {
+            'food': 'Your restaurant generates more cash than it uses. Reinvest in equipment, marketing, or staff development.',
+            'online': 'Your business is cash-positive. Consider investing in product development or customer acquisition.',
+            'construction': 'Cash is growing — use this buffer for project delays or equipment investment.',
+            'services': 'You generate more cash than you spend. Consider hiring, marketing, or building reserves.',
+            '_default': 'Your business generates more cash than it uses. You can invest, hire, or build reserves.'
+        },
+        safe: {
+            'food': `At this pace, you have enough cash to cover about ${effectiveUseDays ? Math.round(daysDisplay / 7) + ' weeks' : Math.floor(runwayMonths) + ' months'} of food, labor, and overhead costs.`,
+            'online': `At your current burn rate, you have ${Math.floor(runwayMonths)} months of runway. This gives you time to grow or optimize before needing funding.`,
+            'construction': `This covers approximately ${Math.floor(runwayMonths)} months of overhead between projects. Comfortable buffer for project delays.`,
+            'manufacturing': `You have ${Math.floor(runwayMonths)} months of cash to cover production costs and overhead. Solid position for planning.`,
+            '_default': `You have time to plan, invest, and weather surprises. Cash balance: ${currency} ${formatNumber(cash)}.`
+        },
+        warn: {
+            'food': `Cash covers about ${effectiveUseDays ? Math.round(daysDisplay / 7) + ' weeks' : runwayMonths.toFixed(1) + ' months'} of expenses. Start tightening — reduce waste, speed up catering collections.`,
+            'online': `${runwayMonths.toFixed(1)} months of runway. If not yet profitable, start planning your next funding round or path to breakeven.`,
+            'construction': `${runwayMonths.toFixed(1)} months of overhead coverage. Chase outstanding progress billings and delay non-critical equipment purchases.`,
+            '_default': `Not critical yet, but start improving cash flow. Collect receivables faster and delay non-essential spending.`
+        },
+        low: {
+            'food': `Cash is dangerously low — only ${effectiveUseDays ? daysDisplay + ' days' : runwayMonths.toFixed(1) + ' months'} left. Negotiate supplier terms, reduce portions or menu items, collect catering invoices immediately.`,
+            'online': `Only ${runwayMonths.toFixed(1)} months of runway left. Cut non-essential costs immediately and accelerate revenue.`,
+            'construction': `${runwayMonths.toFixed(1)} months left. Demand milestone payments on active projects and pause new commitments until cash improves.`,
+            '_default': `Action needed. Collect receivables urgently, cut non-essential spending, and consider short-term credit.`
+        },
+        critical: {
+            'food': `Your cash is nearly gone. Contact suppliers about extended terms today. Collect every outstanding invoice this week.`,
+            'online': `Cash will run out within weeks. Cut all non-essential expenses immediately and focus on revenue.`,
+            'construction': `Cash is critical. Do not start new projects. Collect all outstanding billings and retention money immediately.`,
+            '_default': `Your cash is very low — take action this week. Collect receivables, pause spending, and talk to your bank.`
+        }
+    };
+
+    function getInterp(tier) {
+        const tierTexts = interpTexts[tier];
+        return tierTexts[ind] || tierTexts['_default'];
     }
 
-    // Industry benchmark for runway
-    const runwayMonths = metrics.cashRunway === -1 ? 12 : metrics.cashRunway;
-    renderBenchBar('benchRunway', 'Cash Runway', runwayMonths, { min: 3, max: 6, ideal: 6 }, ' months', true);
+    // Render based on tier
+    if (tier === 'positive') {
+        bigValueEl.textContent = 'Cash Positive';
+        bigValueEl.className = 'runway-big ok runway-text';
+        if (unitEl) unitEl.textContent = ''; // hide "days"/"months" for cash-positive
+        if (methodEl) methodEl.textContent = '';
+        if (cashoutEl) cashoutEl.textContent = '';
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong> and increasing.</p>`;
+        if (interpEl) interpEl.innerHTML = `<p>${getInterp('positive')}</p>`;
+    } else {
+        bigValueEl.textContent = effectiveUseDays ? Math.round(displayVal) : displayVal.toFixed(1);
+        bigValueEl.className = `runway-big ${tier === 'safe' ? 'ok' : tier === 'warn' ? 'warn' : 'danger'}`;
+        if (methodEl) methodEl.textContent = '';
+
+        // Cash-out date: only for warn/low/critical
+        if (tier !== 'safe' && cashoutEl) {
+            const cashOutDate = getCashOutDate(runwayMonths);
+            cashoutEl.textContent = `Cash runs out around ${cashOutDate}`;
+        } else if (cashoutEl) {
+            cashoutEl.textContent = '';
+        }
+
+        if (driversEl) driversEl.innerHTML = `<p>Cash balance: <strong>${currency} ${formatNumber(cash)}</strong>.</p>`;
+        if (interpEl) interpEl.innerHTML = `<p>${getInterp(tier)}</p>`;
+    }
+
+    // Runway Booster insight — show what would extend runway
+    if (boosterEl && tier !== 'positive' && tier !== 'safe') {
+        const ar = current.receivables || 0;
+        const inv = current.inventory || 0;
+        const drawings = current.ownerDrawings || 0;
+        const monthlyBurn = runwayMonths > 0 ? cash / runwayMonths : 0;
+        let booster = '';
+
+        if (ar > 0 && monthlyBurn > 0) {
+            const arBoost = (ar * 0.5) / monthlyBurn;
+            booster = `If you collected 50% of receivables (${currency} ${formatNumber(Math.round(ar * 0.5))}), runway extends to ${(runwayMonths + arBoost).toFixed(1)} months.`;
+        } else if (inv > 0 && monthlyBurn > 0) {
+            const invBoost = (inv * 0.2) / monthlyBurn;
+            booster = `Reducing inventory by 20% (${currency} ${formatNumber(Math.round(inv * 0.2))}) adds ${invBoost.toFixed(1)} months of runway.`;
+        } else if (drawings > 0 && monthlyBurn > 0) {
+            const drawBoost = (drawings * 0.5) / monthlyBurn;
+            booster = `Cutting drawings by half adds ${drawBoost.toFixed(1)} months of runway.`;
+        }
+
+        if (booster) {
+            boosterEl.style.display = '';
+            boosterEl.textContent = booster;
+        } else {
+            boosterEl.style.display = 'none';
+        }
+    } else if (boosterEl) {
+        boosterEl.style.display = 'none';
+    }
+
+    // Industry benchmark bar (uses display units)
+    if (effectiveUseDays) {
+        const benchDays = runway === -1 ? t.safe * 30 : daysDisplay;
+        renderBenchBar('benchRunway', 'How long your cash will last', benchDays, { min: t.warn * 30, max: t.safe * 30, ideal: t.safe * 30 }, ' days', true);
+    } else {
+        const benchMonths = runway === -1 ? t.safe : runwayMonths;
+        renderBenchBar('benchRunway', 'How long your cash will last', benchMonths, { min: t.warn, max: t.safe, ideal: t.safe }, ' months', true);
+    }
 }
 
 function getCashOutDate(months) {
@@ -1308,24 +1892,34 @@ function updateBankMeetingSummary(current, metrics, currency, analysis) {
 
     let cash = '';
     if (metrics.cashRunway === -1) {
-        cash = `Cash position is strong and growing.`;
+        cash = `Cash position is strong at ${currency} ${formatNumber(current.cash || 0)} and growing.`;
+    } else if (metrics.cashRunway >= 6) {
+        cash = `We have ${currency} ${formatNumber(current.cash || 0)} in cash — about ${metrics.cashRunway.toFixed(0)} months of runway.`;
     } else if (metrics.cashRunway >= 3) {
-        cash = `Cash runway is ${metrics.cashRunway.toFixed(1)} months.`;
+        cash = `Cash is ${currency} ${formatNumber(current.cash || 0)} with ${metrics.cashRunway.toFixed(1)} months of runway. We're focused on improving that.`;
     } else {
-        cash = `Cash runway is tight at ${metrics.cashRunway.toFixed(1)} months. We have ${currency} ${formatNumber(current.receivables || 0)} in receivables to collect.`;
+        cash = `Cash is tight at ${currency} ${formatNumber(current.cash || 0)}. We have ${currency} ${formatNumber(current.receivables || 0)} in receivables we're actively collecting.`;
     }
 
-    const cr = metrics.currentRatio >= 1.5 ? 'healthy' : 'adequate';
-    const crVal = metrics.currentRatio.toFixed(2);
-
-    quoteEl.textContent = `${sales}${profit}. ${cash} Current ratio is ${cr} at ${crVal}.`;
+    quoteEl.textContent = `${sales}${profit}. ${cash}`;
 }
 
 // ===== Section 8: Weekly Actions =====
 
-function updateWeeklyActions(current, metrics, currency, analysis) {
+function updateWeeklyActions(current, metrics, currency, analysis, industry) {
     const actionList = document.getElementById('actionList');
     if (!actionList) return;
+
+    // Determine urgency tier (used by both AI and auto-generated paths)
+    // Loss-making businesses need urgency even if runway looks OK
+    const isLosing = (current.netProfit || 0) < 0;
+    const runwaySafe = !isLosing && (metrics.cashRunway === -1 || metrics.cashRunway >= 6);
+    const runwayDanger = (metrics.cashRunway >= 0 && metrics.cashRunway < 3) || (isLosing && metrics.cashRunway >= 0 && metrics.cashRunway < 6);
+    const urgencyMap = runwayDanger
+        ? ['Do Today', 'This Week', 'This Week']
+        : runwaySafe
+        ? ['This Month', 'This Month', 'This Month']
+        : ['This Week', 'This Week', 'This Month'];
 
     // Use AI actions if available
     if (analysis && analysis.action1Title) {
@@ -1337,83 +1931,112 @@ function updateWeeklyActions(current, metrics, currency, analysis) {
 
         // Safety filter: fix common AI errors
         actions = actions.map(a => {
-            // Fix "collect from suppliers" — should be "collect from customers" or "negotiate with suppliers"
             let title = a.title.replace(/collect.*from.*supplier/i, 'Negotiate extended terms with suppliers');
             let desc = a.desc.replace(/collect.*from.*supplier/i, 'negotiate payment terms with your suppliers');
             return { title, desc };
         });
 
-        actionList.innerHTML = actions.map((a, i) => actionCard(i + 1, a.title, a.desc, null)).join('');
+        actionList.innerHTML = actions.map((a, i) =>
+            actionCard(i + 1, a.title, a.desc, null, urgencyMap[i])
+        ).join('');
         return;
     }
 
-    // Auto-generate actions
+    // Auto-generate actions — industry-aware with dynamic urgency
     const actions = [];
+    const bench = getDefaultBenchmarks(industry);
 
-    if (metrics.cashRunway >= 0 && metrics.cashRunway < 3) {
+    // Danger/Watch: urgent cash actions
+    if (runwayDanger) {
         const target = Math.round((current.receivables || 0) * 0.3);
-        actions.push({
-            title: `Collect ${currency} ${formatNumber(target)} from customers`,
-            desc: `You have ${currency} ${formatNumber(current.receivables || 0)} in receivables. Call your top 3 customers and agree on payment dates this week.`,
-            impact: target
-        });
-    } else if (metrics.dso > 30) {
+        if (target > 0) {
+            actions.push({
+                title: `Collect ${currency} ${formatNumber(target)} from customers`,
+                desc: `You have ${currency} ${formatNumber(current.receivables || 0)} outstanding. Call your top 3 customers and agree on payment dates this week.`,
+                impact: target
+            });
+        }
+    }
+
+    // DSO too high for industry
+    if (actions.length < 3 && metrics.dso > bench.dso.max) {
         actions.push({
             title: 'Speed up customer payments',
-            desc: `Customers take ${Math.round(metrics.dso)} days to pay. Send reminders earlier and offer small discounts for early payment.`,
+            desc: `Customers take ${Math.round(metrics.dso)} days to pay (industry target: ${bench.dso.max}). Send reminders earlier or offer small discounts for early payment.`,
             impact: Math.round((current.receivables || 0) * 0.15)
         });
     }
 
-    if (metrics.dpo < 20 && actions.length < 3) {
+    // DPO too low for industry
+    if (actions.length < 3 && metrics.dpo < bench.dpo.min) {
         actions.push({
-            title: 'Negotiate longer payment terms with suppliers',
-            desc: `You pay suppliers in ${Math.round(metrics.dpo)} days. Ask your top 3 suppliers for 30-day terms. This keeps ${currency} ${formatNumber(current.payables || 0)} in your account ${30 - Math.round(metrics.dpo)} extra days.`,
+            title: 'Negotiate longer supplier payment terms',
+            desc: `You pay suppliers in ${Math.round(metrics.dpo)} days (industry norm: ${bench.dpo.min}+). Ask your top 3 suppliers for 30-day terms.`,
             impact: Math.round((current.payables || 0) * 0.1)
         });
     }
 
-    if (metrics.grossMargin < 25 && actions.length < 3) {
+    // Gross margin below industry
+    if (actions.length < 3 && metrics.grossMargin < bench.grossMargin.min) {
         actions.push({
-            title: 'Improve your gross margin',
-            desc: `Gross margin is only ${metrics.grossMargin.toFixed(0)}%. Raise prices 5-10% or negotiate better supplier rates.`,
-            impact: Math.round((current.revenue || 0) * 0.05)
+            title: 'Improve your margins',
+            desc: `Gross margin is ${metrics.grossMargin.toFixed(0)}% (industry minimum: ${bench.grossMargin.min}%). Review pricing or negotiate better supplier rates.`,
+            impact: Math.round((current.revenue || 0) * 0.03)
         });
     }
 
-    if (metrics.cashRunway >= 0 && metrics.cashRunway < 3 && actions.length < 3) {
+    // DIO too high for industry
+    if (actions.length < 3 && metrics.dio > bench.dio.max && bench.dio.max > 0) {
         actions.push({
-            title: 'Pause non-essential spending',
-            desc: `With only ${metrics.cashRunway.toFixed(1)} months of cash, hold off on anything not critical until runway exceeds 3 months.`,
-            impact: Math.round((current.opex || 0) * 0.1)
-        });
-    }
-
-    if (actions.length < 3 && metrics.dio > 30) {
-        actions.push({
-            title: 'Reduce inventory levels',
-            desc: `Stock sits for ${Math.round(metrics.dio)} days. Order smaller quantities more often.`,
+            title: 'Reduce stock levels',
+            desc: `Stock sits for ${Math.round(metrics.dio)} days (industry target: ${bench.dio.max}). Order smaller quantities more often.`,
             impact: Math.round((current.inventory || 0) * 0.2)
         });
     }
 
-    // Ensure at least 3 actions
-    if (actions.length < 3) {
+    // Cash critically low
+    if (actions.length < 3 && runwayDanger) {
         actions.push({
-            title: 'Review operating expenses',
-            desc: 'Look for subscriptions, services, or costs that can be renegotiated or eliminated.',
-            impact: Math.round((current.opex || 0) * 0.05)
+            title: 'Pause non-essential spending',
+            desc: `Cash is critically low. Hold off on anything not essential until your runway exceeds 3 months.`,
+            impact: Math.round((current.opex || 0) * 0.1)
         });
     }
 
+    // Healthy business — growth/optimization actions
+    if (actions.length < 3 && runwaySafe && metrics.netMargin > 0) {
+        const healthyActions = [
+            { title: 'Review your pricing', desc: 'With strong margins, test raising prices 3-5% on your best-selling items. Even a small increase goes straight to profit.' },
+            { title: 'Automate invoice reminders', desc: 'Set up automatic payment reminders to collect faster without chasing customers manually.' },
+            { title: 'Identify your most profitable products', desc: 'Know which items or services generate the most margin — double down on what works.' }
+        ];
+        while (actions.length < 3 && healthyActions.length > 0) {
+            actions.push(healthyActions.shift());
+        }
+    }
+
+    // Fallback — varied generic actions
+    const fallbacks = [
+        { title: 'Review operating expenses', desc: 'Look for subscriptions, services, or costs that can be renegotiated or eliminated.' },
+        { title: 'Set up a weekly cash check', desc: 'Spend 10 minutes every Monday reviewing your bank balance and outstanding invoices.' },
+        { title: 'Talk to your accountant', desc: 'Share this report and ask for their top recommendation based on your numbers.' }
+    ];
+    let fi = 0;
+    while (actions.length < 3) {
+        actions.push(fallbacks[fi % fallbacks.length]);
+        fi++;
+    }
+
     actionList.innerHTML = actions.slice(0, 3).map((a, i) =>
-        actionCard(i + 1, a.title, a.desc, a.impact ? `Cash impact: +${currency} ${formatNumber(a.impact)}` : null)
+        actionCard(i + 1, a.title, a.desc,
+            a.impact ? `Estimated impact: ~${currency} ${formatNumber(a.impact)}` : null,
+            urgencyMap[i])
     ).join('');
 }
 
-function actionCard(num, title, desc, impact) {
-    const urgencyLabel = num === 1 ? 'Do Today' : num === 2 ? 'This Week' : 'This Month';
-    const urgencyClass = num === 1 ? 'u-today' : num === 2 ? 'u-week' : 'u-month';
+function actionCard(num, title, desc, impact, urgencyLabel) {
+    urgencyLabel = urgencyLabel || (num === 1 ? 'Do Today' : num === 2 ? 'This Week' : 'This Month');
+    const urgencyClass = urgencyLabel === 'Do Today' ? 'u-today' : urgencyLabel === 'This Week' ? 'u-week' : 'u-month';
     const metricTag = impact ? `<span class="action-metric">${impact}</span>` : '';
     return `
         <li class="action-item">
@@ -1549,7 +2172,7 @@ async function downloadInvestorPDF() {
     profitEl.textContent = `${currency} ${formatNumber(current.netProfit)}`;
     profitEl.style.color = current.netProfit >= 0 ? '#059669' : '#dc2626';
     document.getElementById('inv-cash').textContent = `${currency} ${formatNumber(current.cash)}`;
-    document.getElementById('inv-runway').textContent = `${metrics.cashRunway || 0} mo`;
+    document.getElementById('inv-runway').textContent = metrics.cashRunway === -1 ? 'Cash positive' : `${(metrics.cashRunway || 0).toFixed(1)} mo`;
 
     document.getElementById('inv-gross-margin').textContent = `${metrics.grossMargin || 0}%`;
     document.getElementById('inv-net-margin').textContent = `${metrics.netMargin || 0}%`;
@@ -1753,16 +2376,35 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
     const overheadPct = revenue > 0 ? (opex / revenue) * 100 : 0;
     const runwayVal = metrics.cashRunway === -1 ? 'Cash positive' : `${(metrics.cashRunway || 0).toFixed(1)} mo`;
 
+    // Industry-specific CCC and runway thresholds for technical view
+    const ind = industry?.toLowerCase() || 'other';
+    const cccT = {
+        'food': { good: 10, warn: 20 }, 'restaurant': { good: 10, warn: 20 },
+        'product': { good: 20, warn: 45 }, 'retail': { good: 20, warn: 45 },
+        'online': { good: 10, warn: 25 }, 'ecommerce': { good: 10, warn: 25 },
+        'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
+        'construction': { good: 45, warn: 75 },
+        'manufacturing': { good: 40, warn: 70 },
+        'healthcare': { good: 25, warn: 50 },
+        'other': { good: 30, warn: 60 }
+    }[ind] || { good: 30, warn: 60 };
+    const runT = {
+        'online': { safe: 12, warn: 6 },
+        'construction': { safe: 9, warn: 4 },
+        '_default': { safe: 6, warn: 3 }
+    }[ind] || { safe: 6, warn: 3 };
+
     // Ratio grid
     const ratioGrid = document.getElementById('techRatioGrid');
     if (ratioGrid) {
+        const cccVal = Math.round(metrics.ccc || 0);
         const ratios = [
             { label: 'Gross Margin', value: `${gm.toFixed(1)}%`, status: gm >= bench.grossMargin.min ? 'ok' : 'warn' },
             { label: 'Net Margin', value: `${nm.toFixed(1)}%`, status: nm >= bench.netMargin.min ? 'ok' : nm >= 0 ? 'warn' : 'danger' },
             { label: 'Current Ratio', value: `${(metrics.currentRatio || 0).toFixed(2)}x`, status: metrics.currentRatio >= 1.5 ? 'ok' : metrics.currentRatio >= 1 ? 'warn' : 'danger' },
             { label: 'Quick Ratio', value: `${quickRatio.toFixed(2)}x`, status: quickRatio >= 1 ? 'ok' : quickRatio >= 0.5 ? 'warn' : 'danger' },
-            { label: 'CCC', value: `${Math.round(metrics.ccc || 0)} days`, status: (metrics.ccc || 0) <= 30 ? 'ok' : (metrics.ccc || 0) <= 60 ? 'warn' : 'danger' },
-            { label: 'Cash Runway', value: runwayVal, status: metrics.cashRunway === -1 || metrics.cashRunway >= 6 ? 'ok' : metrics.cashRunway >= 3 ? 'warn' : 'danger' },
+            { label: 'CCC', value: `${cccVal} days`, status: cccVal < cccT.good ? 'ok' : cccVal < cccT.warn ? 'warn' : 'danger' },
+            { label: 'Cash Runway', value: runwayVal, status: metrics.cashRunway === -1 || metrics.cashRunway >= runT.safe ? 'ok' : metrics.cashRunway >= runT.warn ? 'warn' : 'danger' },
             { label: 'Cash vs AP', value: `${cashVsAP.toFixed(2)}x`, status: cashVsAP >= 1.5 ? 'ok' : cashVsAP >= 1 ? 'warn' : 'danger' },
             { label: 'Overhead %', value: `${overheadPct.toFixed(1)}%`, status: overheadPct <= 40 ? 'ok' : overheadPct <= 60 ? 'warn' : 'danger' }
         ];
@@ -1786,15 +2428,15 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
         incomeBody.innerHTML = `
             <tr><td>Revenue</td><td>${currency} ${formatNumber(revenue)}</td><td>100%</td><td>-</td><td>-</td></tr>
             <tr><td>${COGS_LABELS[industry] || 'COGS'}</td><td>(${currency} ${formatNumber(cogs)})</td><td>${cogsPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
-            <tr class="subtotal"><td>Gross Profit</td><td>${currency} ${formatNumber(grossProfit)}</td><td>${gm.toFixed(1)}%</td><td>${gmBench}%</td><td>${(gm - gmBench).toFixed(1)}%</td></tr>
+            <tr class="subtotal"><td>Gross Profit</td><td>${grossProfit < 0 ? '-' : ''}${currency} ${formatNumber(grossProfit)}</td><td>${gm.toFixed(1)}%</td><td>${gmBench}%</td><td>${(gm - gmBench).toFixed(1)}%</td></tr>
             <tr><td>Operating Expenses</td><td>(${currency} ${formatNumber(opex)})</td><td>${opexPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
-            <tr class="subtotal"><td>EBITDA</td><td>${currency} ${formatNumber(operatingProfit)}</td><td>${ebitdaPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
+            <tr class="subtotal"><td>Operating Profit (EBITDA*)</td><td>${operatingProfit < 0 ? '-' : ''}${currency} ${formatNumber(operatingProfit)}</td><td>${ebitdaPct.toFixed(1)}%</td><td>-</td><td>-</td></tr>
         `;
     }
     if (incomeFoot) {
         const nmBench = bench.netMargin.ideal || bench.netMargin.min;
         incomeFoot.innerHTML = `
-            <tr><td>Net Income</td><td>${currency} ${formatNumber(netProfit)}</td><td>${nm.toFixed(1)}%</td><td>${nmBench}%</td><td>${(nm - nmBench).toFixed(1)}%</td></tr>
+            <tr><td>Net Income</td><td>${netProfit < 0 ? '-' : ''}${currency} ${formatNumber(netProfit)}</td><td>${nm.toFixed(1)}%</td><td>${nmBench}%</td><td>${(nm - nmBench).toFixed(1)}%</td></tr>
         `;
     }
 
@@ -1817,7 +2459,7 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
             <tr><td>DSO</td><td>${dso} days</td><td>${dsoTarget} days</td><td class="${statusIcon(dso, bench.dso.max, true)}">${dso <= bench.dso.max ? 'On target' : 'Over'}</td></tr>
             <tr><td>DIO</td><td>${dio} days</td><td>${dioTarget} days</td><td class="${statusIcon(dio, bench.dio.max, true)}">${dio <= bench.dio.max ? 'On target' : 'Over'}</td></tr>
             <tr><td>DPO</td><td>${dpo} days</td><td>${dpoTarget} days</td><td class="${statusIcon(dpo, bench.dpo.min, false)}">${dpo >= bench.dpo.min ? 'On target' : 'Under'}</td></tr>
-            <tr class="subtotal"><td>CCC</td><td>${ccc} days</td><td>${cccTarget} days</td><td class="${ccc <= cccTarget ? 'ok' : 'warn'}">${ccc <= cccTarget ? 'On target' : 'Over'}</td></tr>
+            <tr class="subtotal"><td>CCC</td><td>${ccc} days</td><td>${Math.max(cccTarget, 0)} days</td><td class="${ccc <= Math.max(cccTarget, cccT.good) ? 'ok' : ccc <= cccT.warn ? 'warn' : 'danger'}">${ccc <= Math.max(cccTarget, cccT.good) ? 'On target' : 'Over'}</td></tr>
         `;
     }
 
@@ -1832,11 +2474,11 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
         const surplus = fcf - loanRepayments;
         fcfBody.innerHTML = `
             <tr><td>Net Profit</td><td>${netProfit < 0 ? `(${currency} ${formatNumber(netProfit)})` : `${currency} ${formatNumber(netProfit)}`}</td></tr>
-            <tr><td>Capital Expenditure</td><td>(${currency} ${formatNumber(capex)})</td></tr>
-            <tr class="subtotal"><td>Free Cash Flow</td><td>${fcf < 0 ? `(${currency} ${formatNumber(fcf)})` : `${currency} ${formatNumber(fcf)}`}</td></tr>
+            <tr><td>Equipment & asset purchases</td><td>(${currency} ${formatNumber(capex)})</td></tr>
+            <tr class="subtotal"><td>Cash Generated (FCF)</td><td>${fcf < 0 ? `(${currency} ${formatNumber(fcf)})` : `${currency} ${formatNumber(fcf)}`}</td></tr>
             ${loanRepayments > 0 ? `
-            <tr><td>Loan Repayments</td><td>(${currency} ${formatNumber(loanRepayments)})</td></tr>
-            <tr class="subtotal"><td>Surplus / Shortfall</td><td>${surplus < 0 ? `(${currency} ${formatNumber(surplus)})` : `${currency} ${formatNumber(surplus)}`}</td></tr>
+            <tr><td>Loan payments</td><td>(${currency} ${formatNumber(loanRepayments)})</td></tr>
+            <tr class="subtotal"><td>Cash after loan payments</td><td>${surplus < 0 ? `(${currency} ${formatNumber(surplus)})` : `${currency} ${formatNumber(surplus)}`}</td></tr>
             ` : ''}
         `;
     }

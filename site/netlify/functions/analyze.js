@@ -3,6 +3,19 @@
 
 const fetch = require('node-fetch');
 
+// Industry-specific COGS labels
+const COGS_LABELS = {
+    'food': 'Food & Beverage Cost', 'restaurant': 'Food & Beverage Cost',
+    'product': 'Cost of Goods', 'retail': 'Cost of Goods',
+    'online': 'Cost of Service', 'ecommerce': 'Product & Shipping Cost',
+    'services': 'Direct Delivery Cost', 'service': 'Direct Delivery Cost',
+    'construction': 'Project Costs',
+    'manufacturing': 'Production Cost',
+    'wholesale': 'Cost of Goods Purchased',
+    'healthcare': 'Clinical / Treatment Cost',
+    'other': 'Cost of Goods Sold'
+};
+
 exports.handler = async (event, context) => {
     // CORS headers for all responses
     const headers = {
@@ -48,8 +61,9 @@ exports.handler = async (event, context) => {
         // Generate plain English analysis using OpenAI
         const analysis = await generateAnalysis(data, metrics, historicalContext);
 
-        // Get industry benchmarks
+        // Get industry benchmarks + add COGS label
         const benchmarks = getIndustryBenchmarks(data.company.industry);
+        benchmarks.cogsLabel = COGS_LABELS[data.company.industry] || 'Cost of Goods Sold';
 
         // Calculate YTD metrics if YTD data provided
         let ytdMetrics = null;
@@ -326,37 +340,29 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
     // Cash Runway - using cash-balance-based burn (preferred method)
     // Formula: Cash Runway = Current Cash / Average Monthly Net Burn
     // Net Burn = (Opening Cash - Closing Cash) / Months
-    // This automatically includes all cash flows: OPEX, COGS, AP payments, loan principals, etc.
-    // Sources: Wall Street Prep, CFI, Perplexity research [1][2][3][5][6][7]
-    const openingCash = current.openingCash || 0;
+    // OPEX-based runway: Cash / monthly operating costs (COGS + OPEX)
+    // Excludes non-operating items (owner drawings, loan payments, capex, tax)
+    // This is the fintech standard for SMB cash runway (Copilot, Perplexity, CFI, JPMorgan)
+    const openingCash = current.openingCash || (ytd && ytd.startingCash) || 0;
     let cashRunway, avgMonthlyBurn, runwaySource;
 
-    if (ytd && ytd.monthsElapsed > 0 && openingCash > 0) {
-        // Cash-balance-based burn (preferred - captures ALL cash movements)
-        // Net Burn = (Cash at Start of Year - Cash Now) / Months Elapsed
-        avgMonthlyBurn = (openingCash - cash) / ytd.monthsElapsed;
+    // Primary: use this month's COGS + OPEX (direct input, most current)
+    const monthlyOpCost = cogs + opex;
 
-        if (avgMonthlyBurn > 0) {
-            // Business is burning cash
-            cashRunway = cash / avgMonthlyBurn;
-            runwaySource = 'ytd_cash';
-        } else {
-            // Business is cash-positive (generating cash)
-            cashRunway = -1; // Flag for "no burn / cash increasing"
-            runwaySource = 'cash_positive';
-        }
+    if (monthlyOpCost > 0) {
+        avgMonthlyBurn = monthlyOpCost;
+        cashRunway = cash / monthlyOpCost;
+        runwaySource = 'opex';
+    } else if (ytd && ytd.monthsElapsed > 0 && (ytd.cogs > 0 || ytd.opex > 0)) {
+        // Fallback: derive monthly operating cost from YTD
+        avgMonthlyBurn = ((ytd.cogs || 0) + (ytd.opex || 0)) / ytd.monthsElapsed;
+        cashRunway = avgMonthlyBurn > 0 ? cash / avgMonthlyBurn : -1;
+        runwaySource = 'ytd_opex';
     } else {
-        // Fallback: No opening cash provided, use P&L approximation
-        const loanRepayments = current.loanRepayments || 0;
-        const monthlyBurn = cogs + opex - netProfit + loanRepayments;
-
-        if (monthlyBurn > 0) {
-            cashRunway = cash / monthlyBurn;
-            runwaySource = 'monthly_pl';
-        } else {
-            cashRunway = -1; // Cash positive
-            runwaySource = 'cash_positive';
-        }
+        // Last resort: if no cost data, flag as unknown
+        avgMonthlyBurn = 0;
+        cashRunway = -1;
+        runwaySource = 'cash_positive';
     }
 
     // VAT
@@ -375,6 +381,17 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
     }
     const hasLoan = shortTermLoans > 0;
     const netCash = cash - shortTermLoans;
+
+    // New industry-adaptive metrics
+    const cogsPercent = revenue > 0 ? (cogs / revenue) * 100 : 0;
+    const overheadRatio = revenue > 0 ? (opex / revenue) * 100 : 0;
+    const cashVsAP = payables > 0 ? cash / payables : (cash > 0 ? 999 : 0);
+    const daysRevenueInBank = revenue > 0 ? cash / (revenue / 30) : 0;
+    const ownerDrawingsAmt = current.ownerDrawings || 0;
+    const ownerDrawingsPercent = (ownerDrawingsAmt > 0 && netProfit > 0) ? (ownerDrawingsAmt / netProfit) * 100 : 0;
+    const labourCost = current.labourCost || 0;
+    const labourCostPercent = revenue > 0 && labourCost > 0 ? (labourCost / revenue) * 100 : 0;
+    const primeCostPercent = revenue > 0 ? ((cogs + labourCost) / revenue) * 100 : 0;
 
     // Changes vs previous
     const revenueChange = previous.revenue ? ((revenue - previous.revenue) / previous.revenue) * 100 : null;
@@ -415,7 +432,15 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
         loanBalance: Math.round(shortTermLoans),
         loanToCash: Math.round(loanToCash * 10) / 10,
         loanPressure: loanPressure,
-        netCash: Math.round(netCash)
+        netCash: Math.round(netCash),
+        // Industry-adaptive metrics
+        cogsPercent: Math.round(cogsPercent * 10) / 10,
+        overheadRatio: Math.round(overheadRatio * 10) / 10,
+        cashVsAP: Math.round(cashVsAP * 100) / 100,
+        daysRevenueInBank: Math.round(daysRevenueInBank * 10) / 10,
+        ownerDrawingsPercent: Math.round(ownerDrawingsPercent),
+        labourCostPercent: Math.round(labourCostPercent * 10) / 10,
+        primeCostPercent: Math.round(primeCostPercent * 10) / 10
     };
 }
 
@@ -581,7 +606,34 @@ function buildPrompt(data, metrics, currency, industryType, language = 'en', his
     };
     const industryName = industryNames[industryType] || industryType;
 
+    // Industry-specific vocabulary for the prompt
+    const industryGuidance = {
+        'food': `INDUSTRY CONTEXT: Restaurant / Food & Hospitality. Use restaurant language: food cost, covers, prime cost, portion control, spoilage, menu engineering. Key metric: Food Cost % (target 28-32%). If labour cost provided, Prime Cost = Food + Labour (target <65%). Label COGS as "Food & Beverage Cost".`,
+        'product': `INDUSTRY CONTEXT: Product / Retail. Use retail language: stock turns, markdowns, shrinkage, sell-through. Focus on inventory efficiency and gross margin. Label COGS as "Cost of Goods".`,
+        'online': `INDUSTRY CONTEXT: SaaS / Digital. Use tech language: burn rate, runway, unit economics. Focus on cash runway and cost control. Label COGS as "Cost of Service".`,
+        'services': `INDUSTRY CONTEXT: Services / Consulting. Use consulting language: project margin, scope creep, team productivity. Focus on overhead ratio and margin. Label COGS as "Direct Delivery Cost".`,
+        'construction': `INDUSTRY CONTEXT: Construction / Real Estate. Use construction language: project margin, WIP, progress billing, retentions, milestones. Focus on DSO and cash. Label COGS as "Project Costs".`,
+        'manufacturing': `INDUSTRY CONTEXT: Manufacturing. Use manufacturing language: material cost, yield, batch sizing, production efficiency. Focus on DIO and material cost %. Label COGS as "Production Cost".`,
+        'wholesale': `INDUSTRY CONTEXT: Wholesale / Distribution. Use distribution language: order fill, credit terms, volume pricing. Focus on DSO/DPO spread and thin margins. Label COGS as "Cost of Goods Purchased".`,
+        'healthcare': `INDUSTRY CONTEXT: Healthcare / Wellness (covers clinics, pharmacies, labs, wellness centres). Use general healthcare language: volume, payer mix, billing, receivables. Do NOT assume clinics only — avoid "patient visits" or "appointments" as the business may be a pharmacy or lab. Focus on AR days and margin. Label COGS as "Clinical / Treatment Cost".`,
+        'other': `INDUSTRY CONTEXT: General Business. Use standard business language.`
+    };
+
+    const investigationFactors = {
+        'food': 'INVESTIGATION POINTS (mention 1-2 as "things to check" in NARRATIVE): food waste %, table turnover, average check size, menu item profitability, portion control.',
+        'product': 'INVESTIGATION POINTS: shrinkage rate, sell-through rate, foot traffic trends, return rate by product.',
+        'online': 'INVESTIGATION POINTS: churn rate, customer acquisition cost, conversion rate, MRR growth.',
+        'services': 'INVESTIGATION POINTS: team utilization rate, realization rate, client concentration risk.',
+        'construction': 'INVESTIGATION POINTS: WIP as % of revenue, retention amounts held, variation capture rate.',
+        'manufacturing': 'INVESTIGATION POINTS: yield/scrap rate, machine utilization, BOM cost accuracy.',
+        'wholesale': 'INVESTIGATION POINTS: order fill rate, backorder rate, customer credit risk.',
+        'healthcare': 'INVESTIGATION POINTS: provider utilization, claim denial rate, revenue per visit, payer mix.',
+        'other': 'INVESTIGATION POINTS: customer concentration, revenue per employee, repeat purchase rate.'
+    };
+
     let prompt = `Analyze this business's financial data and provide a plain English report.
+
+${industryGuidance[industryType] || industryGuidance['other']}
 
 BUSINESS INFO:
 - Company: ${data.company.name}
@@ -594,13 +646,13 @@ Use examples and wording that fit this business type. If it is product based, ta
 
 CURRENT MONTH NUMBERS:
 - Revenue: ${currency} ${current.revenue.toLocaleString()}
-- Cost of Goods Sold: ${currency} ${current.cogs.toLocaleString()}
+- ${COGS_LABELS[industryType] || 'Cost of Goods Sold'}: ${currency} ${current.cogs.toLocaleString()}
 - Operating Expenses: ${currency} ${current.opex.toLocaleString()}
 - Net Profit: ${currency} ${current.netProfit.toLocaleString()}
 - Cash in Bank: ${currency} ${current.cash.toLocaleString()}
-- Accounts Receivable: ${currency} ${current.receivables.toLocaleString()}
-- Inventory: ${currency} ${current.inventory.toLocaleString()}
-- Accounts Payable: ${currency} ${current.payables.toLocaleString()}
+- What customers owe (AR): ${currency} ${current.receivables.toLocaleString()}
+- Inventory / stock on hand: ${currency} ${current.inventory.toLocaleString()}
+- What we owe suppliers (AP): ${currency} ${current.payables.toLocaleString()}
 `;
 
     if (data.previous && data.previous.revenue) {
@@ -697,27 +749,40 @@ Use these metrics in your analysis. If any metric is notably above or below the 
 
 Please provide:
 
-1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision. Round ALL amounts to whole numbers (no decimals) — write "${currency} 14,758" not "${currency} 14,757.78". If the per-dollar amount is less than ${currency} 0.01, say "less than ${currency} 0.01" instead of showing tiny decimals like ${currency} 0.0009.
+1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. If profitable: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." If a loss: "You lost ${currency} 6,194 this month. For every ${currency} 1 of sales, you lost ${currency} 0.08." IMPORTANT: NEVER say "kept" when the business lost money — use "lost" instead. Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision. Round ALL amounts to whole numbers (no decimals) — write "${currency} 14,758" not "${currency} 14,757.78". If the per-dollar amount is less than ${currency} 0.01, say "less than ${currency} 0.01" instead of showing tiny decimals.
 
-2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with "Good:", "Risk:", or "Watch:" as appropriate. Be specific with numbers.
+2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with a tag. Be specific with numbers. Write for a non-accountant — no jargon.
+   TAG RULES based on tone:
+   - HEALTHY tone: use "Good:" and "Watch:" tags only
+   - CAUTION tone: use "Watch:" and "Risk:" tags only
+   - DANGER tone: use "Risk:" tags only — NEVER use "Good:" in a danger scenario
 
-3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only.
-   - First sentence: How many days cash is tied up and whether this is good, normal, or risky.
+3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only. Write for someone who has never heard of "cash conversion cycle."
+   - First sentence: How many days your money is tied up before it comes back, and whether this is good, normal, or risky for your industry.
    - Second sentence: If the cycle is slow or risky, one specific thing to do to improve it, with a number. If the cycle is already good or negative, a brief note on what to maintain or reinvest in.
    - CRITICAL DPO RULE: Higher DPO = better for cash flow (you hold cash longer). NEVER suggest reducing or lowering DPO — that means paying suppliers faster, which HURTS cash flow. To improve cash flow via suppliers, suggest INCREASING DPO or negotiating LONGER payment terms.
    - If CCC is negative (excellent), do NOT force improvement advice. Instead, acknowledge the strong position and suggest maintaining supplier relationships or reinvesting.
-   - Example (positive CCC): "Cash is tied up for 21 days, which is normal. Move supplier payments from 9 to 30 days to free up cash."
+   - Example (positive CCC): "Your money is tied up for 21 days before coming back — that's normal for your industry. Asking suppliers for 30-day payment terms instead of 9 would free up cash faster."
    - Example (negative CCC): "You collect cash before you need to pay it out — that's an excellent position. Focus on maintaining good supplier relationships to keep these terms."
 
-4. ACTION_1: The most urgent action.
-   - Title: 3-6 words, starts with a verb (e.g. "Collect ${currency} 50,000 from customers")
-   - Description: One sentence with a verb and a number (e.g. "Call your top 3 late-paying customers and collect ${currency} 50,000 this week.")
+4-6. THREE ACTIONS — each must be specific, physical, and actionable.
+   - Title: 3-6 words, starts with a verb
+   - Description: One sentence with a specific action and a number
+   - IMPORTANT: You COLLECT from customers. You PAY or NEGOTIATE TERMS with suppliers. Never say "collect from suppliers."
+   - Use industry language (e.g., restaurants: "food cost", construction: "progress billings", SaaS: "churn")
 
-5. ACTION_2: Second priority action. Same format as ACTION_1.
+   ACTION RULES BY TONE:
+   - HEALTHY: ALL 3 actions must focus on GROWTH and OPTIMIZATION — pricing improvements, reinvestment, expansion, efficiency gains. Do NOT suggest collecting receivables, cutting costs, or negotiating terms unless the specific metric is actually bad. A business with strong cash, good margins, and low DSO does NOT need to "collect from customers."
+   - CAUTION: Mix of protective actions (collections, cost review) and improvements.
+   - DANGER: ALL 3 must be urgent survival actions — collect cash, cut spending, talk to bank.
 
-6. ACTION_3: Third action. Same format as ACTION_1.
+4. ACTION_1: Most important action.
 
-7. MEETING_SUMMARY: 2-3 sentences an owner can say when asked "How is your business doing?" Include revenue, profit margin, and one key focus area. Round ALL amounts to whole numbers — no decimal places.
+5. ACTION_2: Second priority.
+
+6. ACTION_3: Third action.
+
+7. MEETING_SUMMARY: 2-3 sentences an owner can say when a bank, partner, or accountant asks "How is your business doing?" Include: revenue (with trend if available), profit margin, and cash position in plain dollars. Do NOT use jargon like "current ratio" or "EBITDA" — use plain language like "cash in bank" and "profit margin." Round ALL amounts to whole numbers — no decimal places.
 
 8. BENCHMARK_NOTE: One sentence comparing a key metric to industry peers. Format: "Based on data from 100+ businesses, your [metric] is [above/below/in line with] the typical range for [industry type]." Pick the most notable metric (good or bad).
 
@@ -744,6 +809,18 @@ ACTION_3_DESC: [description here]
 MEETING_SUMMARY: [your text here]
 
 BENCHMARK_NOTE: [your text here]
+
+ADDITIONAL METRICS:
+- ${COGS_LABELS[industryType] || 'COGS'} % of Revenue: ${metrics.cogsPercent}%
+- Overhead Ratio (OPEX / Revenue): ${metrics.overheadRatio}%
+- Cash vs Accounts Payable: ${metrics.cashVsAP}x ${metrics.cashVsAP < 1 ? '— you owe suppliers more than you have in cash' : ''}
+- Days of Revenue in Bank: ${metrics.daysRevenueInBank} days
+${current.labourCost > 0 ? `- Labour Cost: ${currency} ${(current.labourCost).toLocaleString()} (${metrics.labourCostPercent}% of revenue)\n- Prime Cost (${COGS_LABELS[industryType] || 'COGS'} + Labour): ${metrics.primeCostPercent}%` : ''}
+${current.ownerDrawings > 0 ? `- Owner Drawings: ${currency} ${(current.ownerDrawings).toLocaleString()} (${metrics.ownerDrawingsPercent}% of net profit)` : ''}
+
+${investigationFactors[industryType] || investigationFactors['other']}
+
+TONE CONSISTENCY: ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'The overall status is DANGER. Do NOT use reassuring language like "plenty of breathing room", "comfortable", "solid cushion", or "strong position" anywhere in the report. Every section should reflect urgency.' : metrics.netMargin <= 0 ? 'The overall status is LOSS-MAKING. The business is losing money. Do NOT use positive language like "solid cushion", "strong position", or "comfortable". Be honest: the business is losing money and needs to fix it. In the MEETING_SUMMARY, mention the loss and what is being done about it.' : (metrics.cashRunway >= 0 && metrics.cashRunway < 6) ? 'The overall status is CAUTION. Be honest about risks without being alarmist. Do not say "solid cushion" or "strong position" if margins are thin.' : 'The overall status is HEALTHY. Be encouraging but still flag areas for improvement.'}
 
 IMPORTANT: Put each section on its own line. Do not combine multiple sections on one line.`;
 
@@ -804,14 +881,14 @@ function getDefaultAnalysis(data, metrics) {
     return {
         heroSummary: `You ${profitStatus} of ${currency} ${Math.abs(current.netProfit).toLocaleString()} this month. From every ${currency} 1 of sales, you kept ${currency} ${marginPerUnit} as profit.`,
 
-        narrative: `This month you generated ${currency} ${current.revenue.toLocaleString()} in revenue. Your gross margin is ${metrics.grossMargin}%, which means you keep ${currency} ${(metrics.grossMargin / 100).toFixed(2)} from each ${currency} 1 of sales after product costs.\n\nYour cash position is ${currency} ${current.cash.toLocaleString()}, which gives you about ${metrics.cashRunway} months of runway at current spending levels.${metrics.cashRunway < 3 ? ' This is below the safe level of 3 months.' : ''}`,
+        narrative: `This month you generated ${currency} ${current.revenue.toLocaleString()} in revenue. Your gross margin is ${metrics.grossMargin}%, which means you keep ${currency} ${(metrics.grossMargin / 100).toFixed(2)} from each ${currency} 1 of sales after product costs.\n\nYour cash position is ${currency} ${current.cash.toLocaleString()}${metrics.cashRunway === -1 ? ', and your cash is growing — you generate more than you spend.' : `, which gives you about ${metrics.cashRunway} months of runway at current spending levels.${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? ' This is below the safe level of 3 months.' : ''}`}`,
 
-        cashCycleExplanation: `Your cash is tied up for ${metrics.ccc} days. Stock sits in your warehouse for ${metrics.dio} days, then customers take ${metrics.dso} days to pay you, but you pay suppliers in ${metrics.dpo} days. ${metrics.ccc > 30 ? 'This cycle is longer than ideal, meaning you need more working capital to keep the business running.' : 'This is a reasonable cycle for your type of business.'}`,
+        cashCycleExplanation: `Your money is tied up for ${metrics.ccc} days before it comes back to you. ${metrics.ccc > 30 ? 'That\'s longer than ideal — speeding up customer payments or stretching supplier terms would help.' : 'That\'s a reasonable pace for your type of business.'}`,
 
-        action1Title: metrics.cashRunway < 3
+        action1Title: metrics.cashRunway >= 0 && metrics.cashRunway < 3
             ? `Collect ${currency} ${Math.round(current.receivables * 0.3).toLocaleString()} from customers`
             : 'Review your pricing strategy',
-        action1Desc: metrics.cashRunway < 3
+        action1Desc: metrics.cashRunway >= 0 && metrics.cashRunway < 3
             ? `You have ${currency} ${current.receivables.toLocaleString()} in receivables. Contact your top 3 customers this week and agree on payment dates.`
             : `Your margins could be improved. Review if your prices reflect your true costs and value.`,
 
@@ -829,6 +906,6 @@ function getDefaultAnalysis(data, metrics) {
             ? `Stock sits for ${metrics.dio} days. Order smaller quantities more frequently to free up cash.`
             : `Aim to have at least 3 months of expenses in cash reserves for safety.`,
 
-        meetingSummary: `Our revenue is ${currency} ${current.revenue.toLocaleString()} with a net margin of ${metrics.netMargin}%. We are ${current.netProfit >= 0 ? 'profitable' : 'working to return to profitability'} and focused on ${metrics.cashRunway < 3 ? 'improving our cash position' : 'maintaining healthy cash flow'}. Current ratio is ${metrics.currentRatio}.`
+        meetingSummary: `Revenue is ${currency} ${current.revenue.toLocaleString()} with a ${metrics.netMargin}% profit margin. We are ${current.netProfit >= 0 ? 'profitable' : 'working to return to profitability'} with ${currency} ${current.cash.toLocaleString()} in the bank. We're focused on ${metrics.cashRunway >= 0 && metrics.cashRunway < 3 ? 'strengthening our cash position' : 'maintaining healthy cash flow and growing the business'}.`
     };
 }

@@ -899,25 +899,23 @@ function calculateMetrics(current, previous, days, ytd = {}) {
     }
     const ccc = dso + dio - dpo;
 
+    // OPEX-based runway: Cash / monthly operating costs (COGS + OPEX)
+    // Excludes non-operating items (drawings, loans, capex, tax)
     let cashRunway = 0;
     let runwayMethod = 'opex';
 
-    if (ytd && ytd.startingCash > 0 && ytd.monthsElapsed > 0) {
-        const monthlyBurn = (ytd.startingCash - cash) / ytd.monthsElapsed;
-        runwayMethod = 'ytd';
-        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : -1;
-    } else if (previous && previous.cash !== undefined && previous.cash > 0) {
-        const monthlyBurn = previous.cash - cash;
-        runwayMethod = 'monthly';
-        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : -1;
-    } else {
-        // Fallback: use P&L approximation for burn rate
-        // monthlyBurn = -netProfit + drawings + capex (net cash outflow)
+    const monthlyOpCost = cogs + opex;
+
+    if (monthlyOpCost > 0) {
         runwayMethod = 'opex';
-        const drawings = current.ownerDrawings || 0;
-        const capex = current.assetPurchases || 0;
-        const monthlyBurn = -netProfit + drawings + capex;
-        cashRunway = monthlyBurn > 0 ? cash / monthlyBurn : -1;
+        cashRunway = cash / monthlyOpCost;
+    } else if (ytd && ytd.monthsElapsed > 0 && ((ytd.cogs || 0) + (ytd.opex || 0)) > 0) {
+        runwayMethod = 'ytd_opex';
+        const avgMonthlyOp = ((ytd.cogs || 0) + (ytd.opex || 0)) / ytd.monthsElapsed;
+        cashRunway = cash / avgMonthlyOp;
+    } else {
+        runwayMethod = 'opex';
+        cashRunway = -1;
     }
 
     const revenueChange = previous.revenue ? ((revenue - previous.revenue) / previous.revenue) * 100 : null;
@@ -1733,11 +1731,11 @@ function updateCashRunway(metrics, currency, current, industry) {
     const t = thresholds[ind] || thresholds['other'];
     const useDays = t.useDays;
 
-    // Always calculate runway in months first (burn-based), then convert to days for display
+    // OPEX-based runway — one consistent metric everywhere
     const runwayMonths = runway === -1 ? 999 : runway;
-    const daysDisplay = useDays && revenue > 0 ? Math.round(cash / (revenue / 30)) : 0;
+    const runwayDays = Math.round(runwayMonths * 30);
 
-    // ALWAYS determine tier from months (burn-based) to avoid contradictions
+    // Determine tier from months
     let tier;
     if (runway === -1) tier = 'positive';
     else if (runwayMonths >= t.safe) tier = 'safe';
@@ -1745,12 +1743,11 @@ function updateCashRunway(metrics, currency, current, industry) {
     else if (runwayMonths >= 1) tier = 'low';
     else tier = 'critical';
 
-    // For daily industries: show days only when both metrics agree on the tier
-    // If burn-based runway is safe but days-of-revenue looks bad, show months instead
-    const daysAgree = daysDisplay >= t.warn * 30; // days also look at least OK
-    const effectiveUseDays = useDays && (daysAgree || tier === 'low' || tier === 'critical');
-    const displayVal = effectiveUseDays ? daysDisplay : runwayMonths;
+    // Display in days for short runways, months for longer ones
+    const effectiveUseDays = useDays || runwayMonths < 3;
+    const displayVal = effectiveUseDays ? runwayDays : runwayMonths;
     const displayUnit = effectiveUseDays ? 'days' : 'months';
+    const daysDisplay = runwayDays;
 
     if (unitEl) unitEl.textContent = displayUnit;
 

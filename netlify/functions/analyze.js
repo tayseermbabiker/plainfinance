@@ -340,41 +340,29 @@ function calculateMetrics(current, previous, industryType = 'other', ytd = null)
     // Cash Runway - using cash-balance-based burn (preferred method)
     // Formula: Cash Runway = Current Cash / Average Monthly Net Burn
     // Net Burn = (Opening Cash - Closing Cash) / Months
-    // This automatically includes all cash flows: OPEX, COGS, AP payments, loan principals, etc.
-    // Sources: Wall Street Prep, CFI, Perplexity research [1][2][3][5][6][7]
+    // OPEX-based runway: Cash / monthly operating costs (COGS + OPEX)
+    // Excludes non-operating items (owner drawings, loan payments, capex, tax)
+    // This is the fintech standard for SMB cash runway (Copilot, Perplexity, CFI, JPMorgan)
     const openingCash = current.openingCash || (ytd && ytd.startingCash) || 0;
     let cashRunway, avgMonthlyBurn, runwaySource;
 
-    if (ytd && ytd.monthsElapsed > 0 && openingCash > 0) {
-        // Cash-balance-based burn (preferred - captures ALL cash movements)
-        // Net Burn = (Cash at Start of Year - Cash Now) / Months Elapsed
-        avgMonthlyBurn = (openingCash - cash) / ytd.monthsElapsed;
+    // Primary: use this month's COGS + OPEX (direct input, most current)
+    const monthlyOpCost = cogs + opex;
 
-        if (avgMonthlyBurn > 0) {
-            // Business is burning cash
-            cashRunway = cash / avgMonthlyBurn;
-            runwaySource = 'ytd_cash';
-        } else {
-            // Business is cash-positive (generating cash)
-            cashRunway = -1; // Flag for "no burn / cash increasing"
-            runwaySource = 'cash_positive';
-        }
+    if (monthlyOpCost > 0) {
+        avgMonthlyBurn = monthlyOpCost;
+        cashRunway = cash / monthlyOpCost;
+        runwaySource = 'opex';
+    } else if (ytd && ytd.monthsElapsed > 0 && (ytd.cogs > 0 || ytd.opex > 0)) {
+        // Fallback: derive monthly operating cost from YTD
+        avgMonthlyBurn = ((ytd.cogs || 0) + (ytd.opex || 0)) / ytd.monthsElapsed;
+        cashRunway = avgMonthlyBurn > 0 ? cash / avgMonthlyBurn : -1;
+        runwaySource = 'ytd_opex';
     } else {
-        // Fallback: No opening cash provided, use P&L approximation
-        // Net burn = total cash outflows - revenue = -netProfit + loanRepayments + ownerDrawings + capex
-        // (netProfit already = revenue - cogs - opex, so -netProfit = cogs + opex - revenue)
-        const loanRepayments = current.loanRepayments || 0;
-        const ownerDrawings = current.ownerDrawings || 0;
-        const capex = current.assetPurchases || 0;
-        const monthlyBurn = -netProfit + loanRepayments + ownerDrawings + capex;
-
-        if (monthlyBurn > 0) {
-            cashRunway = cash / monthlyBurn;
-            runwaySource = 'monthly_pl';
-        } else {
-            cashRunway = -1; // Cash positive
-            runwaySource = 'cash_positive';
-        }
+        // Last resort: if no cost data, flag as unknown
+        avgMonthlyBurn = 0;
+        cashRunway = -1;
+        runwaySource = 'cash_positive';
     }
 
     // VAT
@@ -761,7 +749,7 @@ Use these metrics in your analysis. If any metric is notably above or below the 
 
 Please provide:
 
-1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. Example: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." IMPORTANT: Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision. Round ALL amounts to whole numbers (no decimals) — write "${currency} 14,758" not "${currency} 14,757.78". If the per-dollar amount is less than ${currency} 0.01, say "less than ${currency} 0.01" instead of showing tiny decimals like ${currency} 0.0009.
+1. HERO_SUMMARY: One punchy sentence answering "Did you make money?" with the profit/loss amount. If profitable: "You made ${currency} 55,000 profit. For every ${currency} 1 of sales, you kept ${currency} 0.11." If a loss: "You lost ${currency} 6,194 this month. For every ${currency} 1 of sales, you lost ${currency} 0.08." IMPORTANT: NEVER say "kept" when the business lost money — use "lost" instead. Use the currency ${currency} for all amounts. Do NOT use fils, cents, pence, or any subdivision. Round ALL amounts to whole numbers (no decimals) — write "${currency} 14,758" not "${currency} 14,757.78". If the per-dollar amount is less than ${currency} 0.01, say "less than ${currency} 0.01" instead of showing tiny decimals.
 
 2. NARRATIVE: 2-3 short blocks (not paragraphs). Each block is 1-2 sentences. Start each with a tag. Be specific with numbers. Write for a non-accountant — no jargon.
    TAG RULES based on tone:
