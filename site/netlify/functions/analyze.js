@@ -258,14 +258,14 @@ function getIndustryBenchmarks(industry) {
         },
         other: {
             name: 'General Business',
-            // Sources: Blended SME/corporate finance guidance [1][3][22][23]
-            grossMargin: { min: 30, max: 60, ideal: 45 },
-            netMargin: { min: 5, max: 15, ideal: 10 },
-            currentRatio: { min: 1.1, max: 2.5, ideal: 1.75 },
-            quickRatio: { min: 0.7, max: 1.5, ideal: 1.1 },
-            dso: { min: 15, max: 60, ideal: 37 },
-            dio: { min: 10, max: 90, ideal: 45 },
-            dpo: { min: 20, max: 60, ideal: 37 },
+            // Uses product/retail benchmarks as default for unclassified businesses
+            grossMargin: { min: 20, max: 55, ideal: 40 },
+            netMargin: { min: 2, max: 8, ideal: 5 },
+            currentRatio: { min: 1.1, max: 2.0, ideal: 1.4 },
+            quickRatio: { min: 0.5, max: 1.2, ideal: 0.9 },
+            dso: { min: 10, max: 45, ideal: 22 },
+            dio: { min: 30, max: 150, ideal: 90 },
+            dpo: { min: 20, max: 75, ideal: 50 },
             cashRunway: { min: 6, ideal: 9 }
         }
     };
