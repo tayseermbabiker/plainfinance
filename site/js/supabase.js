@@ -32,7 +32,7 @@ function getSupabase() {
 
 // ===== Authentication =====
 
-async function signUp(email, password, fullName) {
+async function signUp(email, password, fullName, extra = {}) {
     const client = getSupabase();
     if (!client) return { error: { message: 'Supabase not initialized' } };
 
@@ -41,7 +41,10 @@ async function signUp(email, password, fullName) {
         password,
         options: {
             data: {
-                full_name: fullName
+                full_name: fullName,
+                job_title: extra.jobTitle || '',
+                company_name: extra.companyName || '',
+                location: extra.location || ''
             }
         }
     });
@@ -52,6 +55,9 @@ async function signUp(email, password, fullName) {
             id: data.user.id,
             email: email,
             full_name: fullName,
+            job_title: extra.jobTitle || '',
+            company_name: extra.companyName || '',
+            location: extra.location || '',
             created_at: new Date().toISOString()
         });
 
@@ -155,8 +161,7 @@ async function getTotalReportCount() {
 function getReportLimit(plan) {
     const limits = {
         'free': 1,      // 1 total (lifetime)
-        'owner': 6,     // 6 per month
-        'pro': 20       // 20 per month
+        'owner': 10     // 10 per month
     };
     return limits[plan] ?? 1;
 }

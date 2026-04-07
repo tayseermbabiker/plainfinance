@@ -161,8 +161,7 @@ async function getTotalReportCount() {
 function getReportLimit(plan) {
     const limits = {
         'free': 1,      // 1 total (lifetime)
-        'owner': 6,     // 6 per month
-        'pro': 20       // 20 per month
+        'owner': 10     // 10 per month
     };
     return limits[plan] ?? 1;
 }

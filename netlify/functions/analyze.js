@@ -5,15 +5,15 @@ const fetch = require('node-fetch');
 
 // Industry-specific COGS labels
 const COGS_LABELS = {
-    'food': 'Food & Beverage Cost', 'restaurant': 'Food & Beverage Cost',
-    'product': 'Cost of Goods', 'retail': 'Cost of Goods',
-    'online': 'Cost of Service', 'ecommerce': 'Product & Shipping Cost',
-    'services': 'Direct Delivery Cost', 'service': 'Direct Delivery Cost',
-    'construction': 'Project Costs',
-    'manufacturing': 'Production Cost',
-    'wholesale': 'Cost of Goods Purchased',
-    'healthcare': 'Clinical / Treatment Cost',
-    'other': 'Cost of Goods Sold'
+    'food': 'Cost of Sales', 'restaurant': 'Cost of Sales',
+    'product': 'Cost of Sales', 'retail': 'Cost of Sales',
+    'online': 'Cost of Sales', 'ecommerce': 'Cost of Sales',
+    'services': 'Cost of Sales', 'service': 'Cost of Sales',
+    'construction': 'Cost of Sales',
+    'manufacturing': 'Cost of Sales',
+    'wholesale': 'Cost of Sales',
+    'healthcare': 'Cost of Sales',
+    'other': 'Cost of Sales'
 };
 
 exports.handler = async (event, context) => {

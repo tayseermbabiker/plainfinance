@@ -36,9 +36,7 @@ exports.handler = async (event, context) => {
     // Price IDs from environment variables
     const PRICE_IDS = {
         owner_monthly: process.env.STRIPE_PRICE_OWNER_MONTHLY,
-        owner_annual: process.env.STRIPE_PRICE_OWNER_ANNUAL,
-        pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
-        pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL
+        owner_annual: process.env.STRIPE_PRICE_OWNER_ANNUAL
     };
 
     const stripe = require('stripe')(STRIPE_SECRET_KEY);

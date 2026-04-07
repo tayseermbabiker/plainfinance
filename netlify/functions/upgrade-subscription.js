@@ -33,9 +33,7 @@ exports.handler = async (event, context) => {
 
     const PRICE_IDS = {
         owner_monthly: process.env.STRIPE_PRICE_OWNER_MONTHLY,
-        owner_annual: process.env.STRIPE_PRICE_OWNER_ANNUAL,
-        pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
-        pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL
+        owner_annual: process.env.STRIPE_PRICE_OWNER_ANNUAL
     };
 
     try {
@@ -83,10 +81,7 @@ exports.handler = async (event, context) => {
         // Supabase will be updated by the webhook (customer.subscription.updated)
         // but we can update immediately for a snappy UI
         const ownerPrices = [PRICE_IDS.owner_monthly, PRICE_IDS.owner_annual];
-        const proPrices = [PRICE_IDS.pro_monthly, PRICE_IDS.pro_annual];
-        let newPlan = 'free';
-        if (ownerPrices.includes(newPriceId)) newPlan = 'owner';
-        if (proPrices.includes(newPriceId)) newPlan = 'pro';
+        const newPlan = ownerPrices.includes(newPriceId) ? 'owner' : 'free';
 
         await supabase.from('profiles').update({
             subscription_plan: newPlan,

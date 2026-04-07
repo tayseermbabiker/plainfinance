@@ -243,7 +243,7 @@
         async function loadSubscriptionInfo() {
             try {
                 const reportCheck = await canCreateReport();
-                const planNames = { free: 'Free', owner: 'Owner', pro: 'Pro', admin: 'Admin' };
+                const planNames = { free: 'Free', owner: 'Full Access', admin: 'Admin' };
                 const planName = planNames[reportCheck.plan] || 'Free';
 
                 // Nav pill
@@ -260,7 +260,7 @@
                 }
 
                 // Upgrade / Cancel links
-                if (reportCheck.plan !== 'pro' && reportCheck.plan !== 'admin') {
+                if (reportCheck.plan === 'free') {
                     document.getElementById('navUpgrade').style.display = 'inline';
                 }
 
@@ -284,7 +284,7 @@
                 const resetLabel = reportCheck.plan === 'free'
                     ? 'Lifetime limit'
                     : `Resets ${resetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-                const upgradeSuffix = (reportCheck.plan !== 'pro' && reportCheck.plan !== 'admin') ? ' \u00b7 upgrade for more' : '';
+                const upgradeSuffix = reportCheck.plan === 'free' ? ' \u00b7 upgrade for more' : '';
                 document.getElementById('kpiReportsSub').textContent = resetLabel + upgradeSuffix;
 
                 // Disable new report if at limit

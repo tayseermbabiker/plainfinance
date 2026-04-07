@@ -141,15 +141,15 @@ function updateOwnerHeadline(current, metrics, currency) {
 // ===== COGS Label Mapping =====
 
 const COGS_LABELS = {
-    'food': 'Food & Beverage Cost', 'restaurant': 'Food & Beverage Cost',
-    'product': 'Cost of Goods', 'retail': 'Cost of Goods',
-    'online': 'Cost of Service', 'ecommerce': 'Product & Shipping Cost',
-    'services': 'Direct Delivery Cost', 'service': 'Direct Delivery Cost',
-    'construction': 'Project Costs',
-    'manufacturing': 'Production Cost',
-    'wholesale': 'Cost of Goods Purchased',
-    'healthcare': 'Clinical / Treatment Cost',
-    'other': 'Cost of Goods Sold'
+    'food': 'Cost of Sales', 'restaurant': 'Cost of Sales',
+    'product': 'Cost of Sales', 'retail': 'Cost of Sales',
+    'online': 'Cost of Sales', 'ecommerce': 'Cost of Sales',
+    'services': 'Cost of Sales', 'service': 'Cost of Sales',
+    'construction': 'Cost of Sales',
+    'manufacturing': 'Cost of Sales',
+    'wholesale': 'Cost of Sales',
+    'healthcare': 'Cost of Sales',
+    'other': 'Cost of Sales'
 };
 
 const INDUSTRY_NAMES = {
@@ -211,49 +211,49 @@ function updateFourPillars(current, metrics, currency, industry, previous) {
     const configs = {
         'food': [
             pillarRevenue('This month\'s sales'),
-            pillarKeyCost('Food Cost %', 32, 36),
+            pillarKeyCost('Cost of Sales %', 32, 36),
             pillarCash(),
             pillarBottomLine(6, 3)
         ],
         'product': [
             pillarRevenue(),
-            pillarKeyCost('COGS %', 45, 55),
+            pillarKeyCost('Cost of Sales %', 45, 55),
             pillarCash(),
             pillarBottomLine(5, 2)
         ],
         'online': [
             pillarRevenue(),
-            pillarKeyCost('Cost of Service %', 30, 40),
+            pillarKeyCost('Cost of Sales %', 30, 40),
             pillarCash(),
             pillarBottomLine(10, 5)
         ],
         'services': [
             pillarRevenue(),
-            pillarKeyCost('Direct Cost %', 50, 65),
+            pillarKeyCost('Cost of Sales %', 50, 65),
             pillarCash(),
             pillarBottomLine(10, 5)
         ],
         'construction': [
             pillarRevenue('Billed this month'),
-            pillarKeyCost('Project Cost %', 80, 85),
+            pillarKeyCost('Cost of Sales %', 80, 85),
             pillarCash(),
             pillarBottomLine(5, 3)
         ],
         'manufacturing': [
             pillarRevenue(),
-            pillarKeyCost('Production Cost %', 70, 80),
+            pillarKeyCost('Cost of Sales %', 70, 80),
             pillarCash(),
             pillarBottomLine(5, 3)
         ],
         'healthcare': [
             pillarRevenue(),
-            pillarKeyCost('Clinical Cost %', 60, 75),
+            pillarKeyCost('Cost of Sales %', 60, 75),
             pillarCash(),
             pillarBottomLine(10, 5)
         ],
         'other': [
             pillarRevenue(),
-            pillarKeyCost('COGS %', 60, 75),
+            pillarKeyCost('Cost of Sales %', 60, 75),
             pillarCash(),
             pillarBottomLine(5, 2)
         ]

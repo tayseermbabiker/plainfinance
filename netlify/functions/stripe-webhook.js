@@ -59,9 +59,7 @@ exports.handler = async (event, context) => {
     // Helper: determine plan from price ID
     function determinePlan(priceId) {
         const ownerPrices = [process.env.STRIPE_PRICE_OWNER_MONTHLY, process.env.STRIPE_PRICE_OWNER_ANNUAL];
-        const proPrices = [process.env.STRIPE_PRICE_PRO_MONTHLY, process.env.STRIPE_PRICE_PRO_ANNUAL];
         if (ownerPrices.includes(priceId)) return 'owner';
-        if (proPrices.includes(priceId)) return 'pro';
         return 'free';
     }
 
@@ -200,15 +198,7 @@ exports.handler = async (event, context) => {
 
                 if (profile) {
                     const priceId = subscription.items.data[0]?.price?.id;
-                    let plan = 'free';
-                    const ownerPrices = [process.env.STRIPE_PRICE_OWNER_MONTHLY, process.env.STRIPE_PRICE_OWNER_ANNUAL];
-                    const proPrices = [process.env.STRIPE_PRICE_PRO_MONTHLY, process.env.STRIPE_PRICE_PRO_ANNUAL];
-
-                    if (ownerPrices.includes(priceId)) {
-                        plan = 'owner';
-                    } else if (proPrices.includes(priceId)) {
-                        plan = 'pro';
-                    }
+                    const plan = determinePlan(priceId);
 
                     await supabase.from('profiles').update({
                         subscription_plan: plan,
