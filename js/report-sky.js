@@ -488,7 +488,10 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
     document.getElementById('bridgeEndCash').textContent = `${currency} ${formatNumber(endCash)}`;
 
     // Gap note — threshold scales with revenue: max(1% of revenue, 250)
-    const calculated = startCash + profit - arChange - invChange + apChange - taxNet - loanRepay - drawings - capex;
+    // Only include taxNet in gap calc when the tax row is visible (taxNet > 0), otherwise
+    // the hidden tax adjustment inflates the gap, making it inconsistent with visible bridge items
+    const taxInCalc = taxNet > 0 ? taxNet : 0;
+    const calculated = startCash + profit - arChange - invChange + apChange - taxInCalc - loanRepay - drawings - capex;
     const gap = endCash - calculated;
     const gapThreshold = Math.max(revenue * 0.01, 250);
     const gapNote = document.getElementById('bridgeGapNote');

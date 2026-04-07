@@ -237,25 +237,59 @@
 
             const billing = isAnnual ? 'annual' : 'monthly';
 
-            // Create checkout session
+            // Check if user already has an active subscription (upgrade path)
+            const { data: profile } = await getUserProfile();
+            const hasSubscription = profile?.stripe_subscription_id && profile?.subscription_status === 'active';
+            const currentPlan = profile?.subscription_plan || 'free';
+
+            if (currentPlan === plan) {
+                alert('You are already on this plan.');
+                return;
+            }
+
             try {
-                const response = await fetch('/.netlify/functions/create-checkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        plan: plan,
-                        billing: billing,
-                        userId: user.id,
-                        userEmail: user.email
-                    })
-                });
+                if (hasSubscription) {
+                    // Upgrade/downgrade existing subscription (prorated)
+                    if (!confirm(`Switch from ${currentPlan.toUpperCase()} to ${plan.toUpperCase()} (${billing})? You'll only be charged the difference.`)) return;
 
-                const result = await response.json();
+                    const response = await fetch('/.netlify/functions/upgrade-subscription', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: user.id,
+                            plan: plan,
+                            billing: billing
+                        })
+                    });
 
-                if (result.success && result.url) {
-                    window.location.href = result.url;
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert('Plan upgraded! Your new features are available now.');
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        alert(result.error || 'Failed to upgrade. Please try again.');
+                    }
                 } else {
-                    alert(result.error || 'Failed to start checkout. Please try again.');
+                    // New subscription — create checkout session
+                    const response = await fetch('/.netlify/functions/create-checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            plan: plan,
+                            billing: billing,
+                            userId: user.id,
+                            userEmail: user.email
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success && result.url) {
+                        window.location.href = result.url;
+                    } else {
+                        alert(result.error || 'Failed to start checkout. Please try again.');
+                    }
                 }
             } catch (error) {
                 console.error('Checkout error:', error);

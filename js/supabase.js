@@ -60,6 +60,7 @@ async function signUp(email, password, fullName, extra = {}) {
             location: extra.location || '',
             created_at: new Date().toISOString()
         });
+
     }
 
     return { data, error };

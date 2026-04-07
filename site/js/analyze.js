@@ -344,6 +344,7 @@ function parseCSVTemplate(file) {
                     'operating expenses (opex)': 'opex',
                     'opex': 'opex',
                     'net profit': 'netProfit',
+                    'net profit / (loss)': 'netProfit',
                     'net income': 'netProfit',
                     'cash in bank': 'cash',
                     'cash': 'cash',

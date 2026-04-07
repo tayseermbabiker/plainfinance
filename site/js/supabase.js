@@ -54,6 +54,7 @@ async function signUp(email, password, fullName) {
             full_name: fullName,
             created_at: new Date().toISOString()
         });
+
     }
 
     return { data, error };

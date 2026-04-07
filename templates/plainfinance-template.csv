@@ -1,21 +1,33 @@
-Field,This Month,Previous Month,Year to Date,Notes
-Revenue / Sales,500000,465000,2500000,Total sales for the period
-Cost of Goods Sold (COGS),325000,,1600000,Direct costs of products/services sold
-Labour / Staff Cost,0,,0,Wages and salaries (optional - separate from OPEX for restaurants)
-Operating Expenses (OPEX),120000,,650000,Salaries + rent + utilities + marketing etc
-Net Profit,55000,60000,250000,Bottom line after all expenses
-Cash in Bank,45000,72000,,Current bank balance (end of month)
-Opening Cash (Start of Year),150000,,,Cash balance on January 1st
-Opening AR (Start of Year),140000,,,Accounts Receivable on January 1st
-Opening Inventory (Start of Year),190000,,,Inventory value on January 1st
-Opening AP (Start of Year),85000,,,Accounts Payable on January 1st
-Accounts Receivable (AR),187000,145000,,Money customers owe you
-Inventory,210000,185000,,Value of stock on hand (0 if services)
-Accounts Payable (AP),98000,88000,,Money you owe suppliers
-Short-term Loans,50000,,,Loans due within 12 months
-Other Liabilities,0,,,Credit cards + accrued expenses etc
-Loan Repayments,5000,,15000,Principal paid this month (not interest)
-Owner Drawings,10000,,30000,Money taken out for personal use
-Asset Purchases,0,,5000,Equipment or assets bought this month
-Tax Collected from Customers,25000,,75000,Sales tax or VAT charged to customers
-Tax Paid on Purchases,16250,,48750,Sales tax or VAT paid on business expenses
+Field,This Month,Previous Month,Year to Date,What this means
+,,,,
+--- INCOME STATEMENT ---,,,,
+Revenue / Sales,,,,"Total money received from customers"
+Cost of Goods Sold (COGS),,,,"Direct cost of what you sold"
+Labour / Staff Cost,,,,"Wages and salaries (restaurants: enter separately from OPEX)"
+Operating Expenses (OPEX),,,,"Rent + utilities + marketing + admin"
+Net Profit / (Loss),,,,"Bottom line after ALL expenses"
+,,,,
+--- CASH POSITION --- Where is your money right now?,,,,
+Cash in Bank,,,,"Your bank balance at end of month"
+Money Customers Owe You (AR),,,,"Unpaid invoices — cash coming your way"
+Inventory / Stock on Hand,,,,"Value of unsold stock. Enter 0 if you are a service business"
+,,,,
+--- WHAT YOU OWE --- Your short-term obligations,,,,
+Money Owed to Suppliers (AP),,,,"Bills you have not paid yet"
+Short-term Loans,,,,"Loans or credit lines due within 12 months"
+Other Liabilities,,,,"Credit cards + accrued expenses etc."
+,,,,
+--- OPENING BALANCES --- Where you started the year (Jan 1st figures),,,,
+Cash at Start of Year,,,,"Your bank balance on January 1st"
+AR at Start of Year,,,,"What customers owed you on Jan 1st"
+Inventory at Start of Year,,,,"Stock value on Jan 1st (enter 0 if services)"
+AP at Start of Year,,,,"What you owed suppliers on Jan 1st"
+,,,,
+--- CASH MOVEMENTS ---,,,,
+Loan Repayments,,,,"Principal paid this month (not interest)"
+Owner Drawings / Dividends,,,,"Money you took out for personal use"
+Equipment / Asset Purchases,,,,"New equipment + computers + furniture etc."
+,,,,
+--- TAX --- VAT or Sales Tax summary,,,,
+Tax Collected from Customers,,,,"VAT or Sales Tax you charged customers"
+Tax Paid on Purchases,,,,"VAT or Sales Tax you paid on expenses"
