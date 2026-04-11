@@ -12,6 +12,7 @@ const COGS_LABELS = {
     'construction': 'Cost of Sales',
     'manufacturing': 'Cost of Sales',
     'wholesale': 'Cost of Sales',
+    'pharmacy': 'Cost of Sales',
     'healthcare': 'Cost of Sales',
     'other': 'Cost of Sales'
 };
@@ -244,16 +245,30 @@ function getIndustryBenchmarks(industry) {
             dpo: { min: 30, max: 75, ideal: 52 },
             cashRunway: { min: 9, ideal: 12 }
         },
+        pharmacy: {
+            name: 'Pharmacy (Retail/Independent)',
+            // Sources: NCPA Digest 2023, Drug Channels Institute, IBISWorld 45611a
+            // Independent pharmacies run razor-thin margins due to PBM reimbursement pressure
+            grossMargin: { min: 20, max: 24, ideal: 22 },
+            netMargin: { min: 2, max: 4, ideal: 3 },
+            currentRatio: { min: 1.0, max: 2.0, ideal: 1.4 },
+            quickRatio: { min: 0.4, max: 1.0, ideal: 0.7 },
+            dso: { min: 30, max: 45, ideal: 37 },
+            dio: { min: 28, max: 35, ideal: 31 },
+            dpo: { min: 20, max: 30, ideal: 25 },
+            cashRunway: { min: 3, ideal: 6 }
+        },
         healthcare: {
-            name: 'Healthcare/Wellness',
-            // Sources: NCBI Pharmacy, Nahdi, Burjeel Holdings reports [17][18][19]
-            grossMargin: { min: 20, max: 60, ideal: 35 },
-            netMargin: { min: 5, max: 20, ideal: 12 },
-            currentRatio: { min: 1.1, max: 2.5, ideal: 1.6 },
-            quickRatio: { min: 0.7, max: 1.5, ideal: 1.15 },
-            dso: { min: 10, max: 90, ideal: 45 },
-            dio: { min: 10, max: 90, ideal: 40 },
-            dpo: { min: 20, max: 60, ideal: 37 },
+            name: 'Medical Clinic / Practice',
+            // Sources: MGMA Cost and Revenue Survey, AMA Physician Practice Benchmark
+            // Covers primary care, dental, specialty outpatient clinics (NOT pharmacies)
+            grossMargin: { min: 60, max: 75, ideal: 65 },
+            netMargin: { min: 10, max: 15, ideal: 12 },
+            currentRatio: { min: 1.2, max: 2.5, ideal: 1.8 },
+            quickRatio: { min: 0.8, max: 1.8, ideal: 1.3 },
+            dso: { min: 35, max: 55, ideal: 45 },
+            dio: { min: 15, max: 25, ideal: 20 },
+            dpo: { min: 25, max: 35, ideal: 30 },
             cashRunway: { min: 6, ideal: 9 }
         },
         other: {
@@ -601,7 +616,8 @@ function buildPrompt(data, metrics, currency, industryType, language = 'en', his
         'food': 'Food & hospitality',
         'construction': 'Construction & real estate',
         'manufacturing': 'Manufacturing & industrial',
-        'healthcare': 'Healthcare & wellness',
+        'pharmacy': 'Pharmacy (retail, independent)',
+        'healthcare': 'Medical clinic / practice',
         'other': 'Other'
     };
     const industryName = industryNames[industryType] || industryType;
@@ -615,7 +631,8 @@ function buildPrompt(data, metrics, currency, industryType, language = 'en', his
         'construction': `INDUSTRY CONTEXT: Construction / Real Estate. Use construction language: project margin, WIP, progress billing, retentions, milestones. Focus on DSO and cash. Label COGS as "Project Costs".`,
         'manufacturing': `INDUSTRY CONTEXT: Manufacturing. Use manufacturing language: material cost, yield, batch sizing, production efficiency. Focus on DIO and material cost %. Label COGS as "Production Cost".`,
         'wholesale': `INDUSTRY CONTEXT: Wholesale / Distribution. Use distribution language: order fill, credit terms, volume pricing. Focus on DSO/DPO spread and thin margins. Label COGS as "Cost of Goods Purchased".`,
-        'healthcare': `INDUSTRY CONTEXT: Healthcare / Wellness (covers clinics, pharmacies, labs, wellness centres). Use general healthcare language: volume, payer mix, billing, receivables. Do NOT assume clinics only — avoid "patient visits" or "appointments" as the business may be a pharmacy or lab. Focus on AR days and margin. Label COGS as "Clinical / Treatment Cost".`,
+        'pharmacy': `INDUSTRY CONTEXT: US Independent Retail Pharmacy. Gross margins are razor-thin (20-24%) due to PBM reimbursement pressure and DIR fees — this is NORMAL, not a red flag. Net margins typically 2-4%. Use pharmacy language: scripts, reimbursements, PBMs, DIR fees, generic vs brand mix, wholesaler terms. Independents often stack revenue streams (retail scripts, long-term care/LTC, vaccines, compounding) which inflate AR, inventory, and AP compared to pure retail. Focus on cash cycle, inventory efficiency, and reimbursement timing. Label COGS as "Cost of Sales".`,
+        'healthcare': `INDUSTRY CONTEXT: Small US Medical Clinic / Practice (primary care, dental, specialty outpatient — NOT pharmacies). Gross margins typically 60-75%, net margins 10-15% before owner compensation. Use clinic language: patient visits, appointments, no-shows, claim denials, insurance billing cycles, payer mix (Medicare, Medicaid, commercial). Focus on DSO (claims collection), no-show rate, and revenue per visit. Label COGS as "Cost of Sales".`,
         'other': `INDUSTRY CONTEXT: General Business. Use standard business language.`
     };
 
@@ -627,7 +644,8 @@ function buildPrompt(data, metrics, currency, industryType, language = 'en', his
         'construction': 'INVESTIGATION POINTS: WIP as % of revenue, retention amounts held, variation capture rate.',
         'manufacturing': 'INVESTIGATION POINTS: yield/scrap rate, machine utilization, BOM cost accuracy.',
         'wholesale': 'INVESTIGATION POINTS: order fill rate, backorder rate, customer credit risk.',
-        'healthcare': 'INVESTIGATION POINTS: provider utilization, claim denial rate, revenue per visit, payer mix.',
+        'pharmacy': 'INVESTIGATION POINTS: generic dispensing rate, DIR fee clawbacks, slow-moving inventory, PBM reimbursement trends, multi-line revenue (LTC, vaccines, compounding).',
+        'healthcare': 'INVESTIGATION POINTS: provider utilization, claim denial rate, no-show rate, revenue per visit, payer mix.',
         'other': 'INVESTIGATION POINTS: customer concentration, revenue per employee, repeat purchase rate.'
     };
 

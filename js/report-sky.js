@@ -148,6 +148,7 @@ const COGS_LABELS = {
     'construction': 'Cost of Sales',
     'manufacturing': 'Cost of Sales',
     'wholesale': 'Cost of Sales',
+    'pharmacy': 'Cost of Sales',
     'healthcare': 'Cost of Sales',
     'other': 'Cost of Sales'
 };
@@ -160,7 +161,8 @@ const INDUSTRY_NAMES = {
     'construction': 'Construction / Real Estate',
     'manufacturing': 'Manufacturing',
     'wholesale': 'Wholesale / Distribution',
-    'healthcare': 'Healthcare / Wellness',
+    'pharmacy': 'Pharmacy',
+    'healthcare': 'Medical Clinic / Practice',
     'other': 'General Business'
 };
 
@@ -245,11 +247,17 @@ function updateFourPillars(current, metrics, currency, industry, previous) {
             pillarCash(),
             pillarBottomLine(5, 3)
         ],
+        'pharmacy': [
+            pillarRevenue(),
+            pillarKeyCost('Cost of Sales %', 78, 82),
+            pillarCash(),
+            pillarBottomLine(3, 1)
+        ],
         'healthcare': [
             pillarRevenue(),
-            pillarKeyCost('Cost of Sales %', 60, 75),
+            pillarKeyCost('Cost of Sales %', 35, 45),
             pillarCash(),
-            pillarBottomLine(10, 5)
+            pillarBottomLine(12, 6)
         ],
         'other': [
             pillarRevenue(),
@@ -391,7 +399,8 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
         'service': 'Unpaid invoices<small>Clients still owe you</small>',
         'construction': 'Progress billings<small>Retention and milestone payments</small>',
         'manufacturing': 'Receivables change<small>Customers still owe you</small>',
-        'healthcare': 'Healthcare receivables<small>Unpaid invoices and claims</small>',
+        'pharmacy': 'Insurance & PBM receivables<small>Unpaid scripts awaiting reimbursement</small>',
+        'healthcare': 'Insurance & patient receivables<small>Unpaid claims and copays</small>',
         'other': 'Receivables change<small>Customers still owe you</small>'
     };
     const invLabels = {
@@ -405,6 +414,7 @@ function updateCashBridge(current, previous, metrics, currency, ytd, industry, c
         'service': '', // hidden
         'construction': 'Work in progress<small>Materials on site</small>',
         'manufacturing': 'Materials & WIP<small>Raw materials and work in progress</small>',
+        'pharmacy': 'Drug inventory<small>Scripts, generics, brand, vaccines</small>',
         'healthcare': 'Medical supplies<small>Consumables and stock</small>',
         'other': 'Inventory change<small>Stock sitting in storage</small>'
     };
@@ -606,8 +616,8 @@ function showCashDriversFallback(current, currency, industry) {
     section.style.display = 'block';
 
     const hideInv = ['online', 'services', 'service'].includes(ind);
-    const arLabel = { 'services': 'Unpaid client invoices', 'service': 'Unpaid client invoices', 'construction': 'Progress billings owed', 'healthcare': 'Healthcare receivables' }[ind] || 'Accounts Receivable';
-    const invLabel = { 'food': 'Food & beverage stock', 'restaurant': 'Food & beverage stock', 'construction': 'Work in progress', 'manufacturing': 'Materials & WIP', 'healthcare': 'Medical supplies' }[ind] || 'Inventory';
+    const arLabel = { 'services': 'Unpaid client invoices', 'service': 'Unpaid client invoices', 'construction': 'Progress billings owed', 'pharmacy': 'Insurance & PBM receivables', 'healthcare': 'Insurance & patient receivables' }[ind] || 'Accounts Receivable';
+    const invLabel = { 'food': 'Food & beverage stock', 'restaurant': 'Food & beverage stock', 'construction': 'Work in progress', 'manufacturing': 'Materials & WIP', 'pharmacy': 'Drug inventory', 'healthcare': 'Medical supplies' }[ind] || 'Inventory';
 
     let html = `
         <div class="driver-row"><span class="driver-label">Cash in Bank</span><span class="driver-value">${currency} ${formatNumber(cash)}</span></div>
@@ -698,16 +708,27 @@ function updateInvestigationSection(industry) {
             { question: 'Which raw materials can you source cheaper?', why: 'Renegotiate with suppliers or find alternatives.' },
             { question: 'Are there finished goods you can sell at a discount?', why: 'Cash from discounted stock is better than cash locked in warehouse.' }
         ],
-        'healthcare': isHealthy ? [
-            { question: 'Capacity utilization — are you maximizing throughput?', why: 'Unused capacity is revenue that can never be recovered.' },
-            { question: 'Revenue per transaction — is it growing?', why: 'Higher revenue per transaction means more efficient operations.' },
-            { question: 'Claim and invoice rejection rate', why: 'Even small improvements in billing accuracy add up quickly.' },
-            { question: 'Can you add complementary products or services?', why: 'Supplements, wellness products, or additional services boost margins.' }
+        'pharmacy': isHealthy ? [
+            { question: 'Generic dispensing rate — is it above 85%?', why: 'Generics deliver most of your margin. Brand drugs are razor-thin after PBM fees.' },
+            { question: 'Are DIR fee clawbacks tracked and forecasted?', why: 'DIR fees can reduce reported margins by 3-9% retroactively.' },
+            { question: 'Slow-moving inventory — what should you return?', why: 'Chronic meds sitting on shelves tie up cash you need for fast movers.' },
+            { question: 'Multi-line revenue — are LTC, vaccines, or compounding growing?', why: 'Independent pharmacies survive by stacking revenue streams, not by script volume alone.' }
         ] : [
-            { question: 'Billing rejection rate — how much revenue are you losing?', why: 'Fix rejected claims and invoices immediately — this is revenue you already earned.' },
-            { question: 'Which payers and customers are slowest to pay?', why: 'Follow up aggressively on outstanding receivables.' },
-            { question: 'Can you reduce supply costs this month?', why: 'Switch to generics or negotiate bulk pricing with distributors.' },
-            { question: 'Are there underperforming product lines or services?', why: 'Cut or restructure offerings that cost more than they earn.' }
+            { question: 'DIR fee exposure — how much is being clawed back?', why: 'Retroactive PBM clawbacks silently destroy margin on paid scripts.' },
+            { question: 'Which PBMs and payers are slowest to reimburse?', why: 'Follow up aggressively — aged AR with insurers is recoverable revenue.' },
+            { question: 'Dead stock — what has not moved in 90 days?', why: 'Return to wholesaler where possible. Cash on shelves is cash you cannot spend.' },
+            { question: 'Generic vs brand mix — can you push more generics?', why: 'Higher generic dispensing rate directly improves your margin.' }
+        ],
+        'healthcare': isHealthy ? [
+            { question: 'No-show rate — is it under 10%?', why: 'Every empty slot is revenue that cannot be recovered.' },
+            { question: 'Revenue per visit — is it growing?', why: 'Higher revenue per visit compounds across your patient base.' },
+            { question: 'Claim denial rate — how clean are your submissions?', why: '20-30% of claims get denied on first submission. Rework extends DSO and burns staff time.' },
+            { question: 'Payer mix — are Medicare/Medicaid crowding out commercial?', why: 'Government plans pay faster but lower; commercial pays more but slower.' }
+        ] : [
+            { question: 'No-show rate — how much revenue are you losing?', why: 'Empty slots at 15-20% no-show is pure lost revenue. Text reminders typically recover 5-8%.' },
+            { question: 'Which payers are slowest and which deny most?', why: 'Aged AR with commercial insurers is usually recoverable with follow-up.' },
+            { question: 'Can you reduce supply costs this month?', why: 'Review GPO contracts and negotiate bulk pricing on consumables.' },
+            { question: 'Are there underperforming services or procedures?', why: 'Some procedures cost more to deliver than they reimburse. Cut or restructure them.' }
         ],
         'other': isHealthy ? [
             { question: 'Customer concentration — is any client over 30% of revenue?', why: 'Diversifying reduces risk of a sudden revenue drop.' },
@@ -954,7 +975,8 @@ function getDefaultBenchmarks(industry) {
         'wholesale':     { name: 'Wholesale',     grossMargin: { min: 15, max: 30, ideal: 22 }, netMargin: { min: 2, max: 8, ideal: 5 },  dso: { min: 20, max: 45, industry: 35 }, dio: { min: 30, max: 60, industry: 45 }, dpo: { min: 25, max: 50, industry: 35 } },
         'restaurant':    { name: 'Restaurant',    grossMargin: { min: 60, max: 80, ideal: 70 }, netMargin: { min: 3, max: 9, ideal: 6 },  dso: { min: 0, max: 5, industry: 2 },  dio: { min: 5, max: 15, industry: 10 }, dpo: { min: 10, max: 30, industry: 20 } },
         'construction':  { name: 'Construction',  grossMargin: { min: 15, max: 35, ideal: 25 }, netMargin: { min: 3, max: 10, ideal: 6 }, dso: { min: 30, max: 90, industry: 60 }, dio: { min: 7, max: 30, industry: 15 }, dpo: { min: 30, max: 90, industry: 60 } },
-        'healthcare':    { name: 'Healthcare',    grossMargin: { min: 40, max: 60, ideal: 50 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 10, max: 60, industry: 35 }, dio: { min: 5, max: 30, industry: 15 }, dpo: { min: 15, max: 45, industry: 30 } },
+        'pharmacy':      { name: 'Pharmacy',      grossMargin: { min: 20, max: 24, ideal: 22 }, netMargin: { min: 2, max: 4, ideal: 3 },   dso: { min: 30, max: 45, industry: 37 }, dio: { min: 28, max: 35, industry: 31 }, dpo: { min: 20, max: 30, industry: 25 } },
+        'healthcare':    { name: 'Medical Clinic', grossMargin: { min: 60, max: 75, ideal: 65 }, netMargin: { min: 10, max: 15, ideal: 12 }, dso: { min: 35, max: 55, industry: 45 }, dio: { min: 15, max: 25, industry: 20 }, dpo: { min: 25, max: 35, industry: 30 } },
         'general':       { name: 'General',       grossMargin: { min: 30, max: 60, ideal: 45 }, netMargin: { min: 5, max: 15, ideal: 10 }, dso: { min: 15, max: 60, industry: 35 }, dio: { min: 10, max: 60, industry: 30 }, dpo: { min: 20, max: 60, industry: 35 } }
     };
     // Map form values to benchmark keys
@@ -1135,7 +1157,8 @@ function updateProfitInterpretation(current, metrics, currency, analysis, indust
         'services': { strong: 60, solid: 50 }, 'service': { strong: 60, solid: 50 },
         'construction': { strong: 25, solid: 15 },
         'manufacturing': { strong: 30, solid: 20 },
-        'healthcare': { strong: 50, solid: 40 },
+        'pharmacy': { strong: 24, solid: 20 },
+        'healthcare': { strong: 70, solid: 60 },
         'other': { strong: 45, solid: 30 }
     };
     const ind = industry?.toLowerCase() || 'other';
@@ -1150,7 +1173,8 @@ function updateProfitInterpretation(current, metrics, currency, analysis, indust
         'services': 0.5, 'service': 0.5,
         'construction': 0.7,
         'manufacturing': 0.65,
-        'healthcare': 0.65,
+        'pharmacy': 0.85,
+        'healthcare': 0.60,
         'other': 0.6
     };
     const opexWarnRatio = opexThresholds[ind] || 0.6;
@@ -1219,7 +1243,8 @@ function updateOperationalHealth(metrics, currency, analysis, industry, current,
         'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
         'construction': { good: 45, warn: 75 },
         'manufacturing': { good: 40, warn: 70 },
-        'healthcare': { good: 25, warn: 50 },
+        'pharmacy': { good: 35, warn: 55 },
+        'healthcare': { good: 30, warn: 50 },
         'other': { good: 30, warn: 60 }
     };
     const cccT = cccThresholds[ind] || cccThresholds['other'];
@@ -1453,7 +1478,8 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
                 'service': `without winning a single new client`,
                 'construction': `without completing a single extra project`,
                 'manufacturing': `without producing a single extra unit`,
-                'healthcare': `without generating any extra revenue`,
+                'pharmacy': `without dispensing a single extra script`,
+                'medical clinic': `without seeing a single extra patient`,
                 'general': `without generating any extra revenue`
             };
             const hook = oppText[indName] || oppText['general'];
@@ -1489,7 +1515,8 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
             'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
             'construction': { good: 45, warn: 75 },
             'manufacturing': { good: 40, warn: 70 },
-            'healthcare': { good: 25, warn: 50 },
+            'pharmacy': { good: 35, warn: 55 },
+        'healthcare': { good: 30, warn: 50 },
             'other': { good: 30, warn: 60 }
         };
         const ct = cccThresh[ind2] || cccThresh['other'];
@@ -1728,6 +1755,7 @@ function updateCashRunway(metrics, currency, current, industry) {
         'service': { safe: 6, warn: 3, useDays: false },
         'construction': { safe: 9, warn: 4, useDays: false },
         'manufacturing': { safe: 6, warn: 3, useDays: false },
+        'pharmacy': { safe: 4, warn: 2, useDays: false },
         'healthcare': { safe: 6, warn: 3, useDays: false },
         'other': { safe: 6, warn: 3, useDays: false }
     };
@@ -2388,7 +2416,8 @@ function updateTechnicalMode(current, metrics, currency, industry, benchmarks) {
         'services': { good: 30, warn: 60 }, 'service': { good: 30, warn: 60 },
         'construction': { good: 45, warn: 75 },
         'manufacturing': { good: 40, warn: 70 },
-        'healthcare': { good: 25, warn: 50 },
+        'pharmacy': { good: 35, warn: 55 },
+        'healthcare': { good: 30, warn: 50 },
         'other': { good: 30, warn: 60 }
     }[ind] || { good: 30, warn: 60 };
     const runT = {
