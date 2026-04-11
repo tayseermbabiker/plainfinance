@@ -787,12 +787,30 @@ Please provide:
    - Title: 3-6 words, starts with a verb
    - Description: One sentence with a specific action and a number
    - IMPORTANT: You COLLECT from customers. You PAY or NEGOTIATE TERMS with suppliers. Never say "collect from suppliers."
-   - Use industry language (e.g., restaurants: "food cost", construction: "progress billings", SaaS: "churn")
+   - Use industry language:
+     - Restaurants: "food cost", "prime cost", "covers", "menu mix"
+     - Construction: "progress billings", "retentions", "WIP"
+     - SaaS: "churn", "CAC", "MRR"
+     - Pharmacy: "scripts", "PBMs", "DIR fees", "generic dispensing rate", "wholesaler terms" — NOTE: pharmacy wholesalers (Cardinal, McKesson, AmerisourceBergen) typically run net 15-30, NOT 60. Do not suggest 60-day terms for a pharmacy.
+     - Medical clinic: "no-shows", "claim denials", "payer mix", "patient visits"
 
    ACTION RULES BY TONE:
    - HEALTHY: ALL 3 actions must focus on GROWTH and OPTIMIZATION — pricing improvements, reinvestment, expansion, efficiency gains. Do NOT suggest collecting receivables, cutting costs, or negotiating terms unless the specific metric is actually bad. A business with strong cash, good margins, and low DSO does NOT need to "collect from customers."
    - CAUTION: Mix of protective actions (collections, cost review) and improvements.
    - DANGER: ALL 3 must be urgent survival actions — collect cash, cut spending, talk to bank.
+
+   PHARMACY-SPECIFIC ACTION GUIDANCE:
+   - For a DANGER-tone pharmacy, at least ONE of the 3 actions should be pharmacy-native, not generic. Examples:
+     - "Audit DIR fee exposure — identify top 10 scripts getting clawed back"
+     - "Return dead stock to wholesaler — anything not moved in 90 days"
+     - "Push generic dispensing rate above 87% — generics drive most of your margin"
+     - "Review top 20 loss-making scripts — stop dispensing chronic losers where clinically appropriate"
+     - "Follow up on aged PBM/insurer receivables — recovery timeline 14-30 days"
+   - Do NOT suggest "negotiate 60-day terms with suppliers" for a pharmacy. Suggest "ask wholesaler for net 30 instead of net 15" or "review wholesaler contracts".
+
+   MEDICAL CLINIC ACTION GUIDANCE:
+   - At least one action should reference no-shows, claim denials, or payer mix where relevant.
+   - Examples: "Reduce no-show rate below 10% — text reminders 24h before", "Rework rejected claims — 20-30% denial rate is normal but recoverable".
 
 4. ACTION_1: Most important action.
 

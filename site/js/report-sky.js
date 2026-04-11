@@ -1447,7 +1447,19 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
                 narrative += getAPAdvice(ind);
             }
         } else {
-            narrative = `You are running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than the industry average — strong working capital management.`;
+            // "Leaner than industry" — check if it's real strength or stretched payables / cash crisis
+            const stretchedPayables = apVar > Math.abs(wcrVar) * 0.5;
+            const cashInDanger = globalTier === 'danger';
+
+            if (cashInDanger && stretchedPayables) {
+                narrative = `On paper you're running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than industry, but only because you owe suppliers ${currency} ${formatNumber(apVar)} more than typical. That's not efficiency — it's unpaid bills. Fix cash first.`;
+            } else if (cashInDanger) {
+                narrative = `Working capital is ${currency} ${formatNumber(Math.abs(wcrVar))} below industry average, but cash is still critical. Your main problem is elsewhere — focus on the cash runway.`;
+            } else if (stretchedPayables) {
+                narrative = `You're running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than industry, but mostly from stretched supplier payments (${currency} ${formatNumber(apVar)} above typical). Make sure you can cover those balances when due.`;
+            } else {
+                narrative = `You are running ${currency} ${formatNumber(Math.abs(wcrVar))} leaner than the industry average — strong working capital management.`;
+            }
         }
 
         // DPO context — when paying suppliers too fast
@@ -1492,13 +1504,41 @@ function updateWCRTable(current, metrics, bench, currency, industry, ytd) {
                 <div class="wc-opportunity-text">in cash — right now, ${hook}.</div>
             `;
         } else if (wcrVar < -5000) {
-            // Running lean — celebrate
+            // "Leaner than industry" — but check if this is real strength or stretched payables
+            const stretchedPayables = apVar > Math.abs(wcrVar) * 0.5;
+            const cashInDanger = globalTier === 'danger';
+
             oppEl.style.display = '';
-            oppEl.className = 'wc-opportunity plain-only opp-negative';
-            oppEl.innerHTML = `
-                <div class="wc-opportunity-label">Strong Position</div>
-                <div class="wc-opportunity-text">You're running <strong>${currency} ${formatNumber(Math.abs(wcrVar))}</strong> leaner than the industry average. Your working capital management is excellent.</div>
-            `;
+
+            if (cashInDanger && stretchedPayables) {
+                // Contradiction: "leanness" is coming from unpaid suppliers while cash is critical
+                oppEl.className = 'wc-opportunity plain-only opp-warning';
+                oppEl.innerHTML = `
+                    <div class="wc-opportunity-label">Looks Lean — But Watch Out</div>
+                    <div class="wc-opportunity-text">On paper you're running <strong>${currency} ${formatNumber(Math.abs(wcrVar))}</strong> leaner than industry. But it's because you're stretching supplier payments by <strong>${currency} ${formatNumber(apVar)}</strong> while cash is critical. This is not strength — it's unpaid bills buying you time.</div>
+                `;
+            } else if (cashInDanger) {
+                // Lean but cash is still in crisis — tone down the celebration
+                oppEl.className = 'wc-opportunity plain-only opp-warning';
+                oppEl.innerHTML = `
+                    <div class="wc-opportunity-label">Lean, But Cash Is Critical</div>
+                    <div class="wc-opportunity-text">Your working capital is <strong>${currency} ${formatNumber(Math.abs(wcrVar))}</strong> below industry average, yet cash is still critical. Fix the cash runway first — working capital is not your main problem.</div>
+                `;
+            } else if (stretchedPayables) {
+                // Not in danger but leanness still largely from payables — be honest
+                oppEl.className = 'wc-opportunity plain-only opp-warning';
+                oppEl.innerHTML = `
+                    <div class="wc-opportunity-label">Lean Working Capital</div>
+                    <div class="wc-opportunity-text">You're <strong>${currency} ${formatNumber(Math.abs(wcrVar))}</strong> leaner than industry, but mostly because you owe suppliers <strong>${currency} ${formatNumber(apVar)}</strong> more than typical. Make sure you can cover those balances on time.</div>
+                `;
+            } else {
+                // Genuine strong position
+                oppEl.className = 'wc-opportunity plain-only opp-negative';
+                oppEl.innerHTML = `
+                    <div class="wc-opportunity-label">Strong Position</div>
+                    <div class="wc-opportunity-text">You're running <strong>${currency} ${formatNumber(Math.abs(wcrVar))}</strong> leaner than the industry average. Your working capital management is excellent.</div>
+                `;
+            }
         } else {
             oppEl.style.display = 'none';
         }
