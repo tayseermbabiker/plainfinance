@@ -740,6 +740,8 @@ WORKING CAPITAL CYCLE (calculated using ${wcSource}):
 ${benchmarks.dio.ideal > 0 ? `- Days Inventory Outstanding (DIO): ${metrics.dio} days (industry typical: ${benchmarks.dio.min}-${benchmarks.dio.max} days, ideal: ${benchmarks.dio.ideal} days)` : `- Days Inventory Outstanding (DIO): ${metrics.dio} days (not typically applicable for this industry)`}
 - Days Payable Outstanding (DPO): ${metrics.dpo} days (industry typical: ${benchmarks.dpo.min}-${benchmarks.dpo.max} days, ideal: ${benchmarks.dpo.ideal} days)
 - Cash Conversion Cycle: ${metrics.ccc} days (total days cash is tied up, lower is better)
+- CCC EVALUATION: For this industry, under ${industryType === 'pharmacy' ? '35' : industryType === 'food' || industryType === 'restaurant' ? '10' : industryType === 'online' || industryType === 'ecommerce' ? '10' : industryType === 'services' || industryType === 'service' ? '30' : industryType === 'healthcare' ? '30' : '30'} days is GOOD, ${industryType === 'pharmacy' ? '35-55' : industryType === 'food' || industryType === 'restaurant' ? '10-20' : industryType === 'online' || industryType === 'ecommerce' ? '10-25' : industryType === 'services' || industryType === 'service' ? '30-60' : industryType === 'healthcare' ? '30-50' : '30-60'} days is NORMAL, above that is HIGH.
+- PAYABLES CONTEXT: Current AP is ${currency} ${current.payables.toLocaleString()}, industry target is approximately ${currency} ${Math.round(current.cogs / 30 * (benchmarks.dpo?.ideal || 30)).toLocaleString()}. ${current.payables > current.cogs / 30 * (benchmarks.dpo?.max || 45) ? 'ALREADY STRETCHED — do NOT suggest extending supplier terms further.' : 'Payables are within normal range.'}
 
 METRIC EVALUATION:
 - Gross Margin is ${metrics.grossMargin >= benchmarks.grossMargin.min ? (metrics.grossMargin >= benchmarks.grossMargin.ideal ? 'GOOD - at or above industry ideal' : 'OK - within industry range') : 'LOW - below industry minimum, needs attention'}
@@ -776,11 +778,13 @@ Please provide:
    - DANGER tone: use "Risk:" tags only — NEVER use "Good:" in a danger scenario
 
 3. CASH_CYCLE_EXPLANATION: Exactly 2 short sentences only. Write for someone who has never heard of "cash conversion cycle."
-   - First sentence: How many days your money is tied up before it comes back, and whether this is good, normal, or risky for your industry.
+   - First sentence: How many days your money is tied up before it comes back, and whether this is good, normal, or risky for your industry. USE THE CCC EVALUATION above to determine the correct assessment — do not guess.
    - Second sentence: If the cycle is slow or risky, one specific thing to do to improve it, with a number. If the cycle is already good or negative, a brief note on what to maintain or reinvest in.
-   - CRITICAL DPO RULE: Higher DPO = better for cash flow (you hold cash longer). NEVER suggest reducing or lowering DPO — that means paying suppliers faster, which HURTS cash flow. To improve cash flow via suppliers, suggest INCREASING DPO or negotiating LONGER payment terms.
+   - CRITICAL DPO RULE: Higher DPO = better for cash flow (you hold cash longer). NEVER suggest reducing or lowering DPO — that means paying suppliers faster, which HURTS cash flow.
+   - CRITICAL PAYABLES RULE: If the PAYABLES CONTEXT above says "ALREADY STRETCHED", do NOT suggest extending supplier terms. Instead suggest collecting receivables faster or reducing inventory.
    - If CCC is negative (excellent), do NOT force improvement advice. Instead, acknowledge the strong position and suggest maintaining supplier relationships or reinvesting.
-   - Example (positive CCC): "Your money is tied up for 21 days before coming back — that's normal for your industry. Asking suppliers for 30-day payment terms instead of 9 would free up cash faster."
+   - Example (positive CCC, payables normal): "Your money is tied up for 21 days before coming back — that's normal for your industry. Asking suppliers for 30-day payment terms instead of 9 would free up cash faster."
+   - Example (positive CCC, payables stretched): "Your money is tied up for 27 days — that's healthy for your industry. Focus on collecting receivables faster to improve cash flow further."
    - Example (negative CCC): "You collect cash before you need to pay it out — that's an excellent position. Focus on maintaining good supplier relationships to keep these terms."
 
 4-6. THREE ACTIONS — each must be specific, physical, and actionable.
