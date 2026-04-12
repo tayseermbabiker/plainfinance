@@ -195,10 +195,14 @@
             const runway = report.cash_runway ?? null;
             const netProfit = report.net_profit ?? 0;
             const cash = report.cash ?? 0;
+            const rd = report.report_data;
+            const payables = rd?.current?.payables ?? 0;
 
-            // Danger: negative profit AND low runway, or very low runway
+            // Danger: zero/negative runway, or cash can't cover payables while losing money
+            if (runway !== null && runway <= 0) return 'danger';
             if (runway !== null && runway < 3) return 'danger';
             if (netProfit < 0 && cash < 0) return 'danger';
+            if (netProfit < 0 && payables > 0 && cash < payables * 0.1) return 'danger';
 
             // Watch: low runway or negative profit
             if (runway !== null && runway < 6) return 'watch';

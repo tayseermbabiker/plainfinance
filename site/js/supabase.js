@@ -224,14 +224,14 @@ async function saveReport(reportData) {
         cash: reportData.current?.cash,
         report_data: reportData,
         // New metric columns for historical tracking
-        gross_margin: metrics.grossMargin || null,
-        net_margin: metrics.netMargin || null,
-        dso: metrics.dso || null,
-        dio: metrics.dio || null,
-        dpo: metrics.dpo || null,
-        ccc: metrics.ccc || null,
-        cash_runway: metrics.cashRunway || null,
-        current_ratio: metrics.currentRatio || null,
+        gross_margin: metrics.grossMargin != null ? metrics.grossMargin : null,
+        net_margin: metrics.netMargin != null ? metrics.netMargin : null,
+        dso: metrics.dso != null ? metrics.dso : null,
+        dio: metrics.dio != null ? metrics.dio : null,
+        dpo: metrics.dpo != null ? metrics.dpo : null,
+        ccc: metrics.ccc != null ? metrics.ccc : null,
+        cash_runway: metrics.cashRunway != null ? metrics.cashRunway : null,
+        current_ratio: metrics.currentRatio != null ? metrics.currentRatio : null,
         created_at: new Date().toISOString()
     }).select();
 
