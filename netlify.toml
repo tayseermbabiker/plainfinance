@@ -15,13 +15,14 @@
 
 # Etsy Calculator subpath — proxies to standalone Netlify site
 [[redirects]]
-  from = "/etsy"
-  to = "/etsy/"
-  status = 301
-
-[[redirects]]
   from = "/etsy/*"
   to = "https://etsypricing.netlify.app/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/etsy"
+  to = "https://etsypricing.netlify.app/"
   status = 200
   force = true
 
