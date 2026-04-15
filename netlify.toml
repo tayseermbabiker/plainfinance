@@ -13,6 +13,18 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
+# Etsy Calculator subpath — proxies to standalone Netlify site
+[[redirects]]
+  from = "/etsy"
+  to = "/etsy/"
+  status = 301
+
+[[redirects]]
+  from = "/etsy/*"
+  to = "https://plainfinancials-etsy.netlify.app/etsy/:splat"
+  status = 200
+  force = true
+
 
 [build.environment]
   NODE_VERSION = "18.19.0"
