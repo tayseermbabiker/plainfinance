@@ -21,7 +21,7 @@
 
 [[redirects]]
   from = "/etsy/*"
-  to = "https://etsypricing.netlify.app/etsy/:splat"
+  to = "https://etsypricing.netlify.app/:splat"
   status = 200
   force = true
 
