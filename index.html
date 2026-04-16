@@ -283,6 +283,28 @@
         ]
     }
     </script>
+    <style>
+        @keyframes btnPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.55);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 14px rgba(234, 88, 12, 0);
+                transform: scale(1.03);
+            }
+        }
+        .btn-pulse {
+            animation: btnPulse 1.8s ease-in-out infinite;
+            position: relative;
+        }
+        .btn-pulse:hover {
+            animation-play-state: paused;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .btn-pulse { animation: none; }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -323,7 +345,7 @@
                     <p class="hero-subtitle">Financial reports translated into plain English. Finally understand your numbers.</p>
                     <div class="hero-cta">
                         <a href="report-sky.html?sample=true" class="btn btn-primary btn-lg">See Sample Report</a>
-                        <a href="signup.html" class="btn btn-secondary btn-lg">Get 1 Free Report — No Card Needed</a>
+                        <a href="signup.html" class="btn btn-secondary btn-lg btn-pulse">Get 1 Free Report</a>
                     </div>
                     <div class="hero-trust">
                         <span class="trust-item">
