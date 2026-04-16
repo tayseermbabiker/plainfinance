@@ -52,7 +52,7 @@ function showSampleBanner() {
     banner.innerHTML = `
         <div class="sample-banner-content">
             <span class="sample-badge">Sample Report</span>
-            <span class="sample-text">This is a demo report for Atlas Retail Inc. See what you will get.</span>
+            <span class="sample-text">This is a demo report for Greenline Pharmacy. See what you will get.</span>
             <a href="analyze.html" class="btn btn-primary btn-sm">Try With Your Numbers</a>
         </div>
     `;
@@ -831,35 +831,59 @@ function populateReport(data) {
 // ===== Sample Data =====
 
 function populateReportWithSampleData() {
+    // Pharmacy story: "Good sales, but cash is always gone" —
+    // mirrors Dr. Zahraa's testimonial on the homepage.
+    // Sales are decent, margins are thin, but cash is leaking through
+    // slow insurance collections, dead stock, and loan/drawings pressure.
     const sampleData = {
         company: {
-            name: 'Atlas Retail Inc',
-            industry: 'product',
-            period: { month: '11', year: '2024' },
+            name: 'Greenline Pharmacy',
+            industry: 'healthcare',
+            period: { month: '3', year: '2026' },
             currency: 'USD'
         },
         current: {
-            revenue: 500000,
-            cogs: 325000,
-            opex: 120000,
-            netProfit: 55000,
-            cash: 45000,
-            receivables: 187000,
-            inventory: 210000,
-            payables: 98000,
-            shortTermLoans: 50000,
-            otherLiabilities: 0,
-            loanRepayments: 15000,
-            ownerDrawings: 10000,
-            assetPurchases: 5000
+            revenue: 128500,
+            cogs: 91235,
+            labourCost: 22400,
+            opex: 38000,
+            netProfit: -735,
+            cash: 8400,
+            receivables: 52600,
+            inventory: 98000,
+            payables: 31800,
+            shortTermLoans: 12000,
+            otherLiabilities: 4200,
+            loanRepayments: 3000,
+            ownerDrawings: 5000,
+            assetPurchases: 0,
+            vatCollected: 6425,
+            vatPaid: 4561
         },
         previous: {
-            revenue: 465000,
-            netProfit: 60000,
-            cash: 72000,
-            receivables: 145000,
-            inventory: 185000,
-            payables: 88000
+            revenue: 122800,
+            netProfit: -1400,
+            cash: 14200,
+            receivables: 49800,
+            inventory: 94000,
+            payables: 29500
+        },
+        ytd: {
+            revenue: 375200,
+            cogs: 267800,
+            labourCost: 67200,
+            opex: 114200,
+            netProfit: -6800,
+            startingCash: 45000,
+            openingAR: 38000,
+            openingInventory: 62000,
+            openingAP: 28000,
+            loanRepayments: 9000,
+            ownerDrawings: 15000,
+            assetPurchases: 8500,
+            taxCollected: 18760,
+            taxPaid: 13390,
+            monthsElapsed: 3
         }
     };
     populateReport(sampleData);
