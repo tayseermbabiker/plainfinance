@@ -1,0 +1,329 @@
+[
+  {
+    "name": "Beardbrand",
+    "url": "https://www.beardbrand.com",
+    "category": "grooming",
+    "founderName": "",
+    "emails": [
+      "support@beardbrand.com"
+    ]
+  },
+  {
+    "name": "Mountaineer Brand",
+    "url": "https://www.mountaineerbrand.com",
+    "category": "grooming",
+    "founderName": "",
+    "emails": [
+      "customerservice@mountaineerbrand.com",
+      "support@mountaineerbrand.com"
+    ]
+  },
+  {
+    "name": "Stubble and Stache",
+    "url": "https://www.stubbleandstache.com",
+    "category": "grooming",
+    "founderName": "Marine Corps",
+    "emails": []
+  },
+  {
+    "name": "Razor MD",
+    "url": "https://razormd.com",
+    "category": "grooming",
+    "founderName": "",
+    "emails": [
+      "michael@kier-group.com",
+      "info@razormd.com",
+      "warehouse@razormd.com"
+    ]
+  },
+  {
+    "name": "Roughneck Beard Co",
+    "url": "https://roughneckbeardcompany.com",
+    "category": "grooming",
+    "founderName": "",
+    "emails": [
+      "sales@roughneckbeardcompany.com"
+    ]
+  },
+  {
+    "name": "Far West Fungi",
+    "url": "https://farwestfungi.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "markets@farwestfungi.com",
+      "farm@farwestfungi.com",
+      "sanmartin@farwestfungi.com",
+      "info@farwestfungi.com",
+      "orders@farwestfungi.com",
+      "questions@farwestfungi.com",
+      "sales@farwestfungi.com",
+      "naomi@farwestfungi.com",
+      "accounting@farwestfungi.com"
+    ]
+  },
+  {
+    "name": "Fungi Perfecti",
+    "url": "https://fungi.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "info@fungi.com"
+    ]
+  },
+  {
+    "name": "Smallhold",
+    "url": "https://smallhold.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "hello@smallhold.com"
+    ]
+  },
+  {
+    "name": "Mushroom Angel",
+    "url": "https://themushroomangel.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "orders@themushroomangel.com"
+    ]
+  },
+  {
+    "name": "Mycopolitan",
+    "url": "https://www.mycopolitan.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "mufn@googlegroups.com",
+      "info@mycopolitan.com"
+    ]
+  },
+  {
+    "name": "Mushroom Mountain",
+    "url": "https://mushroommountain.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "hello@mushroommountain.com",
+      "billie@mushroommountain.com",
+      "olga@mushroommountain.com",
+      "megan@mushroommountain.com"
+    ]
+  },
+  {
+    "name": "Outdoor Voices",
+    "url": "https://www.outdoorvoices.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "No Bull",
+    "url": "https://nobullproject.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "pr@nobullproject.com"
+    ]
+  },
+  {
+    "name": "Alphalete",
+    "url": "https://alphaleteathletics.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "ThruDark",
+    "url": "https://thrudark.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "SweetLegs",
+    "url": "https://sweetlegs.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "info@sweetlegs.ca"
+    ]
+  },
+  {
+    "name": "UNRL",
+    "url": "https://www.unrl.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "IWA Company",
+    "url": "https://theiwacompany.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Klur Co",
+    "url": "https://klur.co",
+    "category": "beauty",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Herbivore Botanicals",
+    "url": "https://www.herbivorebotanicals.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": [
+      "mailtoinfo@herbivorebotanicals.com",
+      "pr@herbivorebotanicals.com",
+      "wholesale@herbivorebotanicals.com",
+      "info@herbivorebotanicals.com"
+    ]
+  },
+  {
+    "name": "Youth To The People",
+    "url": "https://www.youthtothepeople.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Drunk Elephant",
+    "url": "https://www.drunkelephant.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": [
+      "info@drunkelephant.com",
+      "press@drunkelephant.com",
+      "info@drunkelephant.ca",
+      "drunkelephant@shiseido.com.tw"
+    ]
+  },
+  {
+    "name": "Kosas",
+    "url": "https://www.kosas.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": [
+      "letschat@kosas.com"
+    ]
+  },
+  {
+    "name": "Fishwife",
+    "url": "https://eatfishwife.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "hello@eatfishwife.com"
+    ]
+  },
+  {
+    "name": "Siete Foods",
+    "url": "https://sietefoods.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "hola@sietefoods.com"
+    ]
+  },
+  {
+    "name": "Bachan's",
+    "url": "https://bachans.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "support@bachans.com",
+      "press@bachans.com",
+      "jobs@bachans.com"
+    ]
+  },
+  {
+    "name": "Diaspora Co",
+    "url": "https://www.diasporaco.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "info@diasporaco.com",
+      "wholesale@diasporaco.com"
+    ]
+  },
+  {
+    "name": "Spicewalla",
+    "url": "https://www.spicewallabrand.com",
+    "category": "food",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Burlap & Barrel",
+    "url": "https://www.burlapandbarrel.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "care@burlapandbarrel.com",
+      "ethan@burlapandbarrel.com"
+    ]
+  },
+  {
+    "name": "Boll & Branch",
+    "url": "https://www.bollandbranch.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "help@bollandbranch.com",
+      "press@bollandbranch.com"
+    ]
+  },
+  {
+    "name": "Brooklinen",
+    "url": "https://www.brooklinen.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "hello@brooklinen.com",
+      "press@brooklinen.com",
+      "sales@brooklinenbusiness.com",
+      "influencer@brooklinen.com"
+    ]
+  },
+  {
+    "name": "Public Goods",
+    "url": "https://publicgoods.com",
+    "category": "home",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "State Bags",
+    "url": "https://statebags.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "sales@statebags.com",
+      "customerservice@statebags.com",
+      "press@statebags.com",
+      "info@statebags.com"
+    ]
+  },
+  {
+    "name": "Paravel",
+    "url": "https://www.tourparavel.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Bellroy",
+    "url": "https://bellroy.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "support@bellroy.com",
+      "corporatesales@bellroy.com",
+      "press@bellroy.com"
+    ]
+  }
+]

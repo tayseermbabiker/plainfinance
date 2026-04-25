@@ -1,0 +1,842 @@
+[
+  {
+    "name": "Veselka",
+    "url": "https://www.veselka.com",
+    "ownerName": "Volodymyr and Olha",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Mamoun's Falafel",
+    "url": "https://www.mamouns.com",
+    "ownerName": "",
+    "emails": [
+      "feedback@mamouns.com",
+      "catering@mamouns.com"
+    ],
+    "pagesChecked": 7
+  },
+  {
+    "name": "S&P Lunch",
+    "url": "https://www.sandplunch.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Superiority Burger",
+    "url": "https://www.superiorityburger.com",
+    "ownerName": "",
+    "emails": [
+      "info@superiorityburger.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Russ & Daughters Cafe",
+    "url": "https://www.russanddaughters.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Katz's Delicatessen",
+    "url": "https://katzsdelicatessen.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Punjabi Deli",
+    "url": "https://www.punjabinyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Abraco",
+    "url": "https://www.abraconyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Minca Ramen",
+    "url": "https://www.newyorkramen.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Vanessa's Dumpling House",
+    "url": "https://www.vanessas.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Lucien",
+    "url": "https://www.luciennyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Prune",
+    "url": "https://www.prunerestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "John's of Bleecker Street",
+    "url": "https://www.johnsbrickovenpizza.com",
+    "ownerName": "",
+    "emails": [
+      "johnspizzeria@gmail.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Tartine",
+    "url": "https://www.tartinenyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 1
+  },
+  {
+    "name": "Buvette",
+    "url": "https://ilovebuvette.com",
+    "ownerName": "",
+    "emails": [
+      "hello@ilovebuvette.com",
+      "bonjour@ilovebuvette.com",
+      "konnichiwa@ilovebuvette.com"
+    ],
+    "pagesChecked": 8
+  },
+  {
+    "name": "Mary's Fish Camp",
+    "url": "https://www.marysfishcamp.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "The Spotted Pig",
+    "url": "https://www.thespottedpig.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Corner Bistro",
+    "url": "https://www.cornerbistrony.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Lupa",
+    "url": "https://www.luparestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Malatesta",
+    "url": "https://www.malatestatrattoria.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Amy Ruth's",
+    "url": "https://www.amyruthsharlem.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Dinosaur Bar-B-Que",
+    "url": "https://www.dinosaurbarbque.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Lolo's Seafood Shack",
+    "url": "https://www.lolosseafoodshack.com",
+    "ownerName": "",
+    "emails": [
+      "lolosseafoodshack@gmail.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Oso Harlem",
+    "url": "https://www.osoharlem.com",
+    "ownerName": "",
+    "emails": [
+      "info@osoharlem.com",
+      "hola@osoharlem.com",
+      "100316468583139hola@osoharlem.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Manhattanville Coffee",
+    "url": "https://www.manhattanvillecoffee.com",
+    "ownerName": "",
+    "emails": [
+      "contact@manhattanvillecoffee.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Mess Hall",
+    "url": "https://www.messhallkitchen.com",
+    "ownerName": "",
+    "emails": [
+      "info@messhallkitchen.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Nom Wah Tea Parlor",
+    "url": "https://nomwah.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Joe's Shanghai",
+    "url": "https://www.joeshanghairestaurants.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 8
+  },
+  {
+    "name": "Xi'an Famous Foods",
+    "url": "https://www.xianfoods.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Wo Hop",
+    "url": "https://www.wohopnyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Great NY Noodletown",
+    "url": "https://www.greatnynoodletown.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Lombardi's Pizza",
+    "url": "https://www.firstpizza.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 7
+  },
+  {
+    "name": "Alleva Dairy",
+    "url": "https://www.allevadairy.com",
+    "ownerName": "",
+    "emails": [
+      "allevadairy@gmail.com"
+    ],
+    "pagesChecked": 7
+  },
+  {
+    "name": "Totto Ramen",
+    "url": "https://www.tottoramen.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "BCD Tofu House",
+    "url": "https://www.bcdtofu.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Cho Dang Gol",
+    "url": "https://www.chodanggolnyc.com",
+    "ownerName": "",
+    "emails": [
+      "chodanggol@handhospitality.com",
+      "cdgny35@gmail.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Szechuan Gourmet",
+    "url": "https://www.szechuangourmetnyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Chennai Garden",
+    "url": "https://www.chennaigarden.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Hangawi",
+    "url": "https://www.hangawirestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Keens Steakhouse",
+    "url": "https://www.keens.com",
+    "ownerName": "",
+    "emails": [
+      "info@keens.com",
+      "banquets@keens.com"
+    ],
+    "pagesChecked": 8
+  },
+  {
+    "name": "Uncle Boons Sister",
+    "url": "https://www.uncleboons.com",
+    "ownerName": "",
+    "emails": [
+      "info@uncleboons.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Balthazar",
+    "url": "https://www.balthazarny.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Cafe Habana",
+    "url": "https://www.cafehabana.com",
+    "ownerName": "",
+    "emails": [
+      "info@cafehabana.com"
+    ],
+    "pagesChecked": 7
+  },
+  {
+    "name": "Prince Street Pizza",
+    "url": "https://www.princestreetpizza.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Ruby's Cafe",
+    "url": "https://www.rubyscafe.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Thai Diner",
+    "url": "https://www.thaidiner.com",
+    "ownerName": "",
+    "emails": [
+      "hi@thaidiner.com",
+      "hello@thaidiner.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Tacombi",
+    "url": "https://www.tacombi.com",
+    "ownerName": "",
+    "emails": [
+      "pr@tacombi.com",
+      "hr@tacombi.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Peter Luger",
+    "url": "https://peterluger.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 8
+  },
+  {
+    "name": "Bamonte's",
+    "url": "https://www.bamontes.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Lilia",
+    "url": "https://www.lilianewyork.com",
+    "ownerName": "",
+    "emails": [
+      "info@lilianewyork.com",
+      "reservations@lilianewyork.com"
+    ],
+    "pagesChecked": 8
+  },
+  {
+    "name": "Okonomi",
+    "url": "https://www.okonomibk.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Misi",
+    "url": "https://www.misinewyork.com",
+    "ownerName": "",
+    "emails": [
+      "info@misinewyork.com"
+    ],
+    "pagesChecked": 7
+  },
+  {
+    "name": "SEA Thai",
+    "url": "https://www.seathainyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 7
+  },
+  {
+    "name": "al di la Trattoria",
+    "url": "https://www.aldilatrattoria.com",
+    "ownerName": "",
+    "emails": [
+      "info@aldilatrattoria.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Bogota Latin Bistro",
+    "url": "https://www.bogotabistro.com",
+    "ownerName": "",
+    "emails": [
+      "elena@mghospitalitygroup.com",
+      "manager@bogotabistro.com",
+      "manager@mitimitinyc.com",
+      "manager@mitimitinj.com",
+      "manager@medusataverna.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Miriam",
+    "url": "https://www.miriamrestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Stone Park Cafe",
+    "url": "https://www.stoneparkcafe.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Runner & Stone",
+    "url": "https://www.runnerandstone.com",
+    "ownerName": "",
+    "emails": [
+      "info@runnerandstone.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Pork Slope",
+    "url": "https://www.porkslopebrooklyn.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Roberta's",
+    "url": "https://www.robertaspizza.com",
+    "ownerName": "",
+    "emails": [
+      "info@robertaspizza.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Bunna Cafe",
+    "url": "https://www.bfrankrestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Momo Sushi Shack",
+    "url": "https://www.momosushishack.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Saraghina",
+    "url": "https://www.sfrankrestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Tortilleria Mexicana Los Hermanos",
+    "url": "https://www.tortilleriamexicanaloshermanos.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Hometown BBQ",
+    "url": "https://www.hometownbbq.com",
+    "ownerName": "",
+    "emails": [
+      "info@hometownbbq.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Lucali",
+    "url": "https://www.lucali.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 7
+  },
+  {
+    "name": "Ferdinando's Focacceria",
+    "url": "https://www.ferdinandosfocacceria.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Court Street Grocers",
+    "url": "https://www.courtstreetgrocers.com",
+    "ownerName": "",
+    "emails": [
+      "hello@courtstreetgrocers.com"
+    ],
+    "pagesChecked": 9
+  },
+  {
+    "name": "Buttermilk Channel",
+    "url": "https://www.buttermilkchannelnyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Paulie Gee's",
+    "url": "https://pauliegee.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Karczma",
+    "url": "https://www.karczmabk.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Esme",
+    "url": "https://www.esmenyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 2
+  },
+  {
+    "name": "Peter Pan Donut",
+    "url": "https://www.peterpandonuts.com",
+    "ownerName": "",
+    "emails": [
+      "bakery@peterpandonuts.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Juliana's Pizza",
+    "url": "https://www.julianaspizza.com",
+    "ownerName": "",
+    "emails": [
+      "merchandise@julianaspizza.com"
+    ],
+    "pagesChecked": 8
+  },
+  {
+    "name": "Tanoreen",
+    "url": "https://www.tanoreen.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Elia",
+    "url": "https://www.eliarestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Brooklyn Beso",
+    "url": "https://www.brooklynbeso.com",
+    "ownerName": "",
+    "emails": [
+      "besomanager.23@gmail.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Pacificana",
+    "url": "https://www.pacificanarestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Taverna Kyclades",
+    "url": "https://www.tavernakyclades.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Vesta Trattoria",
+    "url": "https://www.vestatrattoria.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Mar's",
+    "url": "https://www.marsnyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Ornella Trattoria",
+    "url": "https://www.ornellatrattoria.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Botte Bar",
+    "url": "https://www.bottebar.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Pio Pio",
+    "url": "https://www.piopio.com",
+    "ownerName": "",
+    "emails": [
+      "info@piopio.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Samosa Shack",
+    "url": "https://www.thesamosashack.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Arepa Lady",
+    "url": "https://www.arepalady.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Phayul",
+    "url": "https://www.phayulrestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Nan Xiang Xiao Long Bao",
+    "url": "https://www.nanxiangxiaolongbao.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Hunan Kitchen of Grand Sichuan",
+    "url": "https://www.hunankitchennyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "White Bear",
+    "url": "https://www.whitebearnyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Lao Bei Fang Dumpling House",
+    "url": "https://www.laobeifangdumplinghouse.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Donovan's Pub",
+    "url": "https://www.donovanspubnyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Lhasa Fast Food",
+    "url": "https://www.lhasafastfood.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Rincon Criollo",
+    "url": "https://www.rinconcriollorestaurant.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Nick's Pizza",
+    "url": "https://www.nickspizzanyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Roberto's",
+    "url": "https://www.robertosofarthurave.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Tra Di Noi",
+    "url": "https://www.tradinoibx.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Zero Otto Nove",
+    "url": "https://www.089nyc.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Enzo's of Arthur Avenue",
+    "url": "https://www.enzosofarthurave.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Mike's Deli",
+    "url": "https://www.arthuravenue.com",
+    "ownerName": "",
+    "emails": [
+      "mymail@mailservice.com"
+    ],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Havana Cafe",
+    "url": "https://www.havanacafebronx.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Feeding Tree",
+    "url": "https://www.feedingtreebronx.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Taqueria Tlaxcalli",
+    "url": "https://www.taqueratlaxcalli.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Estrellita Poblana",
+    "url": "https://www.estrellitapoblana.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Denino's Pizzeria",
+    "url": "https://www.deninos.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 6
+  },
+  {
+    "name": "Joe & Pat's",
+    "url": "https://www.joeandpats.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 1
+  },
+  {
+    "name": "Enoteca Maria",
+    "url": "https://www.enotecamaria.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 5
+  },
+  {
+    "name": "Royal Crown Bakery",
+    "url": "https://www.royalcrownbakery.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Beso",
+    "url": "https://www.besosi.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  },
+  {
+    "name": "Lee's Tavern",
+    "url": "https://www.leestavernsi.com",
+    "ownerName": "",
+    "emails": [],
+    "pagesChecked": 0
+  }
+]

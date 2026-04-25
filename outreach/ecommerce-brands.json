@@ -1,0 +1,310 @@
+[
+  {
+    "name": "Klur",
+    "url": "https://klur.co",
+    "category": "beauty",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Jennifer Taylor Home",
+    "url": "https://jennifertaylorhome.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "support@jennifertaylorhome.com"
+    ]
+  },
+  {
+    "name": "Molly Mutt",
+    "url": "https://mollymutt.com",
+    "category": "pet",
+    "founderName": "",
+    "emails": [
+      "help@mollymutt.com"
+    ]
+  },
+  {
+    "name": "Wovenbyrd",
+    "url": "https://wovenbyrd.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "happy@wovenbyrd.com"
+    ]
+  },
+  {
+    "name": "Lekker Home",
+    "url": "https://lekkerhome.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "support@lekkerhome.com"
+    ]
+  },
+  {
+    "name": "ModernBeast",
+    "url": "https://modernbeast.com",
+    "category": "pet",
+    "founderName": "",
+    "emails": [
+      "hello@modernbeast.com",
+      "jenna@modernbeast.com",
+      "hope@modernbeast.com",
+      "jordan@gracetaylorpr.com"
+    ]
+  },
+  {
+    "name": "West Paw",
+    "url": "https://www.westpaw.com",
+    "category": "pet",
+    "founderName": "",
+    "emails": [
+      "world@westpaw.com"
+    ]
+  },
+  {
+    "name": "Bodhi Dog",
+    "url": "https://www.thebodhidog.com",
+    "category": "pet",
+    "founderName": "",
+    "emails": [
+      "support@thebodhidog.com"
+    ]
+  },
+  {
+    "name": "Redbarn Pet Products",
+    "url": "https://www.redbarn.com",
+    "category": "pet",
+    "founderName": "",
+    "emails": [
+      "info@redbarn.com"
+    ]
+  },
+  {
+    "name": "Jax & Bones",
+    "url": "https://jaxandbones.com",
+    "category": "pet",
+    "founderName": "",
+    "emails": [
+      "jbpack@jaxandbones.com"
+    ]
+  },
+  {
+    "name": "Lil Archies",
+    "url": "https://lilarchies.com",
+    "category": "pet",
+    "founderName": "",
+    "emails": [
+      "info@lilarchies.com"
+    ]
+  },
+  {
+    "name": "Caraa",
+    "url": "https://caraasport.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "hello@caraa.co"
+    ]
+  },
+  {
+    "name": "Genuine People",
+    "url": "https://genuine-people.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Indie Identity",
+    "url": "https://www.indieidentity.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "contact@indieidentity.com"
+    ]
+  },
+  {
+    "name": "Modern Citizen",
+    "url": "https://www.moderncitizen.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "soho@moderncitizen.com",
+      "sf@moderncitizen.com",
+      "hi@moderncitizen.com",
+      "hi@moderncitizen.com."
+    ]
+  },
+  {
+    "name": "Beefcake Swimwear",
+    "url": "https://beefcakeswimwear.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Pulp Pantry",
+    "url": "https://pulppantry.com",
+    "category": "food",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "FireCreek Snacks",
+    "url": "https://firecreeksnacks.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "cs@firecreeksnacks.com",
+      "press@firecreeksnacks.com"
+    ]
+  },
+  {
+    "name": "Magic Spoon",
+    "url": "https://magicspoon.com",
+    "category": "food",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "DEUX",
+    "url": "https://eatdeux.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "support@eatdeux.com",
+      "hello@eatdeux.com"
+    ]
+  },
+  {
+    "name": "Freestyle Snacks",
+    "url": "https://freestylesnacks.com",
+    "category": "food",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "NAKIIT",
+    "url": "https://nakiit.com",
+    "category": "jewelry",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Lot28",
+    "url": "https://lot28.com",
+    "category": "jewelry",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Ostrich Moon",
+    "url": "https://ostrichmoon.com",
+    "category": "jewelry",
+    "founderName": "",
+    "emails": [
+      "annie@ostrichmoon.com"
+    ]
+  },
+  {
+    "name": "Simuero",
+    "url": "https://simuero.com",
+    "category": "jewelry",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Local Eclectic",
+    "url": "https://www.localeclectic.com",
+    "category": "jewelry",
+    "founderName": "",
+    "emails": [
+      "hello@localeclectic.com"
+    ]
+  },
+  {
+    "name": "P.F. Candle Co",
+    "url": "https://pfcandleco.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "hello@pfcandleco.com",
+      "pfcandleco@potion-media.com",
+      "marketing@pfcandleco.com",
+      "wholesale@pfcandleco.com",
+      "ep@pfcandleco.com",
+      "sanfrancisco@pfcandleco.com",
+      "brooklyn@pfcandleco.com"
+    ]
+  },
+  {
+    "name": "Brooklyn Candle Studio",
+    "url": "https://brooklyncandlestudio.com",
+    "category": "home",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Red Sky Candles",
+    "url": "https://redskycandles.com",
+    "category": "home",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Lily Lou's Aromas",
+    "url": "https://lilylousaromas.com",
+    "category": "home",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "The New Savant",
+    "url": "https://thenewsavant.com",
+    "category": "home",
+    "founderName": "Anderson\n\nErica Anderson",
+    "emails": [
+      "concierge@thenewsavant.com"
+    ]
+  },
+  {
+    "name": "Appointed",
+    "url": "https://appointed.co",
+    "category": "stationery",
+    "founderName": "",
+    "emails": [
+      "hello@appointed.co",
+      "custom@appointed.co"
+    ]
+  },
+  {
+    "name": "Rifle Paper Co",
+    "url": "https://riflepaperco.com",
+    "category": "stationery",
+    "founderName": "",
+    "emails": [
+      "press@riflepaperco.com",
+      "help@riflepaperco.com"
+    ]
+  },
+  {
+    "name": "Aya Paper Co",
+    "url": "https://ayapaperco.com",
+    "category": "stationery",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Papier",
+    "url": "https://www.papier.com",
+    "category": "stationery",
+    "founderName": "",
+    "emails": [
+      "wholesale@papier.com",
+      "press@papier.com",
+      "holly@papier.com",
+      "community@papier.com"
+    ]
+  }
+]

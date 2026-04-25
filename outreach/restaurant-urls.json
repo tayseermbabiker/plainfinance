@@ -1,0 +1,392 @@
+[
+  {
+    "name": "MY AIRBNB",
+    "url": "https://www.airbnb.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "My Book",
+    "url": "https://a.co",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "LIVING IT OUT",
+    "url": "https://livingitout.substack.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://bouldincreekcafe.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.tealhouse.co",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://texashoneyham.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "http://www.asianaindiancuisine.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.bentopicnic.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "http://caspiangrillaustin.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.foodheads.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "http://www.habanerocafe.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.hetsayaustin.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.honestmarys.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://joesbakery.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.pieous.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.sweet-chive.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "Monique",
+    "url": "http://atxeatsandtreats.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.tajpalaceaustin.net",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.deckhandoysterbar.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "http://www.elmesontequileria.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.lenoirrestaurant.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://tomosushiaustin.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "WEBSITE",
+    "url": "https://www.vazquezrestaurant.com",
+    "source": "https://somuchlife.com/family-owned-aust"
+  },
+  {
+    "name": "Bakery Lorraine",
+    "url": "https://www.bakerylorraine.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "District Kitchen + Cocktails",
+    "url": "https://districtaustin.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Flower Child",
+    "url": "https://www.iamaflowerchild.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Hopdoddy",
+    "url": "https://www.hopdoddy.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Interstellar BBQ",
+    "url": "https://www.theinterstellarbbq.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "SLAB BBQ & Beer",
+    "url": "https://dopebbq.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "First Chinese BBQ",
+    "url": "http://www.firstchinesebbq.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "House of Three Gorges",
+    "url": "https://www.houseofthreegorges.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Special Noodle",
+    "url": "https://specialnoodle-austin.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Sangam Chettinad Indian Cuisine",
+    "url": "https://www.sangamchettinad.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Andiamo Ristorante",
+    "url": "https://andiamoitaliano.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "DeSano Pizzeria Napoletana",
+    "url": "http://www.desanopizza.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "North Italia",
+    "url": "https://www.northitaliarestaurant.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Ramen Del Barrio",
+    "url": "https://www.ramendelbarrio.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Ramen Tatsu-ya",
+    "url": "http://ramen-tatsuya.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Tare",
+    "url": "https://www.tareaustin.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Tomodachi",
+    "url": "http://www.tomosushiaustin.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Chi’Lantro",
+    "url": "http://www.chilantrobbq.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Halal Bros",
+    "url": "http://www.thehalalbros.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Usta Kababgy",
+    "url": "https://www.ustakababgy.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "El Tacorrido",
+    "url": "http://www.eltacorrido.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Los Chilakillers",
+    "url": "https://www.loschilakillers.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "One Taco",
+    "url": "https://onetaco.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Tacodeli",
+    "url": "https://www.tacodeli.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Vazquez Restaurant",
+    "url": "http://vazquezrestaurant.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Veracruz All Natural",
+    "url": "http://www.veracruzallnatural.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Baklava House",
+    "url": "https://www.baklava-house.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Snowy Village",
+    "url": "https://www.snowyvillagenorthaustin.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Madam Mam’s",
+    "url": "http://www.madammam.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Thai Cuisine",
+    "url": "http://www.thaicuisineaustin.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Sip Saam Thai",
+    "url": "https://www.sipsaamthai.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Bodhi Viet Vegan",
+    "url": "https://www.bodhivietveggies.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Fresh Bowl",
+    "url": "https://www.atxfreshbowl.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Pho Saigon",
+    "url": "http://www.phosaigonnoodlehouse.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "Sunflower",
+    "url": "https://www.sunflowerrestaurants.com",
+    "source": "https://fearlesscaptivations.com/2016-ci"
+  },
+  {
+    "name": "CARVE American Grille",
+    "url": "https://carveamericangrille.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Chinos Fusion Hacienda",
+    "url": "https://chinoshacienda.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Cypress Grill",
+    "url": "https://cypressgrill.net",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Elizabeth Street Cafe",
+    "url": "https://elizabethstreetcafe.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Jack Allen’s Kitchen",
+    "url": "https://jackallenskitchen.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "June’s All Day",
+    "url": "https://junesallday.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Magnolia Cafe",
+    "url": "http://www.magnoliacafeaustin.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Odd Duck",
+    "url": "https://www.oddduckaustin.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Phoebe’s Diner",
+    "url": "https://www.phoebesdiner.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Company Guide",
+    "url": "https://support.bramlettresidential.com",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Consumer Protection Notice",
+    "url": "https://www.trec.texas.gov",
+    "source": "https://bramlettpartners.com/blog/best-r"
+  },
+  {
+    "name": "Phat Phoodies",
+    "url": "https://theaustinthings.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Birria Tacos",
+    "url": "https://craftbeeramethyst.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Biscuits",
+    "url": "https://atx-bites.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Burgers",
+    "url": "https://atxfyi.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Burgers for Takeout",
+    "url": "http://atx-bites.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Milkshakes",
+    "url": "https://phatphoodies.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Paella",
+    "url": "https://cocktailswithlisa.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Poké",
+    "url": "https://sushiatx.blog",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  },
+  {
+    "name": "Best Breweries",
+    "url": "https://craftbeeraustin.com",
+    "source": "https://austinfoodbloggers.org/best-plac"
+  }
+]

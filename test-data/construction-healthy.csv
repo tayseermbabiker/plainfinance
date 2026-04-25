@@ -1,0 +1,21 @@
+Field,This Month,Previous Month,Year to Date,Notes
+Revenue / Sales,850000,780000,4200000,Contract billings for the period
+Cost of Goods Sold (COGS),595000,,2940000,Materials + subcontractors + direct labour
+Labour / Staff Cost,0,,0,Included in COGS for construction
+Operating Expenses (OPEX),170000,,850000,Office + insurance + equipment lease
+Net Profit,85000,72000,410000,After all expenses
+Cash in Bank,320000,290000,,Current bank balance
+Opening Cash (Start of Year),280000,,,Cash on Jan 1
+Opening AR (Start of Year),380000,,,Retentions + progress billings owed Jan 1
+Opening Inventory (Start of Year),45000,,,Materials on hand Jan 1
+Opening AP (Start of Year),310000,,,Supplier payables Jan 1
+Accounts Receivable (AR),420000,395000,,Progress billings + retentions owed
+Inventory,52000,48000,,Materials on site
+Accounts Payable (AP),340000,320000,,Owed to subcontractors + suppliers
+Short-term Loans,80000,,,Equipment financing
+Other Liabilities,15000,,,Accrued expenses
+Loan Repayments,12000,,60000,Equipment loan payments
+Owner Drawings,15000,,75000,Owner distributions
+Asset Purchases,0,,25000,Tools and equipment
+Tax Collected from Customers,42500,,210000,VAT on billings
+Tax Paid on Purchases,29750,,147000,VAT on materials/subs

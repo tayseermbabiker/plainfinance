@@ -1,0 +1,310 @@
+[
+  {
+    "name": "Indie Coffee Roasters",
+    "url": "https://www.indiecoffeeroasters.com",
+    "category": "coffee",
+    "founderName": "",
+    "emails": [
+      "info@indiecoffeeroasters.com",
+      "hello@indiecoffeeroasters.com",
+      "wholesale@indiecoffeeroasters.com"
+    ]
+  },
+  {
+    "name": "Independence Coffee",
+    "url": "https://www.independencecoffee.com",
+    "category": "coffee",
+    "founderName": "",
+    "emails": [
+      "orders@independencecoffee.com",
+      "sales@independencecoffee.com"
+    ]
+  },
+  {
+    "name": "Mothership Coffee",
+    "url": "https://mothershipcoffee.com",
+    "category": "coffee",
+    "founderName": "Juanny Romero",
+    "emails": []
+  },
+  {
+    "name": "Intelligentsia Coffee",
+    "url": "https://www.intelligentsia.com",
+    "category": "coffee",
+    "founderName": "",
+    "emails": [
+      "press@intelligentsiacoffee.com",
+      "events@intelligentsiacoffee.com",
+      "gifts@intelligentsiacoffee.com",
+      "officecoffee@intelligentsiacoffee.com"
+    ]
+  },
+  {
+    "name": "Snarky Tea",
+    "url": "https://snarkytea.com",
+    "category": "tea",
+    "founderName": "",
+    "emails": [
+      "%20customerservice@snarkytea.com",
+      "laura@snarkytea.com",
+      "customerservice@snarkytea.com"
+    ]
+  },
+  {
+    "name": "Firebelly Tea",
+    "url": "https://firebellytea.com",
+    "category": "tea",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Tease Tea",
+    "url": "https://teasetea.com",
+    "category": "tea",
+    "founderName": "",
+    "emails": [
+      "hello@teasewellness.com"
+    ]
+  },
+  {
+    "name": "Vorratu",
+    "url": "https://vorratu.com",
+    "category": "tea",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Milton & Goose",
+    "url": "https://www.miltonandgoose.com",
+    "category": "kids",
+    "founderName": "",
+    "emails": [
+      "hello@miltonandgoose.com"
+    ]
+  },
+  {
+    "name": "Posh Peanut",
+    "url": "https://www.poshpeanut.com",
+    "category": "kids",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Monica + Andy",
+    "url": "https://www.monicaandandy.com",
+    "category": "kids",
+    "founderName": "",
+    "emails": [
+      "store@monicaandandy.com",
+      "storks@monicaandandy.com"
+    ]
+  },
+  {
+    "name": "Sapling Child",
+    "url": "https://saplingchild.com",
+    "category": "kids",
+    "founderName": "",
+    "emails": [
+      "info@saplingchild.com"
+    ]
+  },
+  {
+    "name": "Mountain Kids Toys",
+    "url": "https://mountainkidstoys.com",
+    "category": "kids",
+    "founderName": "",
+    "emails": [
+      "mountainkidstoys@gmail.com"
+    ]
+  },
+  {
+    "name": "Two Islands",
+    "url": "https://twoislands.com.au",
+    "category": "wellness",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "MaryRuth Organics",
+    "url": "https://maryruthorganics.com",
+    "category": "wellness",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Four Sigmatic",
+    "url": "https://us.foursigmatic.com",
+    "category": "wellness",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "FLO Vitamins",
+    "url": "https://flovitamins.com",
+    "category": "wellness",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Rhode Beauty",
+    "url": "https://www.rhodeskin.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Youthforia",
+    "url": "https://www.youthforia.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Topicals",
+    "url": "https://mytopicals.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Hyper Skin",
+    "url": "https://hyperskin.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": [
+      "orders@hyperskin.com",
+      "press@hyperskin.com",
+      "community@hyperskin.com"
+    ]
+  },
+  {
+    "name": "Fur",
+    "url": "https://www.furyou.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": [
+      "hello@furyou.com"
+    ]
+  },
+  {
+    "name": "Ogee",
+    "url": "https://www.ogee.com",
+    "category": "beauty",
+    "founderName": "",
+    "emails": [
+      "support@ogee.com",
+      "pr@ogee.com",
+      "wholesale@ogee.com"
+    ]
+  },
+  {
+    "name": "Ruggable",
+    "url": "https://ruggable.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "support@ruggable.co.kr"
+    ]
+  },
+  {
+    "name": "Parachute Home",
+    "url": "https://www.parachutehome.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "concierge@parachutehome.com",
+      "hospitality@parachutehome.com",
+      "help@affirm.com",
+      "support@withjoy.com",
+      "help@parachutehome.com",
+      "trade@parachutehome.com"
+    ]
+  },
+  {
+    "name": "Floyd Home",
+    "url": "https://floydhome.com",
+    "category": "home",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Coyuchi",
+    "url": "https://www.coyuchi.com",
+    "category": "home",
+    "founderName": "",
+    "emails": [
+      "press@coyuchi.com",
+      "info@coyuchi.com",
+      "invest@coyuchi.com"
+    ]
+  },
+  {
+    "name": "Cuyana",
+    "url": "https://www.cuyana.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Everlane",
+    "url": "https://www.everlane.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Girlfriend Collective",
+    "url": "https://girlfriend.com",
+    "category": "fashion",
+    "founderName": "",
+    "emails": [
+      "hello@girlfriend.com",
+      "europe@girlfriend.com"
+    ]
+  },
+  {
+    "name": "Mejuri",
+    "url": "https://mejuri.com",
+    "category": "jewelry",
+    "founderName": "",
+    "emails": [
+      "press@mejuri.com",
+      "corporatesales@mejuri.com"
+    ]
+  },
+  {
+    "name": "Partake Foods",
+    "url": "https://partakefoods.com",
+    "category": "food",
+    "founderName": "",
+    "emails": []
+  },
+  {
+    "name": "Omsom",
+    "url": "https://omsom.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "sales@omsom.com"
+    ]
+  },
+  {
+    "name": "Fly By Jing",
+    "url": "https://flybyjing.com",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "support@flybyjing.com",
+      "flybyjing@isetta.co"
+    ]
+  },
+  {
+    "name": "Graza",
+    "url": "https://graza.co",
+    "category": "food",
+    "founderName": "",
+    "emails": [
+      "hello@graza.co"
+    ]
+  }
+]

@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlainFinancials — Mesa & Main — July 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #F5F6F8;
+  --white:        #FFFFFF;
+  --ink:          #0D1B2A;
+  --ink-mid:      #4A5568;
+  --ink-light:    #8A9AB0;
+  --border:       #DDE3EC;
+  --border-dark:  #B4BFCF;
+  --orange:       #E8521A;
+  --orange-light: #F5A623;
+  --teal:         #00906A;
+  --gold:         #B7791F;
+  --red:          #C0392B;
+  --red-bg:       #FEF2F2;
+  --red-border:   #FECACA;
+  --gold-bg:      #FFFBEB;
+  --gold-border:  #FDE68A;
+  --teal-bg:      #F0FDF8;
+  --teal-border:  #99E6CF;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── TOP BAR ─── */
+.top-bar {
+  height: 5px;
+  background: linear-gradient(90deg, var(--orange) 0%, var(--orange-light) 100%);
+}
+
+/* ─── PAGE ─── */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 6rem;
+}
+
+/* ─── MODE TOGGLE ─── */
+.mode-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.75rem;
+  gap: 0;
+}
+.mode-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 6px 16px;
+  border: 1.5px solid var(--border-dark);
+  background: var(--white);
+  color: var(--ink-mid);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.mode-btn:first-child { border-radius: 3px 0 0 3px; }
+.mode-btn:last-child  { border-radius: 0 3px 3px 0; border-left: none; }
+.mode-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* ─── HEADER ─── */
+.report-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 2rem;
+  padding-bottom: 1.75rem;
+  margin-bottom: 2rem;
+  border-bottom: 2.5px solid var(--ink);
+}
+.brand-line {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand-line::after {
+  content: '';
+  display: inline-block;
+  height: 1px;
+  width: 40px;
+  background: var(--border-dark);
+}
+.company-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 0.95;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+.header-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 3px;
+}
+.tag-period { background: var(--bg); border: 1px solid var(--border-dark); color: var(--ink-mid); }
+.tag-industry { background: var(--ink); color: #fff; }
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+}
+.status-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.status-badge.warn  { background: var(--gold);  color: #fff; }
+.status-badge.safe  { background: var(--teal);  color: #fff; }
+.status-badge.danger{ background: var(--red);   color: #fff; }
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  flex-shrink: 0;
+}
+.gen-date {
+  font-size: 10.5px;
+  color: var(--ink-light);
+  text-align: right;
+  line-height: 1.5;
+}
+
+/* ─── HEADLINE ─── */
+.headline {
+  border-radius: 0 4px 4px 0;
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 2.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.headline.warn   { background: var(--gold-bg);  border: 1px solid var(--gold-border);  border-left: 4px solid var(--gold); }
+.headline.safe   { background: var(--teal-bg);  border: 1px solid var(--teal-border);  border-left: 4px solid var(--teal); }
+.headline.danger { background: var(--red-bg);   border: 1px solid var(--red-border);   border-left: 4px solid var(--red);  }
+.headline-icon {
+  font-size: 17px;
+  line-height: 1.6;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.headline-text {
+  font-size: 15px;
+  line-height: 1.7;
+  font-weight: 500;
+}
+.headline.warn   .headline-text { color: #78490A; }
+.headline.safe   .headline-text { color: #1A5C45; }
+.headline.danger .headline-text { color: #7B241C; }
+
+/* ─── SECTION ─── */
+.section { margin-bottom: 2.75rem; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+}
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.section-hint {
+  font-size: 11.5px;
+  color: var(--ink-light);
+  margin-left: auto;
+  font-style: italic;
+}
+
+/* ─── 4 PILLARS ─── */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.pillar {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.3rem 1.25rem 1.1rem;
+  position: relative;
+  overflow: hidden;
+}
+.pillar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.pillar.p-ok::after     { background: var(--teal); }
+.pillar.p-warn::after   { background: var(--gold); }
+.pillar.p-danger::after { background: var(--red); }
+.pillar.p-neutral::after{ background: var(--ink-light); }
+
+.pillar-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 7px;
+  font-weight: 500;
+}
+.pillar-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.pillar-number {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+.pillar-number.c-ink    { color: var(--ink); }
+.pillar-number.c-ok     { color: var(--teal); }
+.pillar-number.c-warn   { color: var(--gold); }
+.pillar-number.c-danger { color: var(--red); }
+
+.pillar-arrow {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.arrow-up   { background: var(--teal-bg);  color: var(--teal); }
+.arrow-down { background: var(--red-bg);   color: var(--red); }
+.arrow-flat { background: var(--bg);       color: var(--ink-mid); }
+
+.pillar-sub {
+  font-size: 11.5px;
+  color: var(--ink-light);
+  margin-bottom: 10px;
+}
+.pillar-badge {
+  display: inline-block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 3px;
+  margin-bottom: 9px;
+}
+.pb-ok     { background: var(--teal); color: #fff; }
+.pb-warn   { background: var(--gold); color: #fff; }
+.pb-danger { background: var(--red);  color: #fff; }
+.pb-neutral{ background: var(--ink-light); color: #fff; }
+
+.pillar-insight {
+  font-size: 12px;
+  color: var(--ink-mid);
+  line-height: 1.65;
+  padding-top: 9px;
+  border-top: 1px solid var(--border);
+}
+.pillar-insight strong { color: var(--ink); font-weight: 600; }
+
+/* ─── P&L ─── */
+.pl-table { width: 100%; border-collapse: collapse; }
+.pl-row { display: grid; grid-template-columns: 1fr 100px 80px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); gap: 1rem; }
+.pl-row:last-child { border-bottom: none; }
+.pl-row.indent .pl-name { padding-left: 1.25rem; color: var(--ink-mid); }
+.pl-row.sub { padding-top: 6px; padding-bottom: 6px; }
+.pl-row.subtotal { background: var(--bg); border-radius: 3px; padding: 10px 12px; margin: 4px 0; }
+.pl-row.subtotal .pl-name { font-weight: 600; color: var(--ink); }
+.pl-row.total { border-top: 2px solid var(--ink); padding-top: 14px; }
+.pl-row.total .pl-name { font-weight: 700; font-size: 15px; }
+.pl-name { font-size: 13.5px; }
+.pl-name small { display: block; font-size: 11px; color: var(--ink-light); font-weight: 400; margin-top: 1px; }
+.pl-val { font-size: 14px; font-weight: 500; text-align: right; }
+.pl-pct {
+  font-size: 12px;
+  color: var(--ink-light);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pl-pct.c-ok     { color: var(--teal); font-weight: 600; }
+.pl-pct.c-warn   { color: var(--gold); font-weight: 600; }
+.pl-pct.c-danger { color: var(--red);  font-weight: 600; }
+
+/* Benchmark bar */
+.bench-bar-section { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 12px; }
+.bench-item {}
+.bench-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+.bench-item-label { font-size: 12px; color: var(--ink-mid); }
+.bench-item-vals {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.bench-you {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+.bench-you.warn { color: var(--gold); }
+.bench-you.ok   { color: var(--teal); }
+.bench-industry { color: var(--ink-light); }
+.bench-track {
+  height: 7px;
+  background: var(--border);
+  border-radius: 4px;
+  position: relative;
+  overflow: visible;
+}
+.bench-range {
+  position: absolute;
+  top: 0; bottom: 0;
+  background: var(--teal-border);
+  opacity: 0.45;
+  border-radius: 4px;
+}
+.bench-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  border: 2.5px solid var(--white);
+  box-shadow: 0 0 0 1.5px currentColor;
+}
+.bench-marker.warn   { background: var(--gold);  color: var(--gold); }
+.bench-marker.ok     { background: var(--teal);  color: var(--teal); }
+.bench-marker.danger { background: var(--red);   color: var(--red); }
+.bench-range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+  font-size: 10px;
+  color: var(--ink-light);
+}
+
+/* ─── AI INSIGHT ─── */
+.insight-blocks { display: flex; flex-direction: column; gap: 10px; }
+.insight-block {
+  padding: 1rem 1.2rem;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.75;
+  border-left: 3px solid transparent;
+}
+.insight-block.neutral { background: #F8FAFC; border: 1px solid var(--border); border-left: 3px solid var(--ink-light); color: var(--ink-mid); }
+.insight-block.neutral strong { color: var(--ink); }
+.insight-block.warn    { background: var(--gold-bg); border: 1px solid var(--gold-border); border-left: 3px solid var(--gold); color: #78490A; }
+.insight-block.warn    strong { color: #5C3409; }
+.insight-block.ok      { background: var(--teal-bg); border: 1px solid var(--teal-border); border-left: 3px solid var(--teal); color: #1A5C45; }
+.insight-block.ok      strong { color: #134D39; }
+.insight-label {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  opacity: 0.65;
+}
+
+/* ─── CASH BRIDGE ─── */
+.bridge-container { background: var(--white); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.bridge-row {
+  display: grid;
+  grid-template-columns: 1fr 130px 120px;
+  align-items: center;
+  padding: 11px 1.25rem;
+  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+  font-size: 13px;
+}
+.bridge-row:last-child { border-bottom: none; }
+.bridge-row.section-start { padding-top: 14px; }
+.bridge-row.total {
+  background: var(--ink);
+  padding: 13px 1.25rem;
+  border-bottom: none;
+}
+.bridge-row.total .b-label,
+.bridge-row.total .b-bar-cell,
+.bridge-row.total .b-val { color: #fff; }
+.bridge-row.ending { background: #F0FDF8; border-top: 2px solid var(--teal); }
+.b-label { color: var(--ink-mid); }
+.b-label.flag { color: var(--red); font-weight: 500; }
+.b-label.strong { color: var(--ink); font-weight: 600; }
+.b-label small { display: block; font-size: 10.5px; color: var(--ink-light); font-weight: 400; margin-top: 1px; }
+.b-bar-cell {}
+.b-bar-wrap { display: flex; align-items: center; gap: 6px; height: 6px; }
+.b-bar {
+  height: 100%;
+  border-radius: 3px;
+  min-width: 3px;
+}
+.b-bar.pos { background: var(--teal); }
+.b-bar.neg { background: var(--red); }
+.b-val { font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.b-val.pos { color: var(--teal); }
+.b-val.neg { color: var(--red); }
+.b-val.strong { color: var(--ink); font-weight: 700; }
+.b-val.danger { color: var(--red); font-weight: 700; }
+.b-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-left: 6px;
+  background: var(--border);
+  color: var(--ink-light);
+  vertical-align: middle;
+}
+.b-tag.est { background: #EBF4FF; color: #2B6CB0; }
+.b-tag.warn { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
+
+/* ─── WORKING CAPITAL ─── */
+.wc-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+.wc-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1rem 0.9rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.wc-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+}
+.wc-card.ok::after     { background: var(--teal); }
+.wc-card.warn::after   { background: var(--gold); }
+.wc-card.danger::after { background: var(--red); }
+.wc-card-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.wc-card-abbr {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  margin-bottom: 2px;
+}
+.wc-number {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.wc-number.ok     { color: var(--teal); }
+.wc-number.warn   { color: var(--gold); }
+.wc-number.danger { color: var(--red);  }
+.wc-unit  { font-size: 11.5px; color: var(--ink-light); margin-bottom: 8px; }
+.wc-badge {
+  display: inline-block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 3px;
+}
+.wc-badge.ok     { background: var(--teal); color: #fff; }
+.wc-badge.warn   { background: var(--gold); color: #fff; }
+.wc-badge.danger { background: var(--red);  color: #fff; }
+
+.ccc-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 1rem 0 1.25rem;
+  font-size: 13px;
+  color: var(--ink-mid);
+  flex-wrap: wrap;
+}
+.ccc-chunk {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+.ccc-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+.ccc-op { color: var(--ink-light); font-size: 16px; }
+.ccc-total {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+/* WCR Table */
+.wcr-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.wcr-table thead th {
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  font-weight: 500;
+  padding: 0 0 10px;
+  border-bottom: 1.5px solid var(--ink);
+  text-align: left;
+}
+.wcr-table thead th:not(:first-child) { text-align: right; }
+.wcr-table tbody td {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.wcr-table tbody td:not(:first-child) { text-align: right; }
+.wcr-table tfoot td {
+  padding: 12px 0 0;
+  font-weight: 700;
+  border-top: 1.5px solid var(--ink);
+  font-size: 13.5px;
+}
+.wcr-table tfoot td:not(:first-child) { text-align: right; }
+.var-bad  { color: var(--red);  font-weight: 600; }
+.var-ok   { color: var(--teal); font-weight: 600; }
+
+/* ─── RUNWAY ─── */
+.runway-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+.runway-big {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 100px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.runway-big.danger { color: var(--red); }
+.runway-big.warn   { color: var(--gold); }
+.runway-big.ok     { color: var(--teal); }
+.runway-unit {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink-mid);
+  margin-top: 16px;
+}
+.runway-meta {
+  flex: 1;
+  padding-top: 12px;
+}
+.runway-cashout {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--red);
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  padding: 5px 12px;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+.runway-explanation { font-size: 13px; color: var(--ink-mid); line-height: 1.7; }
+
+/* ─── DEBT COVERAGE ─── */
+.debt-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+.debt-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1rem 0.9rem;
+  text-align: center;
+}
+.debt-card-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+}
+.debt-card-number {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.debt-card-number.ok   { color: var(--teal); }
+.debt-card-number.warn { color: var(--gold); }
+.debt-card-sub { font-size: 11.5px; color: var(--ink-light); }
+
+/* ─── BANK QUOTE ─── */
+.bank-quote-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.75rem 2rem;
+  position: relative;
+}
+.bank-quote-wrap::before {
+  content: '"';
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 80px;
+  font-weight: 800;
+  color: var(--orange);
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  line-height: 1;
+  opacity: 0.18;
+}
+.bank-quote-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  font-style: italic;
+  padding-left: 0.5rem;
+  border-left: 4px solid var(--orange);
+  margin-bottom: 1rem;
+}
+.bank-quote-note {
+  font-size: 12px;
+  color: var(--ink-light);
+  font-style: italic;
+  padding-left: 0.6rem;
+}
+
+/* ─── ACTIONS ─── */
+.actions-list { list-style: none; }
+.action-item {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.action-item:last-child { border-bottom: none; }
+.action-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--border-dark);
+  min-width: 30px;
+  line-height: 1;
+  padding-top: 2px;
+}
+.action-body { flex: 1; }
+.urgency-tag {
+  display: inline-block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+.u-today { background: var(--red);  color: #fff; }
+.u-week  { background: var(--gold); color: #fff; }
+.u-month { background: #EDF2F7; color: var(--ink-mid); }
+.action-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.action-desc {
+  font-size: 12.5px;
+  color: var(--ink-mid);
+  line-height: 1.7;
+}
+.action-metric {
+  display: inline-block;
+  background: var(--bg);
+  border: 1px solid var(--border-dark);
+  border-radius: 3px;
+  font-size: 11px;
+  padding: 2px 8px;
+  color: var(--ink-mid);
+  margin-top: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* ─── NON-FINANCIAL ─── */
+.nf-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.nf-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.nf-icon {
+  font-size: 16px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+.nf-body {}
+.nf-question { font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.nf-why { color: var(--ink-mid); font-size: 12px; line-height: 1.65; }
+
+/* ─── FOOTER ─── */
+.report-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-disclaimer {
+  font-size: 10.5px;
+  color: var(--ink-light);
+  line-height: 1.75;
+  max-width: 540px;
+}
+.footer-brand {
+  text-align: right;
+  font-size: 10.5px;
+  color: var(--ink-light);
+  line-height: 1.75;
+}
+.footer-brand strong {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.footer-brand a { color: var(--orange); text-decoration: none; }
+
+/* ─── DIVIDER ─── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 0.5rem 0 2rem; }
+
+/* ─── TECHNICAL MODE ─── */
+#technical-mode { display: none; }
+#technical-mode.visible { display: block; }
+#plain-mode.hidden { display: none; }
+
+/* TECHNICAL TABLE */
+.tech-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 1.25rem; }
+.tech-table thead th {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  font-weight: 600;
+  padding: 0 0 9px;
+  border-bottom: 1.5px solid var(--ink);
+  text-align: left;
+}
+.tech-table thead th:not(:first-child) { text-align: right; }
+.tech-table tbody td {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tech-table tbody td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.tech-table tfoot td {
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 12px 0 0;
+  border-top: 1.5px solid var(--ink);
+}
+.tech-table tfoot td:not(:first-child) { text-align: right; }
+.tech-section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 1.75rem 0 0.75rem;
+}
+.ratio-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+.ratio-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.8rem 0.9rem;
+}
+.ratio-name { font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 4px; }
+.ratio-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.ratio-val.ok   { color: var(--teal); }
+.ratio-val.warn { color: var(--gold); }
+.ratio-val.bad  { color: var(--red);  }
+.ratio-bench { font-size: 10px; color: var(--ink-light); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 620px) {
+  .pillars { grid-template-columns: 1fr; }
+  .wc-cards { grid-template-columns: 1fr; }
+  .debt-grid { grid-template-columns: 1fr; }
+  .ratio-grid { grid-template-columns: repeat(2, 1fr); }
+  .company-name { font-size: 38px; }
+  .report-header { grid-template-columns: 1fr; }
+  .header-right { align-items: flex-start; }
+  .runway-big { font-size: 72px; }
+  .bridge-row { grid-template-columns: 1fr 80px; }
+  .b-bar-cell { display: none; }
+}
+
+/* ─── PRINT ─── */
+@media print {
+  body { background: white; }
+  .top-bar, .pillar::after, .wc-card::after { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .mode-bar { display: none; }
+  #plain-mode { display: block !important; }
+  #technical-mode { display: block !important; }
+  .page { padding: 0.75rem; max-width: 100%; }
+  .section { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<div class="page">
+
+  <!-- ═══════════ MODE TOGGLE ═══════════ -->
+  <div class="mode-bar">
+    <button class="mode-btn active" id="btn-plain" onclick="setMode('plain')">Plain English</button>
+    <button class="mode-btn" id="btn-tech"  onclick="setMode('technical')">Technical View</button>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       § 1 — HEADER
+  ═══════════════════════════════════════ -->
+  <div class="report-header">
+    <div>
+      <div class="brand-line">PlainFinancials — Monthly Briefing</div>
+      <div class="company-name">Mesa &amp; Main</div>
+      <div class="header-tags">
+        <span class="tag tag-period">July 2026</span>
+        <span class="tag tag-industry">Food &amp; Hospitality</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-badge warn">
+        <span class="status-dot"></span>
+        ⚠ Watch
+      </div>
+      <div class="gen-date">Generated 31 July 2026<br>PlainFinancials.com</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       PLAIN ENGLISH MODE
+  ═══════════════════════════════════════ -->
+  <div id="plain-mode">
+
+    <!-- § 2 — ONE-SENTENCE HEADLINE -->
+    <div class="headline warn">
+      <div class="headline-icon">⚠️</div>
+      <div class="headline-text">
+        The restaurant is busy and profitable on paper — but with only <strong>$8,200 in the bank</strong> and $18,000 owed to suppliers, a slow week puts you in a cash squeeze, and <strong>food costs running at 36%</strong> (vs. 28–32% industry target) are silently eating your profit every month.
+      </div>
+    </div>
+
+    <!-- § 3 — 4 PILLARS -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">Your Four Key Numbers</span>
+        <span class="section-hint">vs. last month</span>
+      </div>
+      <div class="pillars">
+
+        <!-- Revenue -->
+        <div class="pillar p-ok">
+          <div class="pillar-label">Revenue</div>
+          <div class="pillar-row">
+            <div class="pillar-number c-ink">$85K</div>
+            <div class="pillar-arrow arrow-up">↑ +4%</div>
+          </div>
+          <div class="pillar-sub">Total sales this month</div>
+          <span class="pillar-badge pb-ok">On Track</span>
+          <div class="pillar-insight">Sales volume is healthy. The kitchen is busy. The challenge is what happens to that revenue <strong>after it comes in</strong>.</div>
+        </div>
+
+        <!-- Food Cost % -->
+        <div class="pillar p-warn">
+          <div class="pillar-label">Food Cost %</div>
+          <div class="pillar-row">
+            <div class="pillar-number c-warn">36%</div>
+            <div class="pillar-arrow arrow-down">↑ +1pp</div>
+          </div>
+          <div class="pillar-sub">Industry target: 28–32%</div>
+          <span class="pillar-badge pb-warn">Too High</span>
+          <div class="pillar-insight">For every $100 you sell, <strong>$36 goes to food</strong>. Closing this gap to 30% would free up <strong>$5,100/month</strong>.</div>
+        </div>
+
+        <!-- Cash in Bank -->
+        <div class="pillar p-danger">
+          <div class="pillar-label">Cash in Bank</div>
+          <div class="pillar-row">
+            <div class="pillar-number c-danger">$8.2K</div>
+            <div class="pillar-arrow arrow-down">↓ −31%</div>
+          </div>
+          <div class="pillar-sub">You owe suppliers $18,000</div>
+          <span class="pillar-badge pb-danger">Critical</span>
+          <div class="pillar-insight">You owe more than <strong>double what you hold</strong>. One slow week and you can't cover supplier payments.</div>
+        </div>
+
+        <!-- Net Margin -->
+        <div class="pillar p-warn">
+          <div class="pillar-label">Net Margin</div>
+          <div class="pillar-row">
+            <div class="pillar-number c-warn">14%</div>
+            <div class="pillar-arrow arrow-down">↓ −1pp</div>
+          </div>
+          <div class="pillar-sub">$11,900 kept after all costs</div>
+          <span class="pillar-badge pb-warn">Shrinking</span>
+          <div class="pillar-insight">Looks decent today, but food costs are creeping up each month. <strong>This trend doesn't hold</strong> without intervention.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- § 4 — P&L SUMMARY -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">Profit &amp; Loss Summary</span>
+        <span class="section-hint">Where the money went</span>
+      </div>
+
+      <div class="pl-row">
+        <div class="pl-name">Revenue <small>Total food &amp; beverage sales</small></div>
+        <div class="pl-val">$85,000</div>
+        <div class="pl-pct">100%</div>
+      </div>
+      <div class="pl-row indent">
+        <div class="pl-name">Food &amp; Beverage Cost <small>Direct ingredient cost</small></div>
+        <div class="pl-val" style="color:var(--red)">– $30,600</div>
+        <div class="pl-pct c-danger">36%</div>
+      </div>
+      <div class="pl-row subtotal">
+        <div class="pl-name">Gross Profit</div>
+        <div class="pl-val">$54,400</div>
+        <div class="pl-pct c-warn">64%</div>
+      </div>
+      <div class="pl-row indent">
+        <div class="pl-name">Labour <small>Wages, benefits, tips</small></div>
+        <div class="pl-val" style="color:var(--ink-mid)">– $22,000</div>
+        <div class="pl-pct">26%</div>
+      </div>
+      <div class="pl-row indent">
+        <div class="pl-name">Operating Expenses <small>Rent, utilities, admin</small></div>
+        <div class="pl-val" style="color:var(--ink-mid)">– $14,000</div>
+        <div class="pl-pct">16%</div>
+      </div>
+      <div class="pl-row subtotal">
+        <div class="pl-name">EBITDA</div>
+        <div class="pl-val">$18,400</div>
+        <div class="pl-pct">22%</div>
+      </div>
+      <div class="pl-row indent">
+        <div class="pl-name">Interest &amp; Depreciation <small>Loan interest + equipment</small></div>
+        <div class="pl-val" style="color:var(--ink-mid)">– $6,500</div>
+        <div class="pl-pct">8%</div>
+      </div>
+      <div class="pl-row total">
+        <div class="pl-name">Net Income</div>
+        <div class="pl-val" style="color:var(--teal); font-size:16px">$11,900</div>
+        <div class="pl-pct c-ok" style="font-size:14px">14%</div>
+      </div>
+
+      <!-- Benchmark bars -->
+      <div class="bench-bar-section" style="margin-top:1.5rem">
+        <!-- Gross Margin -->
+        <div class="bench-item">
+          <div class="bench-item-top">
+            <span class="bench-item-label">Gross Margin — how you compare to restaurants</span>
+            <div class="bench-item-vals">
+              <span class="bench-you warn">You: 64%</span>
+              <span class="bench-industry">Target: 68–72%</span>
+            </div>
+          </div>
+          <div class="bench-track">
+            <div class="bench-range" style="left:68%;width:4%"></div>
+            <div class="bench-marker warn" style="left:64%"></div>
+          </div>
+          <div class="bench-range-labels"><span>50%</span><span>60%</span><span>70%</span><span>80%</span></div>
+        </div>
+        <!-- Net Margin -->
+        <div class="bench-item">
+          <div class="bench-item-top">
+            <span class="bench-item-label">Net Margin — how you compare to restaurants</span>
+            <div class="bench-item-vals">
+              <span class="bench-you ok">You: 14%</span>
+              <span class="bench-industry">Target: 10–17%</span>
+            </div>
+          </div>
+          <div class="bench-track">
+            <div class="bench-range" style="left:40%;width:28%"></div>
+            <div class="bench-marker ok" style="left:56%"></div>
+          </div>
+          <div class="bench-range-labels"><span>0%</span><span>5%</span><span>10%</span><span>25%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- § 5 — AI INSIGHT -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">What This Means</span>
+        <span class="section-hint">Plain English interpretation</span>
+      </div>
+      <div class="insight-blocks">
+        <div class="insight-block warn">
+          <div class="insight-label">Food Cost</div>
+          Food cost reached <strong>36%</strong> of revenue this month, above the restaurant industry benchmark of 28–32%. The resulting gross margin of <strong>64%</strong> is approximately 5–8 percentage points below target. Each additional percentage point in food cost removes roughly <strong>$850/month</strong> from net income at current sales volume.
+        </div>
+        <div class="insight-block neutral">
+          <div class="insight-label">Labour &amp; Overhead</div>
+          Combined labour and operating expenses account for <strong>42% of revenue</strong> ($36,000), which is within the normal range for food &amp; hospitality (35–45%). These costs are not the primary driver of margin pressure in this period.
+        </div>
+        <div class="insight-block ok">
+          <div class="insight-label">Net Profitability</div>
+          Net margin of <strong>14%</strong> sits within the industry benchmark range of 10–17%, indicating that overall profitability is acceptable. However, food cost deterioration over two consecutive months signals a structural issue that will compress this margin below benchmark if unaddressed.
+        </div>
+      </div>
+    </div>
+
+    <!-- § 6 — CASH BRIDGE -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-title">Where Did Your Cash Go?</span>
+        <span class="section-hint">Start → end of month</span>
+      </div>
+      <div class="bridge-container">
+        <div class="bridge-row">
+          <div class="b-label strong">Starting Cash</div>
+          <div class="b-bar-cell"></div>
+          <div class="b-val strong">$11,900</div>
+        </div>
+        <div class="bridge-row">
+          <div class="b-label">+ Net Profit earned</div>
+          <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar pos" style="width:80px"></div></div></div>
+          <div class="b-val pos">+ $11,900</div>
+        </div>
+        <div class="bridge-row">
+          <div class="b-label">
+            − Accounts Receivable increase
+            <small>Customers still owe you</small>
+          </div>
+          <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" style="width:28px"></div></div></div>
+          <div class="b-val neg">− $3,500</div>
+        </div>
+        <div class="bridge-row">
+          <div class="b-label">
+            − Inventory build
+            <small>More stock sitting in the kitchen</small>
+          </div>
+          <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" style="width:16px"></div></div></div>
+          <div class="b-val neg">− $2,000</div>
+        </div>
+        <div class="bridge-row">
+          <div class="b-label">
+            + Accounts Payable increase
+            <small>You owe suppliers more — delayed cash out</small>
+          </div>
+          <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar pos" style="width:36px"></div></div></div>
+          <div class="b-val pos">+ $4,500 <span class="b-tag est">Est.</span></div>
+        </div>
+        <div class="bridge-row">
+          <div class="b-label">− Loan Repayments</div>
+          <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" style="width:56px"></div></div></div>
+          <div class="b-val neg">− $7,000</div>
+        </div>
+        <div class="bridge-row">
+          <div class="b-label flag">
+            − Owner Drawings
+            <small>52% of net profit — exceeds 40% threshold</small>
+          </div>
+          <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" style="width:48px"></div></div></div>
+          <div class="b-val neg">− $6,200 <span class="b-tag warn">⚠ High</span></div>
+        </div>
+        <div class="bridge-row">
+          <div class="b-label">− Equipment Purchase</div>
+          <div class="b-bar-cell"><div class="b-bar-wrap"><div class="b-bar neg" style="width:8px"></div></div></div>
+          <div class="b-val neg">− $1,400</div>
+        </div>
+        <div class="bridge-row ending">
+          <div class="b-label strong">= Ending Cash Balance</div>
+          <div class="b-bar-cell"></div>
+          <div class="b-val danger">$8,200</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- § 7 — WORKING CAPITAL HEALTH -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-title">Working Capital Health</span>
+        <span class="section-hint">How fast cash flows through the business</span>
+      </div>
+
+      <div class="wc-cards">
+        <div class="wc-card ok">
+          <div class="wc-card-label">Days Sales Outstanding</div>
+          <div class="wc-card-abbr">DSO</div>
+          <div class="wc-number ok">3</div>
+          <div class="wc-unit">days to collect</div>
+          <span class="wc-badge ok">Good</span>
+        </div>
+        <div class="wc-card ok">
+          <div class="wc-card-label">Days Inventory Outstanding</div>
+          <div class="wc-card-abbr">DIO</div>
+          <div class="wc-number ok">7</div>
+          <div class="wc-unit">days in stock</div>
+          <span class="wc-badge ok">Good</span>
+        </div>
+        <div class="wc-card danger">
+          <div class="wc-card-label">Days Payable Outstanding</div>
+          <div class="wc-card-abbr">DPO</div>
+          <div class="wc-number danger">8</div>
+          <div class="wc-unit">days to pay suppliers</div>
+          <span class="wc-badge danger">Too Fast</span>
+        </div>
+      </div>
+
+      <div class="ccc-row">
+        <span style="font-size:11px;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;">Cash Conversion Cycle</span>
+        <div class="ccc-chunk"><span class="ccc-val" style="color:var(--teal)">3</span><span style="font-size:10px;color:var(--ink-light)">DSO</span></div>
+        <span class="ccc-op">+</span>
+        <div class="ccc-chunk"><span class="ccc-val" style="color:var(--teal)">7</span><span style="font-size:10px;color:var(--ink-light)">DIO</span></div>
+        <span class="ccc-op">−</span>
+        <div class="ccc-chunk"><span class="ccc-val" style="color:var(--red)">8</span><span style="font-size:10px;color:var(--ink-light)">DPO</span></div>
+        <span class="ccc-op">=</span>
+        <span class="ccc-total">2 days</span>
+        <span style="font-size:11px;color:var(--ink-light)">(healthy for restaurants)</span>
+      </div>
+
+      <table class="wcr-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Actual</th>
+            <th>Industry Target</th>
+            <th>Variance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Accounts Receivable</td>
+            <td>$5,500</td>
+            <td>$3,400</td>
+            <td class="var-bad">+$2,100</td>
+          </tr>
+          <tr>
+            <td>Inventory</td>
+            <td>$8,400</td>
+            <td>$7,000</td>
+            <td class="var-bad">+$1,400</td>
+          </tr>
+          <tr>
+            <td>Accounts Payable</td>
+            <td>$18,000</td>
+            <td>$14,000</td>
+            <td class="var-bad">+$4,000</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Working Capital Required</td>
+            <td>$13,900</td>
+            <td>$10,400</td>
+            <td class="var-bad">+$3,500 excess</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- § 8 — CASH RUNWAY -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <span class="section-title">Cash Runway</span>
+        <span class="section-hint">How long can you last at this pace?</span>
+      </div>
+      <div class="runway-hero">
+        <div>
+          <div class="runway-big warn">1.8</div>
+          <div class="runway-unit">months</div>
+        </div>
+        <div class="runway-meta">
+          <div class="runway-cashout">⚠ Cash runs out approx. September 18, 2026</div>
+          <div class="runway-explanation">
+            Based on $8,200 in the bank and average monthly net burn of $4,600 (after drawings and loan repayments). This assumes current revenue continues — a two-week dip in covers would shorten this to under 4 weeks.
+          </div>
+        </div>
+      </div>
+      <div class="bench-item">
+        <div class="bench-item-top">
+          <span class="bench-item-label">Runway vs. recommended minimum (3 months)</span>
+          <div class="bench-item-vals">
+            <span class="bench-you warn">You: 1.8 mo</span>
+            <span class="bench-industry">Target: 3+ mo</span>
+          </div>
+        </div>
+        <div class="bench-track">
+          <div class="bench-range" style="left:50%;width:50%"></div>
+          <div class="bench-marker danger" style="left:30%"></div>
+        </div>
+        <div class="bench-range-labels"><span>0</span><span>1 mo</span><span>2 mo</span><span>3 mo+</span></div>
+      </div>
+    </div>
+
+    <!-- § 9 — DEBT COVERAGE -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <span class="section-title">Debt Coverage</span>
+        <span class="section-hint">Can you cover your loan payments?</span>
+      </div>
+      <div class="debt-grid">
+        <div class="debt-card">
+          <div class="debt-card-label">Free Cash Flow</div>
+          <div class="debt-card-number ok">$18,400</div>
+          <div class="debt-card-sub">Cash generated before repayments</div>
+        </div>
+        <div class="debt-card">
+          <div class="debt-card-label">Loan Repayments</div>
+          <div class="debt-card-number" style="color:var(--red)">$7,000</div>
+          <div class="debt-card-sub">Monthly principal + interest</div>
+        </div>
+        <div class="debt-card">
+          <div class="debt-card-label">Coverage Ratio</div>
+          <div class="debt-card-number ok">2.6×</div>
+          <div class="debt-card-sub">Min. 1.25× recommended</div>
+        </div>
+      </div>
+      <div class="insight-block ok">
+        <div class="insight-label">Coverage</div>
+        Free cash flow of <strong>$18,400</strong> covers loan repayments of <strong>$7,000</strong> at a ratio of 2.6×, comfortably above the 1.25× minimum required by most lenders. Debt service is not a near-term risk.
+      </div>
+    </div>
+
+    <!-- § 10 — BANK MEETING SUMMARY -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <span class="section-title">If Someone Asks How the Business Is Doing</span>
+        <span class="section-hint">Ready to use</span>
+      </div>
+      <div class="bank-quote-wrap">
+        <div class="bank-quote-text">
+          "Sales are $85,000 this month and we are profitable — $11,900 net profit at 14% margin. Cash position is tight at $8,200, and we're actively working on bringing food costs down from 36% to our 30% target, which will add approximately $5,100 to monthly cash flow."
+        </div>
+        <div class="bank-quote-note">Use this with your bank, business partner, or accountant. Adjust the last sentence if the food cost fix is already underway.</div>
+      </div>
+    </div>
+
+    <!-- § 11 — 3 ACTIONS THIS WEEK -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <span class="section-title">Your 3 Actions This Week</span>
+        <span class="section-hint">Do these first</span>
+      </div>
+      <ul class="actions-list">
+        <li class="action-item">
+          <div class="action-num">01</div>
+          <div class="action-body">
+            <span class="urgency-tag u-today">Do Today</span>
+            <div class="action-title">Call your top 3 suppliers and negotiate 30-day payment terms</div>
+            <div class="action-desc">You currently owe $18,000 to suppliers but only hold $8,200. Extending payment from immediate to 30 days gives you a critical buffer and prevents a cash emergency if a weekend is slower than expected. Your trading history gives you leverage — most suppliers will agree to avoid losing a regular customer.</div>
+            <span class="action-metric">Linked to: Cash $8,200 vs AP $18,000</span>
+          </div>
+        </li>
+        <li class="action-item">
+          <div class="action-num">02</div>
+          <div class="action-body">
+            <span class="urgency-tag u-week">This Week</span>
+            <div class="action-title">Audit your two highest-cost menu items and reprice or re-engineer them</div>
+            <div class="action-desc">Food cost is running at 36% — 4–8 points above benchmark. Pick the two dishes with the highest ingredient cost vs. menu price, and either increase their price by $1–2 or substitute one ingredient. A 2-point improvement in food cost on $85K revenue = $1,700 back in margin per month.</div>
+            <span class="action-metric">Linked to: Food Cost 36% (target 28–32%)</span>
+          </div>
+        </li>
+        <li class="action-item">
+          <div class="action-num">03</div>
+          <div class="action-body">
+            <span class="urgency-tag u-month">This Month</span>
+            <div class="action-title">Reduce owner drawings to a fixed monthly salary, not a percentage of takings</div>
+            <div class="action-desc">You drew $6,200 this month — 52% of net profit — which is above the 40% threshold. Switching to a fixed monthly draw of $4,500 would have left $1,700 more in the business, which compounds quickly into a meaningful cash reserve. Decide on a number and treat it like a salary.</div>
+            <span class="action-metric">Linked to: Owner Drawings $6,200 (52% of profit)</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- § 12 — NON-FINANCIAL INVESTIGATION POINTS -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <span class="section-title">Things to Investigate</span>
+        <span class="section-hint">Data we can't calculate — but you should track</span>
+      </div>
+      <ul class="nf-list">
+        <li class="nf-item">
+          <div class="nf-icon">🍽️</div>
+          <div class="nf-body">
+            <div class="nf-question">What is your table turn rate, and has it changed?</div>
+            <div class="nf-why">Revenue looks healthy, but if covers per service have dropped and average spend is higher, your kitchen is working just as hard for the same top line. Table turns directly affect how efficiently you use food inventory.</div>
+          </div>
+        </li>
+        <li class="nf-item">
+          <div class="nf-icon">📦</div>
+          <div class="nf-body">
+            <div class="nf-question">Are there signs of kitchen waste or theft affecting food cost?</div>
+            <div class="nf-why">A 36% food cost — above benchmark even for a full-service restaurant — can be caused by over-portioning, waste, or theft as much as by supplier price increases. A one-week physical stock count will tell you which it is.</div>
+          </div>
+        </li>
+        <li class="nf-item">
+          <div class="nf-icon">⭐</div>
+          <div class="nf-body">
+            <div class="nf-question">What is your online review trend over the last 90 days?</div>
+            <div class="nf-why">Customer sentiment is a leading indicator of future revenue. If reviews have dipped while sales held steady, a revenue softening may be coming in the next 1–2 months before it shows in your financials.</div>
+          </div>
+        </li>
+        <li class="nf-item">
+          <div class="nf-icon">👥</div>
+          <div class="nf-body">
+            <div class="nf-question">Is staff turnover or overtime hours increasing?</div>
+            <div class="nf-why">Labour is within benchmark now at 26%, but hospitality turnover can push this up quickly. If you're covering shifts with overtime rather than through headcount, the hidden cost will appear in next month's numbers.</div>
+          </div>
+        </li>
+        <li class="nf-item">
+          <div class="nf-icon">🏢</div>
+          <div class="nf-body">
+            <div class="nf-question">When does your lease renew, and do you have a rough sense of the rate?</div>
+            <div class="nf-why">Rent is currently steady inside operating expenses, but a renewal negotiation in the next 6–12 months could materially shift your cost base. Knowing this now means you can plan for it — or use current profitability to negotiate from a position of strength.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  </div><!-- end plain-mode -->
+
+  <!-- ═══════════════════════════════════
+       TECHNICAL VIEW
+  ═══════════════════════════════════════ -->
+  <div id="technical-mode">
+
+    <div class="tech-section-title">Key Financial Ratios</div>
+    <div class="ratio-grid">
+      <div class="ratio-card">
+        <div class="ratio-name">Current Ratio</div>
+        <div class="ratio-val warn">0.7×</div>
+        <div class="ratio-bench">Benchmark: ≥1.0×</div>
+      </div>
+      <div class="ratio-card">
+        <div class="ratio-name">Gross Margin</div>
+        <div class="ratio-val warn">64%</div>
+        <div class="ratio-bench">Target: 68–72%</div>
+      </div>
+      <div class="ratio-card">
+        <div class="ratio-name">Net Margin</div>
+        <div class="ratio-val ok">14%</div>
+        <div class="ratio-bench">Target: 10–17%</div>
+      </div>
+      <div class="ratio-card">
+        <div class="ratio-name">DSCR</div>
+        <div class="ratio-val ok">2.6×</div>
+        <div class="ratio-bench">Min required: 1.25×</div>
+      </div>
+      <div class="ratio-card">
+        <div class="ratio-name">Food Cost %</div>
+        <div class="ratio-val warn">36%</div>
+        <div class="ratio-bench">Target: 28–32%</div>
+      </div>
+      <div class="ratio-card">
+        <div class="ratio-name">Labour %</div>
+        <div class="ratio-val ok">26%</div>
+        <div class="ratio-bench">Target: 25–35%</div>
+      </div>
+      <div class="ratio-card">
+        <div class="ratio-name">Prime Cost</div>
+        <div class="ratio-val warn">62%</div>
+        <div class="ratio-bench">Target: ≤60%</div>
+      </div>
+      <div class="ratio-card">
+        <div class="ratio-name">Cash Runway</div>
+        <div class="ratio-val bad">1.8 mo</div>
+        <div class="ratio-bench">Target: ≥3 months</div>
+      </div>
+    </div>
+
+    <div class="tech-section-title">Income Statement</div>
+    <table class="tech-table">
+      <thead><tr><th>Line Item</th><th>Amount (USD)</th><th>% Revenue</th><th>Industry Avg</th><th>Variance</th></tr></thead>
+      <tbody>
+        <tr><td>Revenue</td><td>85,000</td><td>100.0%</td><td>100.0%</td><td>—</td></tr>
+        <tr><td>Cost of Goods Sold (F&B)</td><td>(30,600)</td><td style="color:var(--red)">36.0%</td><td>28–32%</td><td class="var-bad">+4–8 pp</td></tr>
+        <tr><td>Gross Profit</td><td>54,400</td><td>64.0%</td><td>68–72%</td><td class="var-bad">−4–8 pp</td></tr>
+        <tr><td>Labour</td><td>(22,000)</td><td>25.9%</td><td>25–35%</td><td class="var-ok">Within</td></tr>
+        <tr><td>Occupancy &amp; Overhead</td><td>(14,000)</td><td>16.5%</td><td>12–18%</td><td class="var-ok">Within</td></tr>
+        <tr><td>EBITDA</td><td>18,400</td><td>21.6%</td><td>15–25%</td><td class="var-ok">Within</td></tr>
+        <tr><td>Depreciation &amp; Amortisation</td><td>(3,000)</td><td>3.5%</td><td>2–5%</td><td>—</td></tr>
+        <tr><td>Interest Expense</td><td>(3,500)</td><td>4.1%</td><td>2–5%</td><td>—</td></tr>
+      </tbody>
+      <tfoot><tr><td>Net Income</td><td>11,900</td><td style="color:var(--teal)">14.0%</td><td>10–17%</td><td class="var-ok">Within</td></tr></tfoot>
+    </table>
+
+    <div class="tech-section-title">Balance Sheet Snapshot</div>
+    <table class="tech-table">
+      <thead><tr><th>Item</th><th>Balance (USD)</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Cash &amp; Equivalents</td><td>8,200</td><td style="color:var(--red)">Below recommended 3-month reserve</td></tr>
+        <tr><td>Accounts Receivable</td><td>5,500</td><td>DSO: 3 days — healthy</td></tr>
+        <tr><td>Inventory</td><td>8,400</td><td>DIO: 7 days — healthy</td></tr>
+        <tr><td>Total Current Assets</td><td>22,100</td><td></td></tr>
+        <tr><td>Accounts Payable</td><td>18,000</td><td style="color:var(--red)">DPO: 8 days — paying too fast</td></tr>
+        <tr><td>Short-term Loan Portion</td><td>13,400</td><td></td></tr>
+        <tr><td>Total Current Liabilities</td><td>31,400</td><td></td></tr>
+      </tbody>
+      <tfoot><tr><td>Working Capital (Net)</td><td style="color:var(--red)">(9,300)</td><td>Negative — current liabilities exceed current assets</td></tr></tfoot>
+    </table>
+
+    <div class="tech-section-title">Working Capital Cycle</div>
+    <table class="tech-table">
+      <thead><tr><th>Metric</th><th>Actual</th><th>Industry Target</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Days Sales Outstanding (DSO)</td><td>3 days</td><td>≤7 days</td><td class="var-ok">✓ Good</td></tr>
+        <tr><td>Days Inventory Outstanding (DIO)</td><td>7 days</td><td>5–10 days</td><td class="var-ok">✓ Good</td></tr>
+        <tr><td>Days Payable Outstanding (DPO)</td><td>8 days</td><td>20–30 days</td><td class="var-bad">✗ Too low</td></tr>
+        <tr><td>Cash Conversion Cycle (CCC)</td><td>2 days</td><td>≤10 days</td><td class="var-ok">✓ Good</td></tr>
+      </tbody>
+    </table>
+
+    <div class="tech-section-title">Free Cash Flow &amp; Debt Service</div>
+    <table class="tech-table">
+      <thead><tr><th>Item</th><th>Amount (USD)</th></tr></thead>
+      <tbody>
+        <tr><td>EBITDA</td><td>18,400</td></tr>
+        <tr><td>Working Capital Changes</td><td>(1,000)</td></tr>
+        <tr><td>Capital Expenditure</td><td>(1,400)</td></tr>
+        <tr><td>Free Cash Flow (FCF)</td><td>16,000</td></tr>
+        <tr><td>Loan Repayments</td><td>(7,000)</td></tr>
+        <tr><td>FCFF (after debt service)</td><td>9,000</td></tr>
+        <tr><td>Debt Service Coverage Ratio (DSCR)</td><td>2.6×</td></tr>
+      </tbody>
+    </table>
+
+  </div><!-- end technical-mode -->
+
+  <!-- ═══════════════════════════════════
+       § 13 — FOOTER
+  ═══════════════════════════════════════ -->
+  <div class="report-footer">
+    <div class="footer-disclaimer">
+      This report is generated by PlainFinancials and is intended to help business owners understand their financial data. It is not financial advice. Industry benchmarks are approximations based on publicly available data for the Food &amp; Hospitality sector in the US. For decisions involving material investment, credit, or restructuring, consult a qualified accountant or financial advisor. Data entered by the user has not been independently verified.
+    </div>
+    <div class="footer-brand">
+      <strong>PlainFinancials</strong>
+      Generated 31 July 2026<br>
+      <a href="https://plainfinancials.com">plainfinancials.com</a>
+    </div>
+  </div>
+
+</div><!-- end page -->
+
+<script>
+function setMode(mode) {
+  const plain = document.getElementById('plain-mode');
+  const tech  = document.getElementById('technical-mode');
+  const btnP  = document.getElementById('btn-plain');
+  const btnT  = document.getElementById('btn-tech');
+  if (mode === 'plain') {
+    plain.classList.remove('hidden');
+    tech.classList.remove('visible');
+    btnP.classList.add('active');
+    btnT.classList.remove('active');
+  } else {
+    plain.classList.add('hidden');
+    tech.classList.add('visible');
+    btnP.classList.remove('active');
+    btnT.classList.add('active');
+  }
+}
+</script>
+</body>
+</html>

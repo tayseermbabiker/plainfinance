@@ -1,0 +1,601 @@
+[
+  {
+    "name": "Fresa's",
+    "url": "https://www.fresaschicken.com",
+    "ownerName": "",
+    "emails": [
+      "hi@fresaschicken.com",
+      "donations@fresaschicken.com",
+      "jobs@fresaschicken.com"
+    ]
+  },
+  {
+    "name": "Chuy's",
+    "url": "https://www.chuys.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Guero's Taco Bar",
+    "url": "https://www.guerostacobar.com",
+    "ownerName": "",
+    "emails": [
+      "events@guerostacobar.com",
+      "reservations@gueros.com",
+      "bookings@gueros.com",
+      "info@gueros.com",
+      "events@gueros.com",
+      "catering@guerostacobar.com"
+    ]
+  },
+  {
+    "name": "Torchy's Tacos",
+    "url": "https://www.torchystacos.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Taqueria Arandas",
+    "url": "https://www.taqueriaarandas.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Polvo's Mexican",
+    "url": "https://polvosaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Vaquero Taquero",
+    "url": "https://www.vaquerotaquero.com",
+    "ownerName": "",
+    "emails": [
+      "info@vaquerotaquero.com"
+    ]
+  },
+  {
+    "name": "Valentina's Tex-Mex BBQ",
+    "url": "https://www.valentinastexmexbbq.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Pueblo Viejo",
+    "url": "https://www.puebloviejofoodpark.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Licha's Cantina",
+    "url": "https://www.lichascantina.com",
+    "ownerName": "",
+    "emails": [
+      "lichas.info@gmail.com"
+    ]
+  },
+  {
+    "name": "Suerte",
+    "url": "https://www.suerteaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Rosie's Al Pastor",
+    "url": "https://www.rosiesalpastor.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Casa Colombia",
+    "url": "https://www.casacolombia.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Sap's Thai",
+    "url": "https://sapsthai.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Madam Mam's",
+    "url": "https://www.madammam.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Thai Kun",
+    "url": "https://thaikunaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Asia Cafe",
+    "url": "https://www.asiacafeaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Chen's Noodle House",
+    "url": "https://www.chensnoodlehouse.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Wu Chow",
+    "url": "https://www.wuchowaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Lucky Robot",
+    "url": "https://www.luckyrobotrestaurant.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Taste of India",
+    "url": "https://www.tasteofindia-austin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Bombay Bistro",
+    "url": "https://www.bombaybistro.com",
+    "ownerName": "",
+    "emails": [
+      "bombaysham@yahoo.com"
+    ]
+  },
+  {
+    "name": "Clay Pit",
+    "url": "https://www.claypit.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Swad Indian",
+    "url": "https://www.swadindian.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Koriente",
+    "url": "https://korienteatx.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Chi'Lantro",
+    "url": "https://www.chilantrobbq.com",
+    "ownerName": "",
+    "emails": [
+      "team@chilantrobbq.com",
+      "catering@chilantrobbq.com",
+      "pr@chilantrobbq.com"
+    ]
+  },
+  {
+    "name": "Fukumoto",
+    "url": "https://www.fukumotoaustin.com",
+    "ownerName": "",
+    "emails": [
+      "eat@fukumotoaustin.com"
+    ]
+  },
+  {
+    "name": "Tsuke Edomae",
+    "url": "https://www.tsukeedomae.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Ling Wu",
+    "url": "https://lingwuaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Mandola's Italian",
+    "url": "https://www.mandolas.com",
+    "ownerName": "",
+    "emails": [
+      "office@mandolas.com"
+    ]
+  },
+  {
+    "name": "Vespaio",
+    "url": "https://www.austinvespaio.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Juliet Ristorante",
+    "url": "https://juliet-austin.com",
+    "ownerName": "",
+    "emails": [
+      "ciao@juliet-austin.com",
+      "agonzalez@juliet-austin.com",
+      "events@juliet-austin.com",
+      "events@juliet-gtx.com",
+      "marketing@juliet-austin.com",
+      "abbey@pennington-pr.com"
+    ]
+  },
+  {
+    "name": "Andiamo",
+    "url": "https://www.andiamoitaliano.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Stiles Switch BBQ",
+    "url": "https://www.stilesswitchbbq.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Kerlin BBQ",
+    "url": "https://kerlinbbq.com",
+    "ownerName": "",
+    "emails": [
+      "orders@kerlinbbq.com",
+      "contact@kerlinbbq.com"
+    ]
+  },
+  {
+    "name": "Micklethwait",
+    "url": "https://craftmeatsaustin.com",
+    "ownerName": "",
+    "emails": [
+      "team@craftmeatsaustin.com"
+    ]
+  },
+  {
+    "name": "Sam's BBQ",
+    "url": "https://www.samsbbqaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Brown's Bar-B-Que",
+    "url": "https://brownsbarbque.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Clark's Oyster Bar",
+    "url": "https://www.clarksoysterbar.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Garbo's Lobster",
+    "url": "https://garboslobster.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Truluck's",
+    "url": "https://trulucks.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Snooze",
+    "url": "https://www.snoozeeatery.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Magnolia Cafe",
+    "url": "https://www.magnoliacafeaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Cafe Medici",
+    "url": "https://cafemedici.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Mozart's Coffee",
+    "url": "https://mozartscoffee.com",
+    "ownerName": "",
+    "emails": [
+      "customerservice@mozartscoffee.com"
+    ]
+  },
+  {
+    "name": "Quack's Bakery",
+    "url": "https://www.quacksbakery.com",
+    "ownerName": "",
+    "emails": [
+      "bakery@quacksbakery.com"
+    ]
+  },
+  {
+    "name": "Swedish Hill Bakery",
+    "url": "https://www.swedishhillaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Upper Crust Bakery",
+    "url": "https://theuppercrustbakery.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Colleen's Kitchen",
+    "url": "https://www.colleenskitchenaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Bird Bird Biscuit",
+    "url": "https://birdbirdaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Biscuits & Groovy",
+    "url": "https://www.biscuitsandgroovy.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Sour Duck Market",
+    "url": "https://www.sourduckmarket.com",
+    "ownerName": "",
+    "emails": [
+      "info@sourduckaustin.com"
+    ]
+  },
+  {
+    "name": "Summer Moon Coffee",
+    "url": "https://www.summermooncoffee.com",
+    "ownerName": "",
+    "emails": [
+      "corporate@summermoon.com"
+    ]
+  },
+  {
+    "name": "Houndstooth Coffee",
+    "url": "https://www.houndstoothcoffee.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Fleet Coffee",
+    "url": "https://www.fleetcoffee.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Greater Goods Coffee",
+    "url": "https://greatergoodsroasting.com",
+    "ownerName": "",
+    "emails": [
+      "hello@ggroasting.com",
+      "training@ggroasting.com"
+    ]
+  },
+  {
+    "name": "Salty Sow",
+    "url": "https://saltysow.com",
+    "ownerName": "",
+    "emails": [
+      "saltysowaustin@saltysow.com",
+      "marketing@guyandlarryrestaurants.com"
+    ]
+  },
+  {
+    "name": "Fixe Southern House",
+    "url": "https://www.fixesouthernhouse.com",
+    "ownerName": "",
+    "emails": [
+      "keith@austinfixe.com"
+    ]
+  },
+  {
+    "name": "Parkside",
+    "url": "https://www.parkside-austin.com",
+    "ownerName": "",
+    "emails": [
+      "info@parkside-austin.com",
+      "events@parkside-austin.com"
+    ]
+  },
+  {
+    "name": "Oasthouse",
+    "url": "https://oasthouseaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Maie Day",
+    "url": "https://www.maieday.com",
+    "ownerName": "",
+    "emails": [
+      "communications-maieday@southcongresshotel.com",
+      "events-maieday@southcongresshotel.com"
+    ]
+  },
+  {
+    "name": "Supper Club",
+    "url": "https://www.supperclubaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Austin Land & Cattle",
+    "url": "https://alcsteaks.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "VanHorn's",
+    "url": "https://www.vanhornsaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Slab BBQ",
+    "url": "https://www.slabbbq.com",
+    "ownerName": "",
+    "emails": [
+      "info@slabbbq.com"
+    ]
+  },
+  {
+    "name": "24 Diner",
+    "url": "https://www.24diner.com",
+    "ownerName": "",
+    "emails": [
+      "info@24diner.com"
+    ]
+  },
+  {
+    "name": "Cover 3",
+    "url": "https://cover-3.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Tommy Want Wingy",
+    "url": "https://tommywantwingyatx.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Texas Wings & Grill",
+    "url": "https://texaswingsandgrill.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Wings N More",
+    "url": "https://wingsnmore-austin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Tumble 22",
+    "url": "https://www.tumble22.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Lucy's Fried Chicken",
+    "url": "https://lucysfriedchicken.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "G'Raj Mahal",
+    "url": "https://www.grajmahalaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Banger's",
+    "url": "https://www.bangersaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Nasha India",
+    "url": "https://nashaindia.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Fogo de Chao",
+    "url": "https://fogodechao.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "The Meteor",
+    "url": "https://themeteorcafe.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Veracruz All Natural",
+    "url": "https://www.veracruzallnatural.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Taco Flats",
+    "url": "https://www.tacoflats.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Phoebe's Diner",
+    "url": "https://www.phoebesdiner.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Lao'd Bar",
+    "url": "https://laodbar.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "House of Three Gorges",
+    "url": "https://www.houseofthreegorges.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "AllDay Pizza",
+    "url": "https://alldaypizzaaustin.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "De Nada Cantina",
+    "url": "https://www.denadacantina.com",
+    "ownerName": "",
+    "emails": [
+      "hablar@denadacantina.com"
+    ]
+  },
+  {
+    "name": "Ramen Tatsu-ya",
+    "url": "https://ramentatsuya.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Aba Austin",
+    "url": "https://www.abarestaurants.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Pitchfork Pretty",
+    "url": "https://www.pitchforkpretty.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Cuantos Tacos",
+    "url": "https://www.cuantostacos.com",
+    "ownerName": "",
+    "emails": []
+  },
+  {
+    "name": "Comal",
+    "url": "https://www.comalatx.com",
+    "ownerName": "",
+    "emails": []
+  }
+]

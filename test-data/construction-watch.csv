@@ -1,0 +1,21 @@
+Field,This Month,Previous Month,Year to Date,Notes
+Revenue / Sales,520000,610000,2800000,Billings slowing — project delays
+Cost of Goods Sold (COGS),390000,,2100000,Subcontractor costs + materials
+Labour / Staff Cost,0,,0,Included in COGS
+Operating Expenses (OPEX),110000,,580000,Office overhead + insurance
+Net Profit,20000,45000,120000,Margins thinning
+Cash in Bank,95000,115000,,Tightening
+Opening Cash (Start of Year),180000,,,Cash on Jan 1
+Opening AR (Start of Year),350000,,,Retentions owed Jan 1
+Opening Inventory (Start of Year),30000,,,Materials Jan 1
+Opening AP (Start of Year),280000,,,Payables Jan 1
+Accounts Receivable (AR),480000,420000,,Retentions piling up — slow collections
+Inventory,38000,35000,,Materials on site
+Accounts Payable (AP),260000,250000,,Owed to subs
+Short-term Loans,120000,,,Bridge financing
+Other Liabilities,25000,,,Accrued costs
+Loan Repayments,18000,,90000,Loan payments
+Owner Drawings,10000,,50000,Reduced drawings
+Asset Purchases,0,,15000,Minimal capex
+Tax Collected from Customers,26000,,140000,VAT collected
+Tax Paid on Purchases,19500,,105000,VAT paid

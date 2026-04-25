@@ -1,0 +1,21 @@
+Field,This Month,Previous Month,Year to Date,Notes
+Revenue / Sales,720000,680000,3500000,Production orders strong
+Cost of Goods Sold (COGS),468000,,2275000,Raw materials + production labour + factory overhead
+Labour / Staff Cost,0,,0,Included in COGS
+Operating Expenses (OPEX),158000,,780000,Admin + sales + warehousing
+Net Profit,94000,82000,445000,Healthy margin
+Cash in Bank,280000,245000,,Good reserves
+Opening Cash (Start of Year),220000,,,Cash on Jan 1
+Opening AR (Start of Year),250000,,,Trade receivables Jan 1
+Opening Inventory (Start of Year),310000,,,Raw + WIP + finished goods Jan 1
+Opening AP (Start of Year),220000,,,Supplier payables Jan 1
+Accounts Receivable (AR),290000,270000,,Net 30 terms mostly
+Inventory,340000,325000,,Raw materials + WIP + finished goods
+Accounts Payable (AP),245000,230000,,Supplier terms Net 45
+Short-term Loans,60000,,,Working capital line
+Other Liabilities,10000,,,Accrued expenses
+Loan Repayments,8000,,40000,Term loan repayments
+Owner Drawings,12000,,60000,Regular distributions
+Asset Purchases,0,,35000,Machinery upgrade
+Tax Collected from Customers,36000,,175000,VAT on sales
+Tax Paid on Purchases,23400,,113750,VAT on materials

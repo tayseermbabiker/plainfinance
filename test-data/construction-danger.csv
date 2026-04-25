@@ -1,0 +1,21 @@
+Field,This Month,Previous Month,Year to Date,Notes
+Revenue / Sales,280000,350000,1600000,Projects stalled — disputes + weather delays
+Cost of Goods Sold (COGS),238000,,1400000,Fixed subcontractor commitments eating margin
+Labour / Staff Cost,0,,0,Included in COGS
+Operating Expenses (OPEX),75000,,420000,Cut where possible but fixed costs remain
+Net Profit,-33000,-15000,-220000,Losing money — cost overruns
+Cash in Bank,28000,52000,,Dangerously low
+Opening Cash (Start of Year),150000,,,Cash on Jan 1
+Opening AR (Start of Year),300000,,,Retentions Jan 1
+Opening Inventory (Start of Year),25000,,,Materials Jan 1
+Opening AP (Start of Year),200000,,,Payables Jan 1
+Accounts Receivable (AR),520000,480000,,Clients withholding payment — disputes
+Inventory,42000,40000,,Unused materials on stalled sites
+Accounts Payable (AP),380000,340000,,Falling behind on subs
+Short-term Loans,200000,,,Emergency bridge loan
+Other Liabilities,45000,,,Accrued penalties
+Loan Repayments,25000,,125000,Loan burden
+Owner Drawings,0,,20000,Stopped drawings
+Asset Purchases,0,,10000,No new purchases
+Tax Collected from Customers,14000,,80000,VAT collected
+Tax Paid on Purchases,11900,,70000,VAT paid
