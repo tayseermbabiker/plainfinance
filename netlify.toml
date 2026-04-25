@@ -22,8 +22,8 @@
 
 [[redirects]]
   from = "/etsy"
-  to = "https://etsypricing.netlify.app/"
-  status = 200
+  to = "/etsy/"
+  status = 301
   force = true
 
 
