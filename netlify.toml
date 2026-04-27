@@ -14,19 +14,17 @@
   status = 200
 
 # Etsy Calculator subpath — proxies to standalone Netlify site
-# IMPORTANT: 301 redirect must come BEFORE the proxy splat rule —
-# Netlify's /etsy/* matches /etsy (empty splat), so without this ordering
-# the proxy fires before the redirect and the URL stays without trailing
-# slash, breaking relative paths in the proxied HTML.
-[[redirects]]
-  from = "/etsy"
-  to = "/etsy/"
-  status = 301
-  force = true
-
+# Both /etsy and /etsy/* proxy directly. Always link to /etsy/ (with
+# trailing slash) so relative paths in the proxied HTML resolve correctly.
 [[redirects]]
   from = "/etsy/*"
   to = "https://etsypricing.netlify.app/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/etsy"
+  to = "https://etsypricing.netlify.app/"
   status = 200
   force = true
 
