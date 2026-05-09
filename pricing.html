@@ -209,15 +209,16 @@
             margin-bottom: 24px;
         }
 
-        .pricing-single {
+        .pricing-grid.pricing-single {
             max-width: 720px;
             margin: 0 auto;
             grid-template-columns: 1fr 1fr;
         }
 
         @media (max-width: 768px) {
-            .pricing-single {
+            .pricing-grid.pricing-single {
                 grid-template-columns: 1fr;
+                max-width: 400px;
             }
         }
 
