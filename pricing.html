@@ -112,7 +112,7 @@
                     </div>
                     <div class="faq-item">
                         <h3>What payment methods do you accept?</h3>
-                        <p>All major credit and debit cards via Stripe. Secure and encrypted.</p>
+                        <p>All major credit and debit cards via Lemon Squeezy. Secure, encrypted, and globally tax-compliant.</p>
                     </div>
                     <div class="faq-item">
                         <h3>Do you offer refunds?</h3>
@@ -174,29 +174,11 @@
                 return;
             }
 
-            try {
-                const response = await fetch('/.netlify/functions/create-checkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        plan: 'owner',
-                        billing: 'monthly',
-                        userId: user.id,
-                        userEmail: user.email
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.success && result.url) {
-                    window.location.href = result.url;
-                } else {
-                    alert(result.error || 'Failed to start checkout. Please try again.');
-                }
-            } catch (error) {
-                console.error('Checkout error:', error);
-                alert('Something went wrong. Please try again.');
-            }
+            const buyUrl = 'https://plainfinancials.lemonsqueezy.com/checkout/buy/9a89ceab-091b-4cdb-adb0-3c8d039666e1';
+            const params = new URLSearchParams();
+            params.set('checkout[email]', user.email);
+            params.set('checkout[custom][user_id]', user.id);
+            window.location.href = `${buyUrl}?${params.toString()}`;
         }
 
         function bookConsultation() {

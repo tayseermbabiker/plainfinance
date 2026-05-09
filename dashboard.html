@@ -32,7 +32,7 @@
                     <span id="navPlanText">Free Plan</span>
                 </div>
                 <a href="pricing.html" class="nav-upgrade-link" id="navUpgrade" style="display:none;">Upgrade</a>
-                <a href="#" class="nav-upgrade-link" id="navCancel" style="display:none;color:#94a3b8;" onclick="cancelSubscription(); return false;">Cancel Plan</a>
+                <a href="https://plainfinancials.lemonsqueezy.com/billing" target="_blank" rel="noopener" class="nav-upgrade-link" id="navCancel" style="display:none;color:#94a3b8;">Manage Plan</a>
                 <div class="nav-links">
                     <a href="dashboard.html" class="active">My Reports</a>
                     <a href="analyze.html">New Analysis</a>
@@ -304,34 +304,6 @@
                 }
             } catch (e) {
                 console.log('Could not load subscription info');
-            }
-        }
-
-        // ===== Cancel Subscription =====
-        async function cancelSubscription() {
-            const user = await getUser();
-            if (!user) return;
-
-            if (!confirm('Cancel your subscription? You\'ll keep access until the end of your billing period.')) return;
-
-            try {
-                const response = await fetch('/.netlify/functions/cancel-subscription', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: user.id })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    const endsAt = new Date(result.endsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    alert(`Subscription canceled. You have access until ${endsAt}.`);
-                    location.reload();
-                } else {
-                    alert(result.error || 'Failed to cancel. Please try again.');
-                }
-            } catch (error) {
-                alert('Something went wrong. Please try again.');
             }
         }
 
